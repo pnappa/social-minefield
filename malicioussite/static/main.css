@@ -1,0 +1,12 @@
+iframe {
+  border: none;
+}
+
+.cat {
+  width: 53px;
+  top: 125px;
+  position: fixed;
+  height: 20px;
+  left: 17px;
+  pointer-events: none;
+}

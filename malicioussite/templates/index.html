@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Social Minefield</title>
+    <script src="{{ static_url("main.js") }}"></script>
+    <link href="{{ static_url("main.css") }}" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Social Minefield</h1>
+    <noscript>
+      This site requires JS to run, because it's an interactive game. Sorry!
+    </noscript>
+    <img class="cat" src="{{ static_url("cat.jpg") }}" />
+    <p>A high-stakes game of minesweeper.</p>
+    {% for row in range(row_count) %}
+      <div>Yeet: 
+      {% for col in range(col_count) %}
+        <span>Yo.</span>
+      {% end %}
+      </div>
+    {% end %}
+    <iframe referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
+    <div>
+      <p>
+        TODO: Game of minesweeper, but let's practice with just clickjacking.
+      </p>
+    </div>
+  </body>
+</html>
