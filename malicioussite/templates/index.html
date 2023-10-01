@@ -12,18 +12,34 @@
     </noscript>
     <img class="cat" src="{{ static_url("cat.jpg") }}" />
     <p>A high-stakes game of minesweeper.</p>
-    {% for row in range(row_count) %}
-      <div>Yeet: 
-      {% for col in range(col_count) %}
-        <span>Yo.</span>
+    <table class="game">
+      {% for row in game %}
+        <tr>
+        {% for col in row %}
+        <td class="{{ "mine" if col == -1 else "space" }}">{{ col }}</td>
+        {% end %}
+        </tr>
       {% end %}
-      </div>
-    {% end %}
-    <iframe referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
+    </table>
+    <table class="iframes">
+      {% for row in game %}
+        <tr>
+        {% for col in row %}
+        <td class="boo">
+          {% if col == -1 %}
+            <iframe scrolling="no" referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
+          {% end %}
+          
+        </td>
+        {% end %}
+        </tr>
+      {% end %}
+    </table>
     <div>
       <p>
         TODO: Game of minesweeper, but let's practice with just clickjacking.
       </p>
     </div>
+    <iframe scrolling="no" referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
   </body>
 </html>

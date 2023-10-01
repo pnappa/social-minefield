@@ -1,5 +1,8 @@
 iframe {
   border: none;
+  width: 53px;
+  height: 20px;
+  overflow: hidden;
 }
 
 .cat {
@@ -9,4 +12,38 @@ iframe {
   height: 20px;
   left: 17px;
   pointer-events: none;
+}
+
+.game {
+  position: absolute;
+  pointer-events: none;
+}
+
+.mine, .space {
+  pointer-events: none;
+  background: #ececec;
+  pointer-events: none;
+}
+
+.boo {
+  background: #dddddd;
+}
+
+tr {
+  height: 20px;
+}
+td {
+  height: 20px;
+  width: 53px;
+  padding: 0;
+  text-align: center;
+  /*
+   * this is necessary, because it's necessary (:
+   * https://stackoverflow.com/a/12805357
+   */
+  line-height: 0px;
+}
+
+table {
+  border-spacing: 0;
 }

@@ -5,11 +5,22 @@ import os
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
+        game = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, -1, 0, 0, 0, 0, -1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, -1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ]
         self.render(
             'index.html',
             IFRAMESRC="http://localhost:8889",
-            row_count=10,
-            col_count=10,
+            game=game,
         )
 
 def make_app():
