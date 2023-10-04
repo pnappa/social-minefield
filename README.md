@@ -1,5 +1,7 @@
 # Social Minefield
 
+![Social Minefield Logo](./misc/logo.png)
+
 A high-stakes game of minesweeper.
 
 ## Running
