@@ -41,6 +41,11 @@ python3 app.py
   - Looks reasonable to do.
  - [ ] See if there's a way to get page liking to work.
   - Or things like Videos on FB, or whatever. Things that would show up on the timeline.
+ - There are some limitations I don't think we can avoid:
+  - Is element hovering possible for clickjacked squares? I don't think so: https://moshfeu.github.io/show-tooltip-on-pointer-events-none-element/
+  - Is right clicking possible for clickjacked squares? Maybe something exploiting blurring, idk. This might trigger the iframe click code?
+    - Maybe let's pop up a modal on the user's first attempt at right clicking (this will only work on the non-clickjacked squares), to hopefully scare them off doing it.
+    - Big warning saying not too.
  - [ ] Ability to generate a random game. I think it'll be very difficult to make minesweeper play like the legit version, which generates a board upon revealing the first square (to guarantee the first square isn't a failure).
   - What we'll need to do, is to get them to click a square, wherein we redirect to a page with that revealed.
   - Alternatively we can capture all clicks with an over the top div(?), and use flex-box ordering to reshuffle around the elements. There's probably some maths to involve it. We cannot move the iframes around the DOM without them resetting (which could be detected by FB maybe).
