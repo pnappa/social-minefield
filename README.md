@@ -39,6 +39,8 @@ python3 app.py
  - [ ] Need to be able to detect when a iframe is clicked in, so as to know when it's game over (and which thing they liked).
   - https://stackoverflow.com/questions/2381336/detect-click-into-iframe-using-javascript/32138108#32138108
   - Looks reasonable to do.
+ - [ ] See if there's a way to get page liking to work.
+  - Or things like Videos on FB, or whatever. Things that would show up on the timeline.
  - [ ] Ability to generate a random game. I think it'll be very difficult to make minesweeper play like the legit version, which generates a board upon revealing the first square (to guarantee the first square isn't a failure).
   - What we'll need to do, is to get them to click a square, wherein we redirect to a page with that revealed.
   - Alternatively we can capture all clicks with an over the top div(?), and use flex-box ordering to reshuffle around the elements. There's probably some maths to involve it. We cannot move the iframes around the DOM without them resetting (which could be detected by FB maybe).

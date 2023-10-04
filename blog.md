@@ -1,6 +1,6 @@
 # Social Minefield - the minesweeper game with ramifications
 
-(social minefield logo)
+![social minefield logo](./misc/logo.png)
 
 This is the accompanying blog post to [socialminefield.app](https://socialminefield.app), the game of minesweeper that exploits Clickjacking to like controversial sites on social media.
 
@@ -63,3 +63,5 @@ TODO: Investigate if we can fix it.
 ## How to prevent your site from working??
 The best way is to use privacy preserving browser extensions like Privacy Badger. If you use Firefox (which I highly recommend for privacy reasons), the built-in privacy features automatically block Facebook scripts to stop them stalking you across the Internet.
 
+## Why the logo?
+Well, ISIS are not very nice people (brave statement, I know!), and liking them presents somewhat a taboo. I thought about making it a swastika (Nazis were _also_ not very nice people), but I thought it might mean the site would be banned in Germany.
