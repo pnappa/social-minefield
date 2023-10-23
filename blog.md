@@ -1,4 +1,4 @@
-# Social Minefield - the minesweeper game with ramifications
+# Social Minefield - the minesweeper game with consequences
 
 ![social minefield logo](./misc/logo.png)
 
@@ -10,22 +10,42 @@ Here, we'll cover how it works, how we got here, and where to go.
 
 Probably the least sexy of all front-end exploits, clickjacking is a kind of software vulnerability which lets attackers embed a copy of a site on their own site, and where specially placed clicks from the end user will activate unintended functionality (such as liking a Facebook page, or even purchasing an item online).
 
-Most established sites of consequence have it patched, but every so often, a new web-app will forget to close the hole, and be affected by it for a short (but long enough to be exploited) time, and be granted to the security wall of shame. They then apply the relevant fix, and go on their merry-way, likely to never run into the problem ever again.
-
 How it works is simple:
 
 (TODO: Diagram with a "hot goths in your area!" button over top a "+cool!" button).
 
-It's not just limited to one click, you can cleverly design your UI to trick people to make 
+It's not just limited to one click, you can cleverly design your UI to trick people to make multiple.
 
-## Why do I care?
+(TODO: an animation showing maybe an OSU game?? and a user clicking multiple things to buy something online)
 
-## How's the game work?
+Most established sites of consequence have it patched, but every so often, a new web-app will forget to close the hole, and be affected by it for a short (but long enough to be exploited) time, and be granted to the security hall of shame. They then apply the relevant fix, and go on their merry-way, likely to never run into the problem ever again.
 
-## Fun things along the way
+## How does the website work?
+
+Very similar to the above example. First, we let a user click a square, at which point we generate 10 unique positions to place a mine, that are not the starting click. This ensures that the first piece that a player picks is not a mine, as that's a bit unfair.
+
+(TODO: picture of the empty board, with a mouse at position X, Y, clicking)
+
+At each of these positions we place a "mine". This is simply a like button in that square of the board.
+
+(TODO: picture of the board with a like button in each position)
+
+We number each square based on how many mines are adjacent.
+
+(TODO: picture of the board with numbers)
+
+Then, we cover up the numbered squares with buttons with some code to handle what happens when you click them (reveal itself, etc).
+
+(TODO: Picture of the squares without like buttons covered up)
+
+Finally, we cover up the like buttons with elements with special code that mean that clicks get ignored, and instead click below it.
+
+(TODO: Picture of the final board, with a graphic showing `pointer-events: none;` is applied to the "blanks" above the mines).
+
+Finito.
 
 ## How to fix my app!!!
-If you're running a web-app, all you need to do is add these headers, which disable the ability for someone to load your site into an `<iframe>`.
+If you're a developer and run an interactive website, all you need to do is add these headers, which disable the ability for someone to load your site into an `<iframe>`.
 
 ```
 # xxx: you should already have some csp settings enabled, but having some headers is better than none
@@ -50,6 +70,33 @@ It's recommended to use both CSP and the `X-Frame-Options` header to implement t
 
 If `<iframe>`s are necessary for your site to use, you can allow your OWN site to host itself in an iframe. Amazon do this, for example. They don't use CSP, but implement it using the `X-Frame-Options: SAMEORIGIN` header. It's good news, because Amazon suppports 1-click purchasing, so if there was no protection against Clickjacking, we'd be spending a lot more money on random crap!
 
+## Why is this the behaviour?
+Facebook intentionally allows other sites to embed the like button on any page, as that's what like buttons on website are for.
+
+What isn't clear, is why this is default behaviour. To prevent someone else embedding your website on theirs, you need to add a HTTP header, as described earlier. This is opt-in security, or, insecure by default.
+
+This is not okay. Clickjacking has been a well known attack in security circles since 2008.
+
+#### So, what's the solution?
+
+Browsers make it default that only same-origin sites will be able to embed sites. That is, it's fine for [amazon.com](https://amazon.com) to have embed an iframe of `amazon.com` on itself.
+
+As it's possible to opt in, it means existing websites that being able to be embedded on other people's sites will set a HTTP header that says "allow any website to embed me". In fact, we already have that HTTP header: `Content-Security-Policy: frame-ancestors *`.
+
+My proposed behaviour is making websites effectively have the header `Content-Security-Policy: frame-ancestors 'self'` set implicitly.
+
+I suggest the following timeline:
+
+##### Now
+Add a deprecation warning to embeds that do not specify `Content-Security-Policy: frame-ancestors *` that are hosted on non-same-origin sites. It should suggest a well-written post that is translated in as many languages as possible, and clearly readable from a beginner's perspective.
+
+A bad example is the CORS warning message that pops up, and its MDN page it suggests. While pretty in-depth, it is pretty abstract and kind of hard to understand for beginners.
+
+##### Mid-late 2024
+Switch over to the proposed behaviour. Make it log a warning in the console. If you're particularly brave, perhaps make it spawn an alert modal or display a banner to indicate to non-technical users that the site is broken and needs fixing. 🙃
+
+That's it. That will fix the default insecure nature of Clickjacking, and make me happy.
+
 ## Why hasn't Facebook fixed this?
 Because they're using `<iframes>` to track people across the web. If they nuke the feature, they'll break old sites using the feature (who plonked it on their site many years ago), and potentially lose some tracking data.
 
@@ -61,7 +108,4 @@ Yeah, so it turns out Facebook has globally broken their like feature for "Pages
 TODO: Investigate if we can fix it.
 
 ## How to prevent your site from working??
-The best way is to use privacy preserving browser extensions like Privacy Badger. If you use Firefox (which I highly recommend for privacy reasons), the built-in privacy features automatically block Facebook scripts to stop them stalking you across the Internet.
-
-## Why the logo?
-Well, ISIS are not very nice people (brave statement, I know!), and liking them presents somewhat a taboo. I thought about making it a swastika (Nazis were _also_ not very nice people), but I thought it might mean the site would be banned in Germany.
+The best way is to use privacy preserving browser extensions like Privacy Badger. If you use Firefox (which I highly recommend for privacy reasons), the built-in privacy features automatically block Facebook resources and scripts to stop them stalking you across the Internet.
