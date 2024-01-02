@@ -20,7 +20,6 @@ iframe {
 }
 
 .square {
-  pointer-events: none;
   background: #ececec;
   pointer-events: none;
 }
@@ -80,12 +79,6 @@ iframe {
 .explodedmine::after {
   content: "*";
   overflow: hidden;
-}
-
-/* TODO: The rest...? */
-
-.boo {
-  background: #dddddd;
 }
 
 tr {

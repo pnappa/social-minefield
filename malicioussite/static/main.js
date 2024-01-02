@@ -8,7 +8,6 @@ const isElementInBounds = (clickEvent, element) => {
   // XXX: Are we gonna support right click?
   const isLeftClick = clickEvent.button === 0;
   const isRightClick = clickEvent.button === 2;
-  // console.log(clickEvent);
   const [x, y] = [clickEvent.x, clickEvent.y]; 
   const bounds = element.getBoundingClientRect();
   return x >= bounds.left && x <= bounds.right &&
@@ -66,9 +65,7 @@ const cellToClassName = (c) => {
 }
 
 const checkWinCondition = () => {
-  console.log('checking winning condition...');
   if (currGameField == null) {
-    console.log('false');
     return false;
   }
   const cells = document.querySelectorAll('.square');
@@ -77,14 +74,12 @@ const checkWinCondition = () => {
     const coords = idxToCoords(idx);
     if (!cells[idx].classList.contains('clicked') && currGameField[coords.y][coords.x] !== -1) {
       // If we encounter a non-mine cell that hasn't been clicked, false.
-      console.log('false, exists non-mine not clicked');
       return false;
     }
   }
   // Got the whole way there?
   // TODO: Change the game state and website to indicate success. Maybe remove
   //       the iframes, and display where the bombs were. Add some popup too.
-  console.log('game won');
   alert('game won');
   return true;
 };
@@ -136,20 +131,14 @@ const activateSquare = ({ x, y }) => {
       checkWinCondition();
       break;
     case -1:
-      // TODO: End game?
-      //  - Change any UI elements (highlighting mines, etc)
-      //  - Show loser screen, display which iframe you clicked on.
-      el.classList.add(cellToClassName(cell));
-      el.classList.add('clicked');
-      alert('Game over?');
+      // This is actually impossible to reach, as the iframe swallows the
+      // input. Just do nothing.
       break;
   }
 };
 
 const displayAllCells = () => {
-  console.log('[displayAllCells] ??');
   if (currGameField == null) return;
-  console.log('[displayAllCells] !!');
   document.querySelectorAll('.square').forEach((el, idx) => {
     const coords = idxToCoords(idx);
     const cell = currGameField[coords.y][coords.x];
@@ -168,8 +157,7 @@ const removeAllMineIframes = () => {
 // This function is called when the user clicks on a mine at index idx.
 const gameOver = (idx, iframeSrc) => {
   const { x, y } = idxToCoords(idx);
-  console.log('gameover');
-  alert(`Clicked iframe: ${iframeSrc}, x=${x}, y=${y}`);
+  alert(`Game over: Clicked iframe: ${iframeSrc}, x=${x}, y=${y}`);
   // Toggle the mine cell.
   const element = document.querySelectorAll('.square')[idx];
   element.classList.add('explodedmine');
@@ -276,8 +264,6 @@ const initialiseGameField = ({ x, y }) => {
     game[el.y][el.x] = -1;
   }
 
-  console.log('mine positions', minePositions);
-
   // Then, colour in the numbers for how many adjacent mines there are.
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
@@ -298,14 +284,6 @@ const initialiseGameField = ({ x, y }) => {
     const relevantCell = iframecells[coordToIdx(pos)];
     relevantCell.innerHTML = `<iframe scrolling="no" referrerpolicy="no-referrer" src="${minelinks[idx]}"></iframe>`;
   });
-
-
-  // TODO: Debug to make sure the game is generating right.
-  // document.querySelectorAll('.square').forEach((el, idx) => {
-  //   const coords = idxToCoords(idx);
-  //   const cell = game[coords.y][coords.x];
-  //   el.classList.add(cellToClassName(cell));
-  // });
   
   return game;
 };
@@ -339,9 +317,3 @@ window.addEventListener("mouseup", function(event) {
     });
   }
 });
-
-window.addEventListener("DOMContentLoaded", () => {
-  console.log('loaded');
-  // Set up the game table. This is to allow the first click to work.
-});
-
