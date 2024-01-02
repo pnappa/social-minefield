@@ -87,7 +87,7 @@ My proposed behaviour is making websites effectively have the header `Content-Se
 
 I suggest the following timeline:
 
-##### Now
+##### Near future
 Add a deprecation warning to embeds that do not specify `Content-Security-Policy: frame-ancestors *` that are hosted on non-same-origin sites. It should suggest a well-written post that is translated in as many languages as possible, and clearly readable from a beginner's perspective.
 
 A bad example is the CORS warning message that pops up, and its MDN page it suggests. While pretty in-depth, it is pretty abstract and kind of hard to understand for beginners.
@@ -96,6 +96,15 @@ A bad example is the CORS warning message that pops up, and its MDN page it sugg
 Switch over to the proposed behaviour. Make it log a warning in the console. If you're particularly brave, perhaps make it spawn an alert modal or display a banner to indicate to non-technical users that the site is broken and needs fixing. 🙃
 
 That's it. That will fix the default insecure nature of Clickjacking, and make me happy.
+
+#### Enterprise edge case
+If a website is unable to be updated to add the HTTP header to the web server, it is possible to write a browser extension that will append headers to the response.
+TODO: Write this extension? Or at least, write how to do it. There's a bunch of these extensions around, I'm curious how they work:
+ - I decompiled https://addons.mozilla.org/en-US/firefox/addon/modify-header-value/ and it seems fairly simple.
+  - To decompile:
+   - Right click the add to firefox, copy link.
+   - Wget that file, rename to .zip and decompress.
+   - View the lib/common.js file to see how it works. Pretty simple.
 
 ## Why hasn't Facebook fixed this?
 Because they're using `<iframes>` to track people across the web. If they nuke the feature, they'll break old sites using the feature (who plonked it on their site many years ago), and potentially lose some tracking data.

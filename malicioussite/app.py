@@ -3,24 +3,20 @@ import asyncio
 import tornado
 import os
 
+def get_random_silly_links(num):
+    # TODO: Have a large array of links, and serve them.
+    #       At the moment, we just send the same URL over and over.
+    links = ['http://localhost:8889' for _ in range(10)]
+    return '[' + ",".join(map(lambda x: "'" + x + "'", links)) + ']'
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        game = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, -1, 0, 0, 0, 0, -1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, -1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
         self.render(
             'index.html',
-            IFRAMESRC="http://localhost:8889",
-            game=game,
+            width=10,
+            height=10,
+            num_mines=10,
+            minelinks_array=get_random_silly_links(10)
         )
 
 def make_app():

@@ -19,11 +19,70 @@ iframe {
   pointer-events: none;
 }
 
-.mine, .space {
+.square {
   pointer-events: none;
   background: #ececec;
   pointer-events: none;
 }
+
+.square.clicked {
+  background: #cccccc;
+}
+
+.square.clicked.explodedmine {
+  background: red;
+}
+
+.zero {
+  overflow: hidden;
+}
+
+.one::after {
+  content: "1";
+  overflow: hidden;
+}
+
+.two::after {
+  content: "2";
+  overflow: hidden;
+}
+
+.three::after {
+  content: "3";
+  overflow: hidden;
+}
+
+.four::after {
+  content: "4";
+  overflow: hidden;
+}
+
+.five::after {
+  content: "5";
+  overflow: hidden;
+}
+
+.six::after {
+  content: "6";
+  overflow: hidden;
+}
+
+.seven::after {
+  content: "7";
+  overflow: hidden;
+}
+
+.eight::after {
+  content: "8";
+  overflow: hidden;
+}
+
+.explodedmine::after {
+  content: "*";
+  overflow: hidden;
+}
+
+/* TODO: The rest...? */
 
 .boo {
   background: #dddddd;

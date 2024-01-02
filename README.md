@@ -49,6 +49,9 @@ python3 app.py
  - [ ] Ability to generate a random game. I think it'll be very difficult to make minesweeper play like the legit version, which generates a board upon revealing the first square (to guarantee the first square isn't a failure).
   - What we'll need to do, is to get them to click a square, wherein we redirect to a page with that revealed.
   - Alternatively we can capture all clicks with an over the top div(?), and use flex-box ordering to reshuffle around the elements. There's probably some maths to involve it. We cannot move the iframes around the DOM without them resetting (which could be detected by FB maybe).
+ - [ ] Add random mine facts during the game, which should distract them
+  - The rat that demines
+  - Canaries don't like mines, yada yada yada
 
 ## Experiments with the Like Button
 So, if you insert an iframe with the following code:

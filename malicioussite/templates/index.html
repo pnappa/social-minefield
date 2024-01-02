@@ -2,6 +2,9 @@
 <html>
   <head>
     <title>Social Minefield</title>
+    <script>
+      var minelinks = {% raw minelinks_array %};
+    </script>
     <script src="{{ static_url("main.js") }}"></script>
     <link href="{{ static_url("main.css") }}" rel="stylesheet" />
   </head>
@@ -13,27 +16,23 @@
     <img class="cat" src="{{ static_url("cat.jpg") }}" />
     <p>A high-stakes game of minesweeper.</p>
     <table class="game">
-      {% for row in game %}
+      {% for row in range(height) %}
         <tr>
-        {% for col in row %}
-        <td class="{{ "mine" if col == -1 else "space" }}">{{ col }}</td>
+        {% for col in range(width) %}
+        <td class="square"></td>
+        {# <td class="{{ "mine square" if col == -1 else "space square" }}">{{ col }}</td> #}
         {% end %}
         </tr>
       {% end %}
     </table>
     <table class="iframes">
-      {% for row in game %}
-        <tr>
-        {% for col in row %}
-        <td class="boo">
-          {% if col == -1 %}
-            <iframe scrolling="no" referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
-          {% end %}
-          
-        </td>
+    {% for row in range(height) %}
+      <tr>
+        {% for col in range(width) %}
+        <td class="boo" id="idx-{{ row*width + col}}"></td>
         {% end %}
-        </tr>
-      {% end %}
+      </tr>
+    {% end %}
     </table>
     <div>
       <p>
@@ -43,6 +42,8 @@
       <!--<iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FMrBeast6000&tabs=timeline&width=180&height=70&small_header=true&adapt_container_width=false&hide_cover=true&show_facepile=false&appId" width="180" height="70" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>-->
       <!--<iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FMrBeast6000&tabs=timeline&width=180&height=70&small_header=true&adapt_container_width=false&hide_cover=true&show_facepile=false&appId" width="180" height="70" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>-->
     </div>
+    {#
     <iframe scrolling="no" referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
+    #}
   </body>
 </html>
