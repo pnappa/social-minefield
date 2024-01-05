@@ -1,3 +1,34 @@
+body {
+  font-family: sans-serif;
+  /* Cool colours list:
+   * aniquewhite
+   * bisque
+   * darksalmon
+   * lemonchiffon
+   * TODO: Go through the list more, i stopped at lemonchiffon.
+   */
+  background-color: darksalmon;
+}
+  
+
+#pagecontainer {
+  display: flex;
+  max-width: 800px;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.block {
+  background-color: floralwhite;
+  padding: 1em 3em 3em 3em;
+  border-radius: 2em;
+  border: 5px solid black;
+}
+
+h1 {
+  text-align: center;
+}
+
 iframe {
   border: none;
   width: 53px;

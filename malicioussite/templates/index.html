@@ -9,41 +9,47 @@
     <link href="{{ static_url("main.css") }}" rel="stylesheet" />
   </head>
   <body>
-    <h1>Social Minefield</h1>
-    <noscript>
-      This site requires JS to run, because it's an interactive game. Sorry!
-    </noscript>
-    <img class="cat" src="{{ static_url("cat.jpg") }}" />
-    <p>A high-stakes game of minesweeper.</p>
-    <table class="game">
-      {% for row in range(height) %}
-        <tr>
-        {% for col in range(width) %}
-        <td class="square"></td>
-        {# <td class="{{ "mine square" if col == -1 else "space square" }}">{{ col }}</td> #}
+    <div id="pagecontainer">
+      <div class="block">
+        <h1>🚩🚩🚩 Social Minefield 🚩🚩🚩</h1>
+        <noscript>
+          This site requires JS to run, because it's an interactive game. Sorry!
+        </noscript>
+        <p>A high-stakes game of minesweeper.</p>
+        <table class="game">
+          {% for row in range(height) %}
+            <tr>
+            {% for col in range(width) %}
+            <td class="square"></td>
+            {% end %}
+            </tr>
+          {% end %}
+        </table>
+        <table class="flagplacer">
+          {% for row in range(height) %}
+            <tr>
+            {% for col in range(width) %}
+            <td class="flagsquare"></td>
+            {% end %}
+            </tr>
+          {% end %}
+        </table>
+        <table class="iframes">
+        {% for row in range(height) %}
+          <tr>
+            {% for col in range(width) %}
+            <td class="boo" id="idx-{{ row*width + col}}"></td>
+            {% end %}
+          </tr>
         {% end %}
-        </tr>
-      {% end %}
-    </table>
-    <table class="flagplacer">
-      {% for row in range(height) %}
-        <tr>
-        {% for col in range(width) %}
-        <td class="flagsquare"></td>
-        {% end %}
-        </tr>
-      {% end %}
-    </table>
-    <table class="iframes">
-    {% for row in range(height) %}
-      <tr>
-        {% for col in range(width) %}
-        <td class="boo" id="idx-{{ row*width + col}}"></td>
-        {% end %}
-      </tr>
-    {% end %}
-    </table>
-    <button id="placeflags">Start Placing Flags</button>
+        </table>
+        <button id="placeflags">Start Placing Flags</button>
+      </div>
+      <div class="block">
+        <p>how it works?</p>
+      </div>
+    </div>
+    {# TODO: remove the following ??? #}
     <div>
       <iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&width=100px&layout&action&size&share=false&height=35&appId" width="100px" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
       <!--<iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FMrBeast6000&tabs=timeline&width=180&height=70&small_header=true&adapt_container_width=false&hide_cover=true&show_facepile=false&appId" width="180" height="70" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>-->

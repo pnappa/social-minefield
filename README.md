@@ -52,10 +52,14 @@ python3 app.py
  - [ ] Add random mine facts during the game, which should distract them
   - The rat that demines
   - Canaries don't like mines, yada yada yada
- - [ ] Add a flag placer. It's not possible to place flags because right click isn't handled.
+ - [x] Add a flag placer. It's not possible to place flags because right click isn't handled.
   - The way I imagine this working, is that you click a toggle to change which mode you're in.
   - Then when in that mode, left clicking will place a flag. Clicking the toggle again returns you to regular mode.
   - I don't want it to automatically re-enter the game mode after placing a single flag, as it's easy to accidentally click on a mine if you didn't know that it only activated once.
+ - [ ] Add some styling to make it preeeetty.
+  - [ ] Optimise opensans font - we probably will only need semi-bold and regular weights, so as to strip down the font.
+  - Also consider limiting the range. https://web.dev/articles/reduce-webfont-size#unicode-range_subsetting
+    - I switched to using sans serif (default browser font).
 
 ## Experiments with the Like Button
 So, if you insert an iframe with the following code:
