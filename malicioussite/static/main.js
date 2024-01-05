@@ -3,6 +3,7 @@ const height = 10;
 // Null if no game started.
 let currGameField = null;
 let isGameOver = false;
+let isFlagPlacingEnabled = false;
 
 // I intentionally expose these functions to the global scope, as it's fun to
 // expose the machinery to observant people. If they want to "defuse" the game,
@@ -84,6 +85,7 @@ const checkWinCondition = () => {
   // Got the whole way there?
   // TODO: Change the game state and website to indicate success. Maybe remove
   //       the iframes, and display where the bombs were. Add some popup too.
+  displayAllCells();
   alert('game won');
   return true;
 };
@@ -143,10 +145,16 @@ const activateSquare = ({ x, y }) => {
 
 const displayAllCells = () => {
   if (currGameField == null) return;
+  const flagSquares = document.querySelectorAll('.flagsquare');
   document.querySelectorAll('.square').forEach((el, idx) => {
     const coords = idxToCoords(idx);
     const cell = currGameField[coords.y][coords.x];
     el.classList.add(cellToClassName(cell));
+    // If the square was flagged, and it was not a mine, show a crossed out icon
+    // in the flags layer.
+    if (cell !== -1 && flagSquares[idx]?.classList.contains('active')) {
+      flagSquares[idx].classList.add('incorrect');
+    }
   });
 };
 
@@ -315,32 +323,73 @@ const initialiseGameField = ({ x, y }) => {
   return game;
 };
 
+
 window.addEventListener("mouseup", function(event) {
-  if (currGameField == null) {
-    // If there's no game active, our purpose is to start the game.
-    const squares = document.querySelectorAll('.square');
-    for (let idx = 0; idx < squares.length; ++idx) {
-      const el = squares[idx];
-      const inBounds = isElementInBounds(event, el);
-      if (inBounds) {
-        const coords = idxToCoords(idx);
-        // Generate a game, and set up the iframes.
-        currGameField = initialiseGameField(coords);
-        // "Click" the square the user clicked.
-        activateSquare(coords);
-        // Start loop which detects whether the user has clicked on a iframe.
-        startMonitoringIFrames();
-        break;
+  if (!isFlagPlacingEnabled) {
+    // Regular mine discovery.
+    if (currGameField == null) {
+      // If there's no game active, our purpose is to start the game.
+      const squares = document.querySelectorAll('.square');
+      for (let idx = 0; idx < squares.length; ++idx) {
+        const el = squares[idx];
+        const inBounds = isElementInBounds(event, el);
+        if (inBounds) {
+          const coords = idxToCoords(idx);
+          // Generate a game, and set up the iframes.
+          currGameField = initialiseGameField(coords);
+          // "Click" the square the user clicked.
+          activateSquare(coords);
+          // Start loop which detects whether the user has clicked on a iframe.
+          startMonitoringIFrames();
+          break;
+        }
       }
+    } else if (!isGameOver) {
+      // Handle when the cells are clicked.
+      document.querySelectorAll('.square').forEach((el, idx) => {
+        // TODO: This will never happen for mines, as the iframe swallows the event.
+        if (isElementInBounds(event, el)) {
+          activateSquare(idxToCoords(idx));
+          // alert(`Clicked square ${idx}`);
+        }
+      });
     }
-  } else if (!isGameOver) {
-    // Handle when the cells are clicked.
-    document.querySelectorAll('.square').forEach((el, idx) => {
-      // TODO: This will never happen for mines, as the iframe swallows the event.
+  } else {
+    // Flag placement.
+    document.querySelectorAll('.flagsquare').forEach((el, idx) => {
+      console.log('flagtest');
       if (isElementInBounds(event, el)) {
-        activateSquare(idxToCoords(idx));
-        // alert(`Clicked square ${idx}`);
+        console.log('found square');
+        el.classList.toggle('active');
       }
     });
   }
+});
+
+const enterFlagPlacingMode = () => {
+  document.querySelector('#placeflags').innerText = 'Stop Placing Flags';
+  // Disable the iframes by capturing pointer events.
+  document.querySelector('table.flagplacer').classList.add('active');
+};
+
+const exitFlagPlacingMode = () => {
+  document.querySelector('#placeflags').innerText = 'Start Placing Flags';
+  // Enable the iframes by not capturing pointer events.
+  document.querySelector('table.flagplacer').classList.remove('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('loaded');
+  document.querySelector('#placeflags').addEventListener('mouseup', (clickEvent) => {
+    const isLeftClick = clickEvent.button === 0;
+    if (isLeftClick) {
+      isFlagPlacingEnabled = !isFlagPlacingEnabled;
+      console.log('button clicked');
+      if (isFlagPlacingEnabled) {
+        enterFlagPlacingMode();
+      } else {
+        exitFlagPlacingMode();
+      }
+    }
+  });
 });

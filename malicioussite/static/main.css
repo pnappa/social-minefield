@@ -19,6 +19,30 @@ iframe {
   pointer-events: none;
 }
 
+.flagplacer {
+  pointer-events: none;
+  position: absolute;
+}
+
+.flagplacer.active {
+  pointer-events: auto;
+}
+
+.flagsquare {
+  pointer-events: none;
+}
+
+.flagsquare.active {
+  pointer-events: auto !important;
+}
+.flagsquare.active::after {
+  content: "🚩";
+}
+
+.flagsquare.active.incorrect::after {
+  content: "🚫";
+}
+
 .square {
   background: #ececec;
   pointer-events: none;
@@ -77,7 +101,7 @@ iframe {
 }
 
 .explodedmine::after {
-  content: "*";
+  content: "💣";
   overflow: hidden;
 }
 

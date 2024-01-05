@@ -32,7 +32,7 @@ python3 app.py
 ```
 
 ## TODO
- - [ ] Before I continue too much further with the game, attempt to check if it actually works with the real social media link. I don't want to do all this work for nothing.
+ - [x] Before I continue too much further with the game, attempt to check if it actually works with the real social media link. I don't want to do all this work for nothing.
   - We have a somewhat simple HTML that kind of looks like a minesweeper, but before any gameplay logic comes into play
  - [ ] Are we allowed to load multiple like buttons at once? Or should we make it a modified game of minesweeper where it's only one flag out of the 10 that's a super mine.
    - I reckon Facebook might implement a timing heuristic that detects this. If instead we stream the HTML to the client, using magic HTTP streaming shit, we can ruin that. Obviously is a cat and mouse game.
@@ -52,6 +52,10 @@ python3 app.py
  - [ ] Add random mine facts during the game, which should distract them
   - The rat that demines
   - Canaries don't like mines, yada yada yada
+ - [ ] Add a flag placer. It's not possible to place flags because right click isn't handled.
+  - The way I imagine this working, is that you click a toggle to change which mode you're in.
+  - Then when in that mode, left clicking will place a flag. Clicking the toggle again returns you to regular mode.
+  - I don't want it to automatically re-enter the game mode after placing a single flag, as it's easy to accidentally click on a mine if you didn't know that it only activated once.
 
 ## Experiments with the Like Button
 So, if you insert an iframe with the following code:
