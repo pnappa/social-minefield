@@ -4,6 +4,10 @@ const height = 10;
 let currGameField = null;
 let isGameOver = false;
 
+// I intentionally expose these functions to the global scope, as it's fun to
+// expose the machinery to observant people. If they want to "defuse" the game,
+// that's fun too.
+
 const isElementInBounds = (clickEvent, element) => {
   // XXX: Are we gonna support right click?
   const isLeftClick = clickEvent.button === 0;
@@ -163,7 +167,17 @@ const gameOver = (idx, iframeSrc) => {
   element.classList.add('explodedmine');
   element.classList.add('clicked');
   displayAllCells();
-  removeAllMineIframes();
+  // XXX: This might be breaking the code if you hold down the click? Instead
+  //      let's try just re-adding pointer events to the game.
+  // removeAllMineIframes();
+  // XXX: This won't work either, it seems to check the pointer-events priority
+  //      at the time of release when working out whether the click is
+  //      propagated.
+  // document.querySelector('table.game').classList.add('disable-game');
+  // I am instead going to make the executive decision that clicking on mines is
+  // a bad idea, even when you've uncovered them. Even after minesweeper ships
+  // _discover_ mines, it's still a bad idea to run a ship into them.
+  // Et voila, it's canon. :)
   isGameOver = true;
 };
 
@@ -174,6 +188,19 @@ const startMonitoringIFrames = () => {
   let activeFrame = null;
   // Cursed code adapted from: https://stackoverflow.com/a/32138108
   const monitor = setInterval(function(){
+    // XXX: This code is actually not quite right, if you release the click
+    //      outside the square, it won't "like" the square (observe that no
+    //      alert is raised from the friendly site).
+    //      Even if there's a longer delay it technically won't stop it, and
+    //      makes another exploit possible (if there's a 50/50, quickly click
+    //      both). However, if we decrease it, it'll spawn an alert that will
+    //      nullify the click on the iframe. If the winning condition doesn't
+    //      involve an alert (but instead is a floating div, then it probably
+    //      won't break anything, but should test this. Indeed, we shouldn't
+    //      delete the iframe, as I think that's another cause, instead, just
+    //      renable the pointer events.
+    //      I don't believe this code is possible to get perfectly right. These
+    //      are just hacks, and for a "normal" player, it functions good enough.
     if (currGameField == null) return;
     var elem = document.activeElement;
     if(elem?.tagName === 'IFRAME' && elem.parentElement.id != null){
