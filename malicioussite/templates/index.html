@@ -16,37 +16,55 @@
           This site requires JS to run, because it's an interactive game. Sorry!
         </noscript>
         <p>A high-stakes game of minesweeper.</p>
-        <table class="game">
-          {% for row in range(height) %}
-            <tr>
-            {% for col in range(width) %}
-            <td class="square"></td>
+        <p>Rules:</p>
+        <ul>
+          <li>It's a regular game of minesweeper, but clicking on a mine will like a Facebook link.</li>
+          <li>You must be logged into Facebook, and use a browser without privacy protections (Google Chrome). Similarly, privacy extensions or adblockers make the game not work.</li>
+          <li>No right clicking to place flags, use the flag button to enter flag placing mode. When in flag placing mode, click again to remove a flag.</li>
+          <li>Have fun!</li>
+        </ul>
+        <div id="game">
+          <div>
+            <table class="field">
+              {% for row in range(height) %}
+                <tr>
+                {% for col in range(width) %}
+                <td class="square"></td>
+                {% end %}
+                </tr>
+              {% end %}
+            </table>
+            <table class="flagplacer">
+              {% for row in range(height) %}
+                <tr>
+                {% for col in range(width) %}
+                <td class="flagsquare"></td>
+                {% end %}
+                </tr>
+              {% end %}
+            </table>
+            <table class="iframes">
+            {% for row in range(height) %}
+              <tr>
+                {% for col in range(width) %}
+                <td class="boo" id="idx-{{ row*width + col}}"></td>
+                {% end %}
+              </tr>
             {% end %}
-            </tr>
-          {% end %}
-        </table>
-        <table class="flagplacer">
-          {% for row in range(height) %}
-            <tr>
-            {% for col in range(width) %}
-            <td class="flagsquare"></td>
-            {% end %}
-            </tr>
-          {% end %}
-        </table>
-        <table class="iframes">
-        {% for row in range(height) %}
-          <tr>
-            {% for col in range(width) %}
-            <td class="boo" id="idx-{{ row*width + col}}"></td>
-            {% end %}
-          </tr>
-        {% end %}
-        </table>
-        <button id="placeflags">Start Placing Flags</button>
+            </table>
+            <div id="button-wrapper">
+              <button id="placeflags">🚩 Start Flagging</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="block">
-        <p>how it works?</p>
+        <article>
+          <h2 id="how-it-works">How does it work?</h2>
+          <p>
+            ...TODO, enter the blog post here essentially.
+          </p>
+        </article>
       </div>
     </div>
     {# TODO: remove the following ??? #}

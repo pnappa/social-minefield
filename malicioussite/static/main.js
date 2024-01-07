@@ -5,6 +5,12 @@ let currGameField = null;
 let isGameOver = false;
 let isFlagPlacingEnabled = false;
 
+// We need to subtract the border size, as we don't want clicking on the
+// border to trigger the reveal. This is because clicking on the border of an
+// iframe will not click on the content within. Please keep in sync with the
+// CSS for the cell borders, etc.
+const cellBorderWidth = 2;
+
 // I intentionally expose these functions to the global scope, as it's fun to
 // expose the machinery to observant people. If they want to "defuse" the game,
 // that's fun too.
@@ -15,8 +21,9 @@ const isElementInBounds = (clickEvent, element) => {
   const isRightClick = clickEvent.button === 2;
   const [x, y] = [clickEvent.x, clickEvent.y]; 
   const bounds = element.getBoundingClientRect();
-  return x >= bounds.left && x <= bounds.right &&
-         y >= bounds.top && y <= bounds.bottom;
+  // 0,0 is top left of the viewport.
+  return x >= (bounds.left + cellBorderWidth) && x <= (bounds.right - cellBorderWidth) &&
+         y >= (bounds.top + cellBorderWidth) && y <= (bounds.bottom - cellBorderWidth);
 }
 
 const idxToCoords = (idx) => {
@@ -97,6 +104,8 @@ const activateSquare = ({ x, y }) => {
   const cells = document.querySelectorAll('.square');
   const el = cells[(y * height) + x];
   if (el.classList.contains('clicked')) return;
+  // TODO: Placing flags is broken, you can click through it. Please check the
+  //       flag layer.
 
   const cell = currGameField[y][x];
   switch (cell) {
@@ -367,13 +376,13 @@ window.addEventListener("mouseup", function(event) {
 });
 
 const enterFlagPlacingMode = () => {
-  document.querySelector('#placeflags').innerText = 'Stop Placing Flags';
+  document.querySelector('#placeflags').innerText = '🚫 Stop Flagging';
   // Disable the iframes by capturing pointer events.
   document.querySelector('table.flagplacer').classList.add('active');
 };
 
 const exitFlagPlacingMode = () => {
-  document.querySelector('#placeflags').innerText = 'Start Placing Flags';
+  document.querySelector('#placeflags').innerText = '🚩 Start Flagging';
   // Enable the iframes by not capturing pointer events.
   document.querySelector('table.flagplacer').classList.remove('active');
 }
