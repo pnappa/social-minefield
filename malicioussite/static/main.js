@@ -104,8 +104,13 @@ const activateSquare = ({ x, y }) => {
   const cells = document.querySelectorAll('.square');
   const el = cells[(y * height) + x];
   if (el.classList.contains('clicked')) return;
-  // TODO: Placing flags is broken, you can click through it. Please check the
-  //       flag layer.
+
+  const flagSquares = document.querySelectorAll('.flagsquare');
+  const flagIdx = coordToIdx({ x, y });
+  if (flagSquares[flagIdx]?.classList.contains('active')) {
+    // If there's a flag on this square, clicking shall do nothing.
+    return;
+  }
 
   const cell = currGameField[y][x];
   switch (cell) {
@@ -115,8 +120,12 @@ const activateSquare = ({ x, y }) => {
       while (worklist.length) {
         // Pop from front.
         const workCoords = worklist.shift();
-        const workEl = cells[coordToIdx(workCoords)];
+        const workIdx = coordToIdx(workCoords);
+        const workEl = cells[workIdx];
+        // If it's already been revealed, don't reveal, nor add its neighbours.
         if (workEl.classList.contains('clicked')) continue;
+        // Flood fill should not reveal what's behind a flag.
+        if (flagSquares[workIdx]?.classList.contains('active')) continue;
         const workGameCell = currGameField[workCoords.y][workCoords.x];
         // "Click" the elements that appear in the work list.
         workEl.classList.add('clicked');
