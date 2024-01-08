@@ -192,3 +192,48 @@ table {
 footer.block > :last-child {
   margin-bottom: 0px;
 }
+
+/* interactive demo stuff */
+#interactive-demo-1 > :nth-child(1) {
+  /* Step 1 */
+  background-color: red;
+}
+#interactive-demo-1 > :nth-child(2) {
+  background-color: blue;
+}
+#interactive-demo-1 > :nth-child(3) {
+  background-color: green;
+}
+#interactive-demo-1 > :nth-child(4) {
+  background-color: purple;
+}
+.demo-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.demo-wrapper > div {
+  width: 700px;
+  height: 400px;
+  border-radius: 10px;
+  border: 5px black dashed;
+}
+.hidden {
+  display: none;
+}
+
+.st {
+  text-decoration: line-through;
+}
+
+.steps > button {
+  padding: 5px;
+  font-size: 18px;
+  border-radius: 5px;
+  border: 3px black solid;
+  cursor: pointer;
+  margin-top: 5px;
+}
+.steps > button[disabled] {
+  cursor: not-allowed;
+}

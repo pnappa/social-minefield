@@ -11,6 +11,12 @@ let isFlagPlacingEnabled = false;
 // CSS for the cell borders, etc.
 const cellBorderWidth = 2;
 
+// Interactive demo code.
+let demo1CurrentStep = 1;
+let maxDemo1Step = null;
+let demo2CurrentStep = 1;
+let maxDemo2Step = null;
+
 // I intentionally expose these functions to the global scope, as it's fun to
 // expose the machinery to observant people. If they want to "defuse" the game,
 // that's fun too.
@@ -192,6 +198,7 @@ const gameOver = (idx, iframeSrc) => {
   // The reason for this is that we want to reduce the likelihood the modal
   // breaks the clickjack interaction. For normal clicks, this should be fine,
   // but if a user holds for too long, yes, it'll break. Oh well.
+  // Tweak the timeout for a good-feeling value.
   isGameOver = true;
   setTimeout(() => {
     alert(`Game over: Clicked iframe: ${iframeSrc}, x=${x}, y=${y}`);
@@ -211,7 +218,7 @@ const gameOver = (idx, iframeSrc) => {
     // a bad idea, even when you've uncovered them. Even after minesweeper ships
     // _discover_ mines, it's still a bad idea to run a ship into them.
     // Et voila, it's canon. :)
-  }, 1000);
+  }, 100);
 };
 
 // Monitor when iframes are (probably) clicked, so as to display a relevant
@@ -385,9 +392,7 @@ window.addEventListener("mouseup", function(event) {
   } else {
     // Flag placement.
     document.querySelectorAll('.flagsquare').forEach((el, idx) => {
-      console.log('flagtest');
       if (isElementInBounds(event, el)) {
-        console.log('found square');
         el.classList.toggle('active');
       }
     });
@@ -406,14 +411,63 @@ const exitFlagPlacingMode = () => {
   document.querySelector('table.flagplacer').classList.remove('active');
 }
 
+const refreshDemo1Items = () => {
+  const updateStep = (expectedStep, el) => {
+    if (demo1CurrentStep === expectedStep) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  }
+  const slides = document.querySelectorAll('#interactive-demo-1 > .demo-slide');
+  for (let i = 1; i <= slides.length; ++i) {
+    updateStep(i, slides[i-1]);
+  };
+
+  // Disable the prev and next buttons.
+  if (demo1CurrentStep === 1) {
+    document.querySelector('#prev-step-1').disabled = true;
+    document.querySelector('#next-step-1').disabled = false;
+  } else if (demo1CurrentStep === maxDemo1Step) {
+    document.querySelector('#prev-step-1').disabled = false;
+    document.querySelector('#next-step-1').disabled = true;
+  } else {
+    document.querySelector('#prev-step-1').disabled = false;
+    document.querySelector('#next-step-1').disabled = false;
+  }
+};
+const refreshDemo2Items = () => {
+  const updateStep = (expectedStep, el) => {
+    if (demo2CurrentStep === expectedStep) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  }
+  const slides = document.querySelectorAll('#interactive-demo-2 > .demo-slide');
+  for (let i = 1; i <= slides.length; ++i) {
+    updateStep(i, slides[i-1]);
+  };
+
+  // Disable the prev and next buttons.
+  if (demo2CurrentStep === 1) {
+    document.querySelector('#prev-step-2').disabled = true;
+    document.querySelector('#next-step-2').disabled = false;
+  } else if (demo2CurrentStep === maxDemo2Step) {
+    document.querySelector('#prev-step-2').disabled = false;
+    document.querySelector('#next-step-2').disabled = true;
+  } else {
+    document.querySelector('#prev-step-2').disabled = false;
+    document.querySelector('#next-step-2').disabled = false;
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('loaded');
   document.querySelector('#placeflags').addEventListener('mouseup',
     (clickEvent) => {
       const isLeftClick = clickEvent.button === 0;
       if (isLeftClick) {
         isFlagPlacingEnabled = !isFlagPlacingEnabled;
-        console.log('button clicked');
         if (isFlagPlacingEnabled) {
           enterFlagPlacingMode();
         } else {
@@ -421,5 +475,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
+  );
+
+  // We have an interactive demo, but we don't want people to progress beyond
+  // the last slide.
+  maxDemo1Step = document.querySelectorAll('#interactive-demo-1 > .demo-slide').length;
+  maxDemo2Step = document.querySelectorAll('#interactive-demo-2 > .demo-slide').length;
+  document.querySelector('#prev-step-1').addEventListener('mouseup',
+    () => {
+      // Don't do anything if not initialised.
+      if (maxDemo1Step == null) return;
+      demo1CurrentStep--;
+      if (demo1CurrentStep < 1) demo1CurrentStep = 1;
+      refreshDemo1Items();
+    },
+  );
+  document.querySelector('#next-step-1').addEventListener('mouseup',
+    () => {
+      // Don't do anything if not initialised.
+      if (maxDemo1Step == null) return;
+      demo1CurrentStep++;
+      if (demo1CurrentStep > maxDemo1Step) demo1CurrentStep = maxDemo1Step;
+      refreshDemo1Items();
+    },
+  );
+  document.querySelector('#prev-step-2').addEventListener('mouseup',
+    () => {
+      // Don't do anything if not initialised.
+      if (maxDemo2Step == null) return;
+      demo2CurrentStep--;
+      if (demo2CurrentStep < 1) demo2CurrentStep = 1;
+      refreshDemo2Items();
+    },
+  );
+  document.querySelector('#next-step-2').addEventListener('mouseup',
+    () => {
+      // Don't do anything if not initialised.
+      if (maxDemo2Step == null) return;
+      demo2CurrentStep++;
+      if (demo2CurrentStep > maxDemo2Step) demo2CurrentStep = maxDemo2Step;
+      refreshDemo2Items();
+    },
   );
 });

@@ -30,8 +30,8 @@
           </li>
           <li>
             You must be logged into Facebook, and use a browser without privacy
-            protections (Google Chrome). Similarly, privacy extensions or
-            adblockers break the game.
+            protections (Google Chrome works best). Similarly, privacy
+            extensions or adblockers break the game.
           </li>
           <li>Have fun! 😊</li>
         </ul>
@@ -87,6 +87,9 @@
             them, it will cause your Facebook account to like the link it is
             pointed at.
           </p>
+          <p>
+            Let's take a closer look into the world of Clickjacking attacks.
+          </p>
           <h2 id="clickjacking">The Clickjacking attack</h2>
           <p>
             In the security world, Clickjacking is a forgotten cousin when
@@ -98,18 +101,120 @@
             to it, there still can be bad consequences for users.
           </p>
           <p>
-            Here's a harmless, interactive demo of how it works:
+            Here's a fictional, interactive demonstration of how it works:
           </p>
-          <p>
-            TODO: Interactive diagram here? Would love like a slideshow thing.
-          </p>
-          <p>
-            TODO: In the above diagram, a user is tricked into clicking on a...
-          </p>
+          <div id="interactive-demo-1" class="demo-wrapper">
+            <div class="demo-slide">
+              Setting the scene:
+              <ul>
+                <li>Shop Fast, Australia's biggest ecommerce site, loaded with good and bad retailers</li>
+                <li>Gareth Goodworth, an honest plumber from Kogarah</li>
+                <li>Shonky Steve, an dishonest dropshipper, con-extraordinaire, and malicious hacker</li>
+              </ul>
+            </div>
+            <div class="demo-slide hidden">
+              A look into Shop Fast, and the myriad network of dropshippers.
+              They have incredibly streamlined the purchasing process, and have
+              instant purchases - a single button to directly buy and deliver an
+              item to your registered address.
+            </div>
+            <div class="demo-slide hidden">
+              Gareth's a good bloke, loves a pie and a punt, and certainly is
+              <span class="st">quite lazy</span> conscious of his time so he
+              often buys from Shop Fast.
+              Show his logged in profile, with previous purchases.
+            </div>
+            <div class="demo-slide hidden">
+              Shonky Steve's burgeoning dodgy business, selling totally useless
+              tools. Show an example of one of his products. Due to the bad
+              reviews on his profile, he's not getting many sales anymore. He
+              has a dodgy idea. He's going to exploit clickjacking to get people
+              to unwillingly buy his goods, and run off with the proceeds before
+              people can refund his items.
+            </div>
+            <div class="demo-slide hidden">
+              Shonky Steve hacks into a viral game to host his next devious
+              plan. Pseudo-cats is a hit new web game about pampering a puss and
+              dressing them up.
+              He decides to change the source code of pseudocats.com.au to host
+              a clickjacking attack.
+            </div>
+            <div class="demo-slide hidden">
+              Starting from a clean slate, he embeds the Shop Fast inside the
+              Pseudo-cats website. Due to the way browsers work, if users are
+              logged in to Shop Fast, the embedded website is also logged in.
+            </div>
+            <div class="demo-slide hidden">
+              Next, he covers up parts of the site with elements so that people
+              can't accidentally click on other parts of Shop Fast, only the
+              button.
+            </div>
+            <div class="demo-slide hidden">
+              He then creates the site, carefully positioning an important fake
+              button for the cat game on top of where the instant buy button
+              is. He disables mouse interactions with the fake button, so that
+              if you click it, the click will go <em>through</em> it, and click
+              the real button below.
+            </div>
+            <div class="demo-slide hidden">
+              Gareth, a real feline fan, decides to play with his long-lived cat
+              on pseudocats. Unfortunately, he accidentally buys a hammer from
+              Shonky Steve! He's fallen victim to a Clickjacking attack.
+            </div>
+            <div class="demo-slide hidden">
+              It's not just limited to single clicks, multiple interactions
+              could be chained together, for example, sending money to recent
+              customers in an online banking app, or more destructively,
+              deleting backups on another site.
+            </div>
+            <span class="steps">
+              <button id="prev-step-1" disabled>← Prev</button>
+              <button id="next-step-1">Next →</button>
+            </span>
+          </div>
           <h2 id="mine-setup">Generating the game</h2>
-          <p>
-            TODO: In the above diagram, a user is tricked into clicking on a...
-          </p>
+          This minesweeper game is made in a similar fashion.
+          <div id="interactive-demo-2" class="demo-wrapper">
+            <div class="demo-slide">
+              <p>
+                The user is initially provided with an empty table to click.
+                After clicking, the game is generated to make sure the first
+                click is not on a mine.
+              </p>
+            </div>
+            <div class="demo-slide hidden">
+              <p>
+                At each table cell where we picked a mine to be, we dynamically
+                add an embed (iframe), which points towards a Facebook Like
+                button page, to like a specific URL.
+              </p>
+              <p>
+                Each mine points to a different URL. (Hover over each to show
+                the url for each).
+              </p>
+            </div>
+            <div class="demo-slide hidden">
+              <p>
+                For each of the other squares, we work out of a number what they
+                should be, and if the user clicks on them, we reveal that
+                square, just like minesweeper.
+              </p>
+            </div>
+            <div class="demo-slide hidden">
+              <p>
+                We detect whether a user clicks a mine using some clever code,
+                essentially checking if the page isn't focused any more.
+              </p>
+              <p>
+                If they click on a mine, game over. If they clear all mines, a
+                winner is you!
+              </p>
+            </div>
+            <span class="steps">
+              <button id="prev-step-2" disabled>← Prev</button>
+              <button id="next-step-2">Next →</button>
+            </span>
+          </div>
           <h2 id="check-vulnerability">
             How do I know if a site is vulnerable?
           </h2>
