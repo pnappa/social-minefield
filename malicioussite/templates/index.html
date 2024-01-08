@@ -3,6 +3,7 @@
   <head>
     <title>Social Minefield</title>
     <script>
+      // Yes, these are the links you can like when you click a mine.
       var minelinks = {% raw minelinks_array %};
     </script>
     <script src="{{ static_url("main.js") }}"></script>
@@ -18,10 +19,21 @@
         <p>A high-stakes game of minesweeper.</p>
         <p>Rules:</p>
         <ul>
-          <li>It's a regular game of minesweeper, but clicking on a mine will like a Facebook link.</li>
-          <li>You must be logged into Facebook, and use a browser without privacy protections (Google Chrome). Similarly, privacy extensions or adblockers make the game not work.</li>
-          <li>No right clicking to place flags, use the flag button to enter flag placing mode. When in flag placing mode, click again to remove a flag.</li>
-          <li>Have fun!</li>
+          <li>
+            It's a regular game of minesweeper, but clicking on a mine will like
+            a weird Facebook link.
+          </li>
+          <li>
+            <strong>No right clicking</strong> to place flags, click the flag
+            button to enter flag placing mode. When in this mode, clicking on a
+            square will place a flag.
+          </li>
+          <li>
+            You must be logged into Facebook, and use a browser without privacy
+            protections (Google Chrome). Similarly, privacy extensions or
+            adblockers break the game.
+          </li>
+          <li>Have fun! 😊</li>
         </ul>
         <div id="game">
           <div>
@@ -55,6 +67,9 @@
             <div id="button-wrapper">
               <button id="placeflags">🚩 Start Flagging</button>
             </div>
+            <div id="start-hint">
+              <h3>Click a tile to start!</h3>
+            </div>
           </div>
         </div>
       </div>
@@ -62,10 +77,183 @@
         <article>
           <h2 id="how-it-works">How does it work?</h2>
           <p>
-            ...TODO, enter the blog post here essentially.
+            The game works by exploiting a security flaw called
+            <em>Clickjacking</em>, which allows a malicious site to redirect
+            clicks to another website to perform actions on behalf of the user.
+          </p>
+          <p>
+            In this game, in the locations where mines would be, are actually
+            hidden Facebook like buttons embedded in the page. When you click
+            them, it will cause your Facebook account to like the link it is
+            pointed at.
+          </p>
+          <h2 id="clickjacking">The Clickjacking attack</h2>
+          <p>
+            In the security world, Clickjacking is a forgotten cousin when
+            compared to other high-profile exploits such as
+            <a href="https://en.wikipedia.org/wiki/SQL_injection">
+              SQL Injection</a> or
+            <a href="https://en.wikipedia.org/wiki/Cross-site_scripting">
+              Cross Site Scripting (XSS)</a>. However, if a site is vulnerable
+            to it, there still can be bad consequences for users.
+          </p>
+          <p>
+            Here's a harmless, interactive demo of how it works:
+          </p>
+          <p>
+            TODO: Interactive diagram here? Would love like a slideshow thing.
+          </p>
+          <p>
+            TODO: In the above diagram, a user is tricked into clicking on a...
+          </p>
+          <h2 id="mine-setup">Generating the game</h2>
+          <p>
+            TODO: In the above diagram, a user is tricked into clicking on a...
+          </p>
+          <h2 id="check-vulnerability">
+            How do I know if a site is vulnerable?
+          </h2>
+          <p>
+            If you wish to check if a site is vulnerable to Clickjacking
+            attacks, by visiting the <a href="https://securityheaders.com">
+              Security Headers</a> site, you can specify which site you want to
+            scan. After scanning, you should get a report indicating what
+            security features they have enabled by specifying "headers" that the
+            server sends to your computer when you visit the website.
+          </p>
+          <p>
+            There are two fields to look at for whether a site is vulnerable to
+            Clickjacking:
+          </p>
+          <ul>
+            <li>
+              <code>x-frame-options</code>
+              <ul>
+                <li>
+                  If a value of <code>DENY</code> or <code>SAMEORIGIN</code> is
+                  specified, the site is <strong>not vulnerable</strong>.
+                </li>
+                <li>
+                  If there is no value specified, the site is
+                  <strong>vulnerable</strong>.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <code>content-security-policy</code>
+              <ul>
+                <li>
+                  If the value contains something like
+                  <code>frame-ancestors 'self'</code>, or
+                  <code>frame-ancestors somewebsite.com</code>, it is
+                  <em>probably</em> <strong>not vulnerable</strong>.
+                </li>
+                <li>
+                  If there is no specified field, or the value contains
+                  something like <code>frame-ancestors *</code>, it is 
+                  <em>probably</em> <strong>vulnerable</strong>.
+                </li>
+              </ul>
+            </li>
+          </ul>
+          <p>
+            What these field values specify is whether another website is
+            allowed to embed this website in their site. If it's not allowed,
+            then your web browser (Chrome, Firefox, Safari, etc) will refuse to
+            embed it if it's tried, thus thwarting the attack.
+          </p>
+          <p>
+            Some sites may intentionally want to allow being embedded in other
+            sites, such as the Facebook "Like" button. It's used to allow
+            websites (such as news sites) to let users "like" a page, making
+            sure the article gets more attention. Facebook uses the Like button
+            to discreetly track users across the web. They're embedded across
+            <!-- Source: https://developers.facebook.com/blog/post/2013/11/06/introducing-new-like-and-share-buttons/ -->
+            7.5 million websites - that's quite a spy network!
+          </p>
+          <h2 id="how-to-fix">I'm a developer, how do I fix my site?</h2>
+          <p>
+            Not much effort is required, just adding
+            <code>x-frame-options: SAMEORIGIN</code> or
+            <code>content-security-policy: frame-ancestors 'self'</code> to your
+            HTTP headers suffices.
+          </p>
+          <p>
+            I've written a detailed guide for how to do so,
+            <a href="/developers">here</a>.
+          </p>
+          <h2 id="fix-once-and-for-all">
+            How to <em>eradicate</em> this vulnerability?
+          </h2>
+          <p>TODO: Describe how if we make it opt-in rather than opt out, the attack wouldn't nearly be as widespread.</p>
+          <h2 id="fixing-for-myself">How do I protect myself?</h2>
+          <p>
+            Unfortunately, it's up to the website creators to fix their website
+            to make their users not vulnerable to Clickjacking attacks for that
+            site.
+          </p>
+          <p>
+            However, if you wish to fix this specific attack against Facebook
+            likes, you can install some software which has built-in protections
+            against trackers and ads, which thwart this method.
+          </p>
+          <p>
+            I personally recommend:
+          </p>
+          <ul>
+            <li>
+              <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>
+              or <a href="https://www.apple.com/au/safari/">Safari</a> (iOS/Mac)
+              browsers.
+            </li>
+            <ul>
+              <li>
+                These both have great built-in protections for both safety and
+                privacy.
+              </li>
+              <li>
+                Unfortunately Google Chrome does not (and probably won't ever)
+                have privacy protections from trackers, as their business is
+                built around tracking user-information and selling ads.
+              </li>
+            </ul>
+            <li>
+              <a href="https://privacybadger.org/">Privacy Badger</a> - A
+              browser extension that intelligently blocks trackers.
+            </li>
+            <ul>
+              <li>For Google Chrome: <a href="https://chromewebstore.google.com/detail/privacy-badger/pkehgijcmpdhfbdbbnkijodmdjhbjlgp">here</a></li>
+              <li>For Firefox: <a href="https://addons.mozilla.org/en-US/firefox/addon/privacy-badger17/">here</a></li>
+              <li>For Edge: <a href="https://microsoftedge.microsoft.com/addons/detail/privacy-badger/mkejgcgkdlddbggjhhflekkondicpnop">here</a></li>
+              <li>Safari is not supported. 😞</li>
+            </ul>
+            <li>
+              <a href="https://ublockorigin.com/">uBlock Origin</a> - The best
+              ad blocker in existence.
+            </li>
+            <ul>
+              <li>For Google Chrome: <a href="https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm">here</a></li>
+              <li>For Firefox: <a href="https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/">here</a></li>
+              <li>For Edge: <a href="https://microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak">here</a></li>
+              <li>Safari is not supported. 😞 However, I've heard good things about <a href="https://1blocker.com/">1Blocker</a>.</li>
+            </ul>
+          </ul>
+          <h2>Acknowledgements</h2>
+          <p>
+            TODO: ???
+          </p>
+          <p>
+            If you're curious, the code for all this is free and open-source on
+            GitHub, <a href="https://github.com/pnappa/social-minefield">
+              here</a>. Or, just view source on this page. 🙃
           </p>
         </article>
       </div>
+      <footer class="block">
+        <h3>Made with malaise 💔 by Patrick Nappa (me@pat.sh)</h3>
+        <p>See other things I've made on <a href="https://pat.sh/">my site</a>!</p>
+        <p>Please feel free to email feedback.</p>
+      </footer>
     </div>
     {# TODO: remove the following ??? #}
     <div>

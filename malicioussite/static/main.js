@@ -187,24 +187,31 @@ const removeAllMineIframes = () => {
 // This function is called when the user clicks on a mine at index idx.
 const gameOver = (idx, iframeSrc) => {
   const { x, y } = idxToCoords(idx);
-  alert(`Game over: Clicked iframe: ${iframeSrc}, x=${x}, y=${y}`);
-  // Toggle the mine cell.
-  const element = document.querySelectorAll('.square')[idx];
-  element.classList.add('explodedmine');
-  element.classList.add('clicked');
-  displayAllCells();
-  // XXX: This might be breaking the code if you hold down the click? Instead
-  //      let's try just re-adding pointer events to the game.
-  // removeAllMineIframes();
-  // XXX: This won't work either, it seems to check the pointer-events priority
-  //      at the time of release when working out whether the click is
-  //      propagated.
-  // document.querySelector('table.game').classList.add('disable-game');
-  // I am instead going to make the executive decision that clicking on mines is
-  // a bad idea, even when you've uncovered them. Even after minesweeper ships
-  // _discover_ mines, it's still a bad idea to run a ship into them.
-  // Et voila, it's canon. :)
+  // What we should do, is mark the game as over. Then, in X seconds, show the
+  // pop-up saying they've lost.
+  // The reason for this is that we want to reduce the likelihood the modal
+  // breaks the clickjack interaction. For normal clicks, this should be fine,
+  // but if a user holds for too long, yes, it'll break. Oh well.
   isGameOver = true;
+  setTimeout(() => {
+    alert(`Game over: Clicked iframe: ${iframeSrc}, x=${x}, y=${y}`);
+    // Toggle the mine cell.
+    const element = document.querySelectorAll('.square')[idx];
+    element.classList.add('explodedmine');
+    element.classList.add('clicked');
+    displayAllCells();
+    // XXX: This might be breaking the code if you hold down the click? Instead
+    //      let's try just re-adding pointer events to the game.
+    // removeAllMineIframes();
+    // XXX: This won't work either, it seems to check the pointer-events priority
+    //      at the time of release when working out whether the click is
+    //      propagated.
+    // document.querySelector('table.game').classList.add('disable-game');
+    // I am instead going to make the executive decision that clicking on mines is
+    // a bad idea, even when you've uncovered them. Even after minesweeper ships
+    // _discover_ mines, it's still a bad idea to run a ship into them.
+    // Et voila, it's canon. :)
+  }, 1000);
 };
 
 // Monitor when iframes are (probably) clicked, so as to display a relevant
@@ -362,13 +369,16 @@ window.addEventListener("mouseup", function(event) {
           break;
         }
       }
+      if (currGameField != null) {
+        // Also hide the start hint.
+        document.querySelector('#start-hint')?.classList.add('disabled');
+      }
     } else if (!isGameOver) {
       // Handle when the cells are clicked.
       document.querySelectorAll('.square').forEach((el, idx) => {
-        // TODO: This will never happen for mines, as the iframe swallows the event.
+        // This will never happen for mines, as the iframe swallows the event.
         if (isElementInBounds(event, el)) {
           activateSquare(idxToCoords(idx));
-          // alert(`Clicked square ${idx}`);
         }
       });
     }
@@ -398,16 +408,18 @@ const exitFlagPlacingMode = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('loaded');
-  document.querySelector('#placeflags').addEventListener('mouseup', (clickEvent) => {
-    const isLeftClick = clickEvent.button === 0;
-    if (isLeftClick) {
-      isFlagPlacingEnabled = !isFlagPlacingEnabled;
-      console.log('button clicked');
-      if (isFlagPlacingEnabled) {
-        enterFlagPlacingMode();
-      } else {
-        exitFlagPlacingMode();
+  document.querySelector('#placeflags').addEventListener('mouseup',
+    (clickEvent) => {
+      const isLeftClick = clickEvent.button === 0;
+      if (isLeftClick) {
+        isFlagPlacingEnabled = !isFlagPlacingEnabled;
+        console.log('button clicked');
+        if (isFlagPlacingEnabled) {
+          enterFlagPlacingMode();
+        } else {
+          exitFlagPlacingMode();
+        }
       }
     }
-  });
+  );
 });

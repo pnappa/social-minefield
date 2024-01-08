@@ -117,4 +117,4 @@ Yeah, so it turns out Facebook has globally broken their like feature for "Pages
 TODO: Investigate if we can fix it.
 
 ## How to prevent your site from working??
-The best way is to use privacy preserving browser extensions like Privacy Badger. If you use Firefox (which I highly recommend for privacy reasons), the built-in privacy features automatically block Facebook resources and scripts to stop them stalking you across the Internet.
+The best way is to use privacy preserving browser extensions like Privacy Badger. If you use Firefox (which I highly recommend for privacy reasons), the built-in privacy features automatically block Facebook resources and scripts to stop them stalking you across the Internet. A similar feature exists in Safari.

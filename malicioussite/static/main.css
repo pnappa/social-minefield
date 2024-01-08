@@ -175,3 +175,20 @@ table, tr, td {
 table {
   border-spacing: 0px;
 }
+
+#start-hint {
+  display: flex;
+  justify-content: center;
+}
+
+#start-hint > h3 {
+  margin-bottom: 0px;
+}
+
+#start-hint.disabled {
+  display: none;
+}
+
+footer.block > :last-child {
+  margin-bottom: 0px;
+}
