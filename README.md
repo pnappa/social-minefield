@@ -32,6 +32,11 @@ python3 app.py
 ```
 
 ## TODO
+ - [ ] Write a service to easily check websites for clickjacking vulnerability.
+  - The security-headers is robust, but not very simple to use.
+ - [ ] Add a progress meter to the interactive demos.
+  - Consider not making the demos interactive, and instead splat the content inline?
+  - Idk, this is a hard call, I'll need to ask around (normies and techies).
  - [ ] Serve the font ourselves, we need to ensure the dimensions are exactly what we're setting it to be.
   - We probably need to overwrite all styles, to guarantee the click boxes are exactly where we're expecting them.
  - [ ] I need to write the /developers page for detailed information how to protect your site against it.
