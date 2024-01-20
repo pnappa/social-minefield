@@ -110,10 +110,9 @@
                 <div class="url-bar">
                   <div>
                     <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
-                    <!-- lmao, shopfast.com.au redirects to coles -->
+                    <!-- lmao, shopfast.com.au redirects to coles.com.au -->
                     <div>https://shopfast.com.au/shonky-hammer</div>
                   </div>
-                  <!-- TODO: This button needs to work. It should replace the content with a pretty printed version of the HTML source. Probably fictional. -->
                   <button class="show-source">View source</button>
                 </div>
                 <div class="browser-body">
@@ -204,104 +203,261 @@
                 </div>
                 <div class="browser-source hidden">
                   <!-- This is a simplified, HTML encoded version of the above
-                       snippet. -->
-<!-- TODO: Just testing what syntax highlighting could look like.
-  - IMO, I should write a script to generate this. It's a bit tedious.
-  - The way I made it was getting the above source, stripping out some class names, and then piping into this: https://mothereff.in/html-entities
-  - Make sure the spacing is correct inside a <pre> block.
-  - Probably fairly easy to serialise - it'll just be converting the < and >, right?
-
--->
+                       snippet. See the comment block under it for the source.
+                       To create the below pre block, use the html-2-pre.py
+                       script. -->
+                  <h4>Viewing source code for: <code>https://shopfast.com.au</code></h4>
                   <pre>
-&#x3C;<span class="tag">header</span>&#x3E;<br>
-  &#x3C;<span class="tag">div</span>&#x3E;<br>
-    &#x3C;<span class="tag">img <span class="attribute">src</span>=&#x22;<span class="string">shop-fast-mini-logo.png</span>&#x22;</span>&#x3E;<br>
-    &#x3C;h1&#x3E;ShopFast&#x3C;/h1&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;div&#x3E;Logged in as Gareth&#x3C;/div&#x3E;<br>
-    &#x3C;button&#x3E;Logout&#x3C;/button&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-&#x3C;/header&#x3E;<br>
-&#x3C;div class=&#x22;item&#x22;&#x3E;<br>
-  &#x3C;img src=&#x22;hammer.png&#x22;&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;h3&#x3E;Shonky Hammer&#x3C;/h3&#x3E;<br>
-    &#x3C;p&#x3E;Shonky Steve PTY LTD&#x3C;/p&#x3E;<br>
-    &#x3C;p&#x3E;$100.00&#x3C;/p&#x3E;<br>
-    &#x3C;button&#x3E;<br>
-      &#x3C;img src=&#x22;shopping-cart.svg&#x22;&#x3E;<br>
-      &#x3C;span&#x3E;1-click buy&#x3C;/span&#x3E;<br>
-    &#x3C;/button&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-&#x3C;/div&#x3E;<br>
-&#x3C;div class=&#x22;item-reviews&#x22;&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    Reviews: 100<br>
-    &#x3C;span class=&#x22;star-count&#x22;<br>
-      &#x3E;&#x2605;&#x2605;&#x2606;&#x2606;&#x2606; 2 stars<br>
-    &#x3C;span&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-&#x3C;/div&#x3E;<br>
-&#x3C;div class=&#x22;user-reviews&#x22;&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;p&#x3E;It sucks!!!&#x3C;/p&#x3E;<br>
-    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
-      &#x2605;&#x2606;&#x2606;&#x2606;&#x2606; 1 star<br>
-    &#x3C;span&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;p&#x3E;Barely works!!!&#x3C;/p&#x3E;<br>
-    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
-      &#x2605;&#x2606;&#x2606;&#x2606;&#x2606; 1 star<br>
-    &#x3C;span&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;p&#x3E;How do I refund??&#x3C;/p&#x3E;<br>
-    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
-      &#x2605;&#x2605;&#x2605;&#x2605;&#x2605; 5 stars<br>
-    &#x3C;span&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;p&#x3E;Item is great but got lost!!!&#x3C;/p&#x3E;<br>
-    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
-      &#x2605;&#x2605;&#x2606;&#x2606;&#x2606; 2 stars<br>
-    &#x3C;span&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-  &#x3C;div&#x3E;<br>
-    &#x3C;p&#x3E;Delivered quickly&#x3C;/p&#x3E;<br>
-    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
-      &#x2605;&#x2605;&#x2605;&#x2605;&#x2605; 5 stars<br>
-    &#x3C;span&#x3E;<br>
-  &#x3C;/div&#x3E;<br>
-&#x3C;/div&#x3E;
+&lt;<span class="tag">header</span>&gt;
+  &lt;<span class="tag">div</span>&gt;
+    &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">shop-fast-mini-logo.png</span>"</span>&gt;
+    &lt;<span class="tag">h1</span>&gt;ShopFast&lt;/<span class="tag">h1</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+  &lt;<span class="tag">div</span>&gt;
+    &lt;<span class="tag">div</span>&gt;Logged in as Gareth&lt;/<span class="tag">div</span>&gt;
+    &lt;<span class="tag">button</span>&gt;Logout&lt;/<span class="tag">button</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+&lt;/<span class="tag">header</span>&gt;
+&lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">item</span>"</span>&gt;
+  &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">hammer.png</span>"</span>&gt;
+  &lt;<span class="tag">div</span>&gt;
+    &lt;<span class="tag">h3</span>&gt;Shonky Hammer&lt;/<span class="tag">h3</span>&gt;
+    &lt;<span class="tag">p</span>&gt;Shonky Steve PTY LTD&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">p</span>&gt;$100.00&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">button</span>&gt;
+      &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">shopping-cart.svg</span>"</span>&gt;
+      &lt;<span class="tag">span</span>&gt;1-click buy&lt;/<span class="tag">span</span>&gt;
+    &lt;/<span class="tag">button</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+&lt;/<span class="tag">div</span>&gt;
+&lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">item-reviews</span>"</span>&gt;
+  &lt;<span class="tag">div</span>&gt;
+    Reviews: 100
+    &lt;<span class="tag">span <span class="attribute">class</span>="<span class="string">star-count</span>"</span>&gt;
+      ★★☆☆☆ 2 stars
+    &lt;/<span class="tag">span</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+&lt;/<span class="tag">div</span>&gt;
+&lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">user-reviews</span>"</span>&gt;
+  &lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">review</span>"</span>&gt;
+    &lt;<span class="tag">p</span>&gt;It sucks!!!&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">span <span class="attribute">class</span>="<span class="string">star-count</span>"</span>&gt;
+      ★☆☆☆☆ 1 star
+    &lt;/<span class="tag">span</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+  &lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">review</span>"</span>&gt;
+    &lt;<span class="tag">p</span>&gt;Barely works!!!&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">span <span class="attribute">class</span>="<span class="string">star-count</span>"</span>&gt;
+      ★☆☆☆☆ 1 star
+    &lt;<span class="tag">span</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+  &lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">review</span>"</span>&gt;
+    &lt;<span class="tag">p</span>&gt;How do I refund??&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">span <span class="attribute">class</span>="<span class="string">star-count</span>"</span>&gt;
+      ★★★★★ 5 stars
+    &lt;<span class="tag">span</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+  &lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">review</span>"</span>&gt;
+    &lt;<span class="tag">p</span>&gt;Item is great but got lost!!!&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">span <span class="attribute">class</span>="<span class="string">star-count</span>"</span>&gt;
+      ★★☆☆☆ 2 stars
+    &lt;<span class="tag">span</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+  &lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">review</span>"</span>&gt;
+    &lt;<span class="tag">p</span>&gt;Delivered quickly&lt;/<span class="tag">p</span>&gt;
+    &lt;<span class="tag">span <span class="attribute">class</span>="<span class="string">star-count</span>"</span>&gt;
+      ★★★★★ 5 stars
+    &lt;<span class="tag">span</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+&lt;/<span class="tag">div</span>&gt;</pre>
 <!--
-                    <header>
-                      <div>
-                        <img src="shop-fast-mini-logo.png">
-                        <h1>ShopFast</h1>
+<header>
+  <div>
+    <img src="shop-fast-mini-logo.png">
+    <h1>ShopFast</h1>
+  </div>
+  <div>
+    <div>Logged in as Gareth</div>
+    <button>Logout</button>
+  </div>
+</header>
+<div class="item">
+  <img src="hammer.png">
+  <div>
+    <h3>Shonky Hammer</h3>
+    <p>Shonky Steve PTY LTD</p>
+    <p>$100.00</p>
+    <button>
+      <img src="shopping-cart.svg">
+      <span>1-click buy</span>
+    </button>
+  </div>
+</div>
+<div class="item-reviews">
+  <div>
+    Reviews: 100
+    <span class="star-count">
+      ★★☆☆☆ 2 stars
+    </span>
+  </div>
+</div>
+<div class="user-reviews">
+  <div class="review">
+    <p>It sucks!!!</p>
+    <span class="star-count">
+      ★☆☆☆☆ 1 star
+    </span>
+  </div>
+  <div class="review">
+    <p>Barely works!!!</p>
+    <span class="star-count">
+      ★☆☆☆☆ 1 star
+    <span>
+  </div>
+  <div class="review">
+    <p>How do I refund??</p>
+    <span class="star-count">
+      ★★★★★ 5 stars
+    <span>
+  </div>
+  <div class="review">
+    <p>Item is great but got lost!!!</p>
+    <span class="star-count">
+      ★★☆☆☆ 2 stars
+    <span>
+  </div>
+  <div class="review">
+    <p>Delivered quickly</p>
+    <span class="star-count">
+      ★★★★★ 5 stars
+    <span>
+  </div>
+</div>
+-->
+                </div>
+              </div>
+              <div class="description">
+                <h4>Welcome to ShopFast!</h4>
+                <p>
+                  Australia's leading eCommerce website.
+                </p>
+                <p>
+                  This fictional site lets you purchase goods from sellers
+                  across the world, with just one click.
+                </p>
+                <p>
+                  Pressing the '1-click buy' button will automatically debit the
+                  money from your account, and send the purchased item to your
+                  address.
+                </p>
+                <p>
+                  Try clicking it! To make it easier to understand how the demo
+                  works, we'll make a pop-up appear when you click it.
+                </p>
+              </div>
+            </div>
+            <div id="shonky-setup" class="hidden">
+              <div class="browser">
+                <div class="url-bar">
+                  <div>
+                    <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
+                    <div>https://youhavewonafreecar.com</div>
+                  </div>
+                  <button class="show-source">View source</button>
+                </div>
+                <div class="browser-body">
+                  <div class="body">
+                    <div>
+                      <p>
+                        Congratulations, Shonky Steve, you are now the proud
+                        owner of <code><strong>youhavewonafreecar.com</strong></code>!
+                      </p>
+                      <p>
+                        Please edit your new website, and enjoy!
+                      </p>
+                      <p>
+                        <strong>TODO: I think we can make this slide better.</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="browser-source hidden">
+                  <h4>Viewing source code for: <code>https://youhavewonafreecar.com</code></h4>
+                  <strong>TODO</strong>: Will fill this in once I'm done designing everything.
+                </div>
+              </div>
+              <div class="description">
+                <h4>The Heist Begins</h4>
+                <p>
+                  Shonky Steve wishes to get more people to buy his items, as
+                  he's noticed the bad reviews have started to deter people.
+                  <!-- Sounds like Shonky Steve should get into review fraud
+                       then, huh! -->
+                </p>
+                <p>
+                  Instead, he decides to set up a website to trick people into
+                  buying them.
+                </p>
+                <p>
+                  He purchases <code>YouHaveWonAFreeCar.com</code> and begins
+                  his master plan.
+                </p>
+              </div>
+            </div>
+            <div id="embedding-the-website" class="hidden">
+              <div class="browser">
+                <div class="url-bar">
+                  <div>
+                    <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
+                    <div>https://youhavewonafreecar.com</div>
+                  </div>
+                  <button class="show-source">View source</button>
+                </div>
+                <div class="browser-body">
+                  <div class="header">
+                    <div>
+                    <img src="/static/demos/shop-fast-mini-logo.png" alt="Shop Fast Logo">
+                    <h1>ShopFast</h1>
+                    </div>
+                    <div>
+                      <div class="username">
+                        Logged in as Gareth
                       </div>
-                      <div>
-                        <div>Logged in as Gareth</div>
-                        <button>Logout</button>
-                      </div>
-                    </header>
-                    <div class="item">
-                      <img src="hammer.png">
-                      <div>
+                      <button class="logout">
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                  <div class="body">
+                    <div class="item-listing">
+                      <img
+                        width="137px"
+                        height="137px"
+                        src="/static/demos/hammer.png"
+                        alt="low quality hammer thumbnail">
+                      <div class="item-description">
                         <h3>Shonky Hammer</h3>
-                        <p>Shonky Steve PTY LTD</p>
-                        <p>$100.00</p>
-                        <button>
-                          <img src="shopping-cart.svg">
-                          <span>1-click buy</span>
+                        <p class="item-company">
+                          Shonky Steve PTY LTD
+                        </p>
+                        <p>
+                          $100.00
+                        </p>
+                        <button class="instant-purchase">
+                          <img width="12" height="12" src="/static/demos/shopping-cart.svg" alt="shopping cart icon">
+                          <span>
+                          1-click buy
+                          </span>
                         </button>
                       </div>
                     </div>
                     <div class="item-reviews">
-                      <div>
+                      <div class="summary">
                         Reviews: 100
-                        <span class="star-count">★★☆☆☆ 2 stars<span>
+                        <span class="star-count">
+                          ★★☆☆☆ 
+                          2 stars
+                        <span>
                       </div>
                     </div>
                     <div class="user-reviews">
@@ -341,64 +497,38 @@
                         <span>
                       </div>
                     </div>
--->
-                  </pre>
+                  </div>
+                </div>
+                <div class="browser-source hidden">
+                  <h4>Viewing source code for: <code>https://youhavewonafreecar.com</code></h4>
+                  <pre>
+<!-- Not sure if having this in here is confusing.
+<span class="comment">&lt;!--
+  Yes, this is how simple the source is!
+--&gt;</span> -->
+&lt;<span class="tag">div</span>&gt;
+  &lt;<span class="tag">iframe</span> <span class="attribute">src</span>="<span class="string">https://shopfast.com.au</span>" /&gt;
+&lt;/<span class="tag">div</span>&gt;
+</pre>
                 </div>
               </div>
               <div class="description">
-                <h4>Welcome to ShopFast!</h4>
-                <p>
-                  Australia's leading eCommerce website.
-                </p>
-                <p>
-                  This fictional site lets you purchase goods from sellers
-                  across the world, with just one click.
-                </p>
-                <p>
-                  Pressing the '1-click buy' button will automatically debit the
-                  money from your account, and send the purchased item to your
-                  address.
-                </p>
-                <p>
-                  Try clicking it! To make it easier to understand how the demo
-                  works, we'll make a pop-up appear when you click it.
-                </p>
-              </div>
-            </div>
-            <div id="shonky-setup" class="hidden">
-              <div class="browser">TODO: the empty fake website</div>
-              <div class="description">
-                <h4>The Heist Begins</h4>
-                <p>
-                  Shonky Steve wishes to get more people to buy his items, as
-                  he's noticed the bad reviews have started to deter people.
-                  <!-- Sounds like Shonky Steve should get into review fraud
-                       then, huh! -->
-                </p>
-                <p>
-                  Instead, he decides to set up a website to trick people into
-                  buying them.
-                </p>
-                <p>
-                  <strong>XXX:</strong> This is a bit slow, no? I would prefer to 
-                </p>
-                <p>
-                  Meet: youhavewonafreecar.com
-                </p>
-              </div>
-            </div>
-            <div id="embedding-the-website" class="hidden">
-              <div class="browser">TODO: </div>
-              <div class="description">
                 <h4>Inception</h4>
+                <!-- Editor's note: The Inception reference is incredibly fresh
+                     and new, and-OH GOD IT CAME OUT 14 YEARS AGO -->
                 <p>
                   First, he embeds the ShopFast website <em>inside</em> his, in
                   a nested window.
                 </p>
                 <p>
+                  Notice how identical it can be with the original site, however
+                  note that the URL that shows up in the "browser" is Shonky's,
+                  not ShopFast's URL.
+                </p>
+                <p>
                   Web browsers by default will allow this to happen, and the
-                  embedded website will act as normal. If you are logged in, you
-                  will also appear so in the embedded site.
+                  embedded website will <em>usually</em> act as normal. If you
+                  are logged in, you will also appear so in the embedded site.
                 </p>
                 <p>
                   Interacting with the embedded site works as normal. You can
@@ -407,9 +537,114 @@
               </div>
             </div>
             <div id="overlaying-divs" class="hidden">
-              <div class="browser">TODO: Website again</div>
+              <div class="browser">
+                <div class="url-bar">
+                  <div>
+                    <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
+                    <div>https://youhavewonafreecar.com</div>
+                  </div>
+                  <button class="show-source">View source</button>
+                </div>
+                <div class="browser-body">
+                  <div class="shonky-site">
+                    <div class="blocker-1"></div>
+                    <div class="blocker-2"></div>
+                    <div class="blocker-3"></div>
+                    <div class="blocker-4"></div>
+                  </div>
+                  <div class="header">
+                    <div>
+                    <img src="/static/demos/shop-fast-mini-logo.png" alt="Shop Fast Logo">
+                    <h1>ShopFast</h1>
+                    </div>
+                    <div>
+                      <div class="username">
+                        Logged in as Gareth
+                      </div>
+                      <button class="logout">
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                  <div class="body">
+                    <div class="item-listing">
+                      <img
+                        width="137px"
+                        height="137px"
+                        src="/static/demos/hammer.png"
+                        alt="low quality hammer thumbnail">
+                      <div class="item-description">
+                        <h3>Shonky Hammer</h3>
+                        <p class="item-company">
+                          Shonky Steve PTY LTD
+                        </p>
+                        <p>
+                          $100.00
+                        </p>
+                        <button class="instant-purchase">
+                          <img width="12" height="12" src="/static/demos/shopping-cart.svg" alt="shopping cart icon">
+                          <span>
+                          1-click buy
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="item-reviews">
+                      <div class="summary">
+                        Reviews: 100
+                        <span class="star-count">
+                          ★★☆☆☆ 
+                          2 stars
+                        <span>
+                      </div>
+                    </div>
+                    <div class="user-reviews">
+                      <div>
+                        <p>It sucks!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>Barely works!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>How do I refund??</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Item is great but got lost!!!</p>
+                        <span class="star-count">
+                          ★★☆☆☆
+                          2 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Delivered quickly</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="browser-source hidden">
+                  <h4>Viewing source code for: <code>https://youhavewonafreecar.com</code></h4>
+                  <pre>
+</pre>
+                </div>
+              </div>
               <div class="description">
-                <h4>Covering things up!</h4>
+                <h4>Covering things up</h4>
                 <p>
                   Steve will intentionally set up his website to trick people
                   to click buy on his item.
@@ -417,32 +652,144 @@
                 <p>
                   First, he covers up everything but the buy button with
                   elements so that people don't accidentally interact with the
-                  site in other ways (like logging out).
+                  site in other ways (clicking logging out, for example).
                 </p>
+                <!-- TMI.
+                <p>
+                  He also makes it so that the ShopFast embed isn't scrollable.
+                </p>
+                -->
                 <div>
                   <p>
-                    Adjust the transparency of the top layer to see how it
+                    Adjust the transparency of Steve's overlay to see how it
                     works:
                   </p>
-                  <label for="opacity-slider">Transparency</label>
+                  <label for="opacity-slider">Transparency: 80%</label>
                   <input
-                    id="opacity-slider"
+                    class="opacity-slider"
                     name="opacity-slider"
                     type="range"
                     min="0"
                     max="100"
                     step="1"
-                    value="100">
+                    value="80">
                 </div>
+                <p>
+                  <strong>TODO: What if we add checkboxes to hide/show the different rectangles?</strong>
               </div>
             </div>
             <div id="adding-enticing-content" class="hidden">
-              <div class="browser">TODO: Website again</div>
+              <div class="browser">
+                <div class="url-bar">
+                  <div>
+                    <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
+                    <div>https://youhavewonafreecar.com</div>
+                  </div>
+                  <button class="show-source">View source</button>
+                </div>
+                <div class="browser-body">
+                  <div class="shonky-site">
+                    <div class="blocker-1"></div>
+                    <div class="blocker-2"></div>
+                    <div class="blocker-3"></div>
+                    <div class="blocker-4"></div>
+                  </div>
+                  <div class="header">
+                    <div>
+                    <img src="/static/demos/shop-fast-mini-logo.png" alt="Shop Fast Logo">
+                    <h1>ShopFast</h1>
+                    </div>
+                    <div>
+                      <div class="username">
+                        Logged in as Gareth
+                      </div>
+                      <button class="logout">
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                  <div class="body">
+                    <div class="item-listing">
+                      <img
+                        width="137px"
+                        height="137px"
+                        src="/static/demos/hammer.png"
+                        alt="low quality hammer thumbnail">
+                      <div class="item-description">
+                        <h3>Shonky Hammer</h3>
+                        <p class="item-company">
+                          Shonky Steve PTY LTD
+                        </p>
+                        <p>
+                          $100.00
+                        </p>
+                        <button class="instant-purchase">
+                          <img width="12" height="12" src="/static/demos/shopping-cart.svg" alt="shopping cart icon">
+                          <span>
+                          1-click buy
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="item-reviews">
+                      <div class="summary">
+                        Reviews: 100
+                        <span class="star-count">
+                          ★★☆☆☆ 
+                          2 stars
+                        <span>
+                      </div>
+                    </div>
+                    <div class="user-reviews">
+                      <div>
+                        <p>It sucks!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>Barely works!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>How do I refund??</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Item is great but got lost!!!</p>
+                        <span class="star-count">
+                          ★★☆☆☆
+                          2 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Delivered quickly</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="browser-source hidden">
+                  <h4>Viewing source code for: <code>https://youhavewonafreecar.com</code></h4>
+                  <pre>
+</pre>
+                </div>
+              </div>
               <div class="description">
                 <h4>Free Cars!</h4>
                 <p>
-                  Next, Steve adds some content to his site that's enticing
-                  enough to get people to click. Who wouldn't want a free car?
+                  Finally, Steve adds some content to his site that's enticing
+                  enough to get people to click.
                 </p>
                 <p>
                   The "Enter giveaway" button doesn't do anything. Instead, it's
@@ -460,7 +807,7 @@
                 <div>
                   <label for="opacity-slider">Transparency</label>
                   <input
-                    id="opacity-slider"
+                    class="opacity-slider"
                     name="opacity-slider"
                     type="range"
                     min="0"

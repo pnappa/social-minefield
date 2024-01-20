@@ -214,6 +214,7 @@ footer.block > :last-child {
 }
 .url-bar {
   background: lightgrey;
+  z-index: 2;
   display: flex;
   align-items: center;
   padding-left: 10px;
@@ -352,12 +353,65 @@ footer.block > :last-child {
   grid-template-columns: 3fr 2fr;
   background: ghostwhite;
 }
+/* Makes clickjacking a bit harder to screw up. */
+#overlaying-divs > .browser {
+  overflow: hidden;
+  /* This is 400px - the margin. */
+  width: 380px;
+  background: beige;
+  border: 2px solid black;
+  border-radius: 10px;
+  margin: 10px;
+  position: relative;
+}
+.blocker-1 {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  width: 380px;
+  height: 119px;
+}
+.blocker-2 {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  width: 192px;
+  height: 376px;
+}
+.blocker-3 {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  width: 95px;
+  height: 376px;
+  left: 286px;
+}
+.blocker-4 {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  width: 380px;
+  height: 210px;
+  top: 166px;
+}
+.abi {
+}
 
 /* 5 */
 #adding-enticing-content {
   display: grid;
   grid-template-columns: 3fr 2fr;
   background: ghostwhite;
+}
+#adding-enticing-content > .browser {
+  overflow: hidden;
+  /* This is 400px - the margin. */
+  width: 380px;
+  background: beige;
+  border: 2px solid black;
+  border-radius: 10px;
+  margin: 10px;
+  position: relative;
 }
 
 /* 6 */
@@ -386,6 +440,7 @@ footer.block > :last-child {
   display: none !important;
 }
 
+/* Simple syntax highlighting */
 .browser-source .tag {
   color: #117dea;
 }
@@ -395,12 +450,24 @@ footer.block > :last-child {
 .browser-source .string {
   color: #0340ab;
 }
+.browser-source .comment {
+  color: grey;
+}
 
-.browser-source > pre {
-  line-height: 9px;
+.browser-source > h4 {
+  margin: 5px 0;
+}
+
+.browser-source {
   background-color: #ececec;
   margin: 0;
-  padding: 14px 9px;
+  /* I have no idea why I need at least 1 pixel padding top */
+  padding: 1px 9px;
+  min-height: 100%;
+}
+
+.browser-source > pre {
+  margin: 0;
 }
 
 .browser-body.hidden, .browser-source.hidden {

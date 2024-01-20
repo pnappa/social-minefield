@@ -521,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'mouseup',
     () => {
       // TODO: Is there a nicer way to indicate to the user that this was triggered?
-      alert('Shipping a low quality hammer to 123 Fleet Street...');
+      alert('Deducting $100 & shipping a low quality hammer to 123 Fleet Street...');
     },
   ));
   document.querySelectorAll('.logout').forEach((el) => el.addEventListener(
@@ -537,15 +537,70 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.show-source').forEach((el) => {
     el.addEventListener('mouseup', () => {
       // 1 level up is class=url-bar, another up is class=browser.
-      console.log(el.parentElement, el.parentElement.parentElement, el.parentElement.parentElement.children);
       const children = el.parentElement.parentElement.children;
       for (const child of children) {
-        console.log(child.tagName);
         if (child.classList.contains('browser-body') || child.classList.contains('browser-source')) {
           // If the browser-body/browser-source is hidden, make it hidden, and
           // vice versa.
           child.classList.toggle('hidden');
         }
+      }
+    });
+  });
+  // Add the ability to all the opacity sliders to adjust the opacity of
+  // shonky elements.
+  document.querySelectorAll('#interactive-demo-1 .opacity-slider').forEach((el) => {
+    // Search through the parents' siblings until we find a .shonky-site
+    let currParent = el.parentElement?.parentElement;
+    // Limit to only traverse 100 parents.
+    let limit = 100;
+    // Find the site that's being affected by the opacity.
+    let shonkyWrapper = null;
+    while (limit-- > 0 && currParent != null) {
+      for (const sibling of currParent.children) {
+        if (sibling.classList.contains('browser')) {
+          for (let child1 of sibling.children) {
+            if (child1.classList.contains('browser-body')) {
+              for (let child of child1.children) {
+                if (child.classList.contains('shonky-site')) {
+                  limit = 0;
+                  shonkyWrapper = child;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        if (limit < 0) break;
+      }
+      currParent = currParent.parentElement;
+    }
+    if (shonkyWrapper == null) {
+      console.log('couldnt find shonky');
+    } else {
+      shonkyWrapper.style.opacity = el.value / 100;
+    }
+    // Also find the label, so we can have a nice responsive label.
+    let assocLabel = null;
+    if (el.parentElement != null) {
+      for (const child of el.parentElement.children) {
+        if (child.tagName.toLowerCase() === 'label' && child.getAttribute('for') === 'opacity-slider') {
+          assocLabel = child;
+        }
+      }
+    }
+    if (assocLabel == null) {
+      console.log('couldnt find assoclabel');
+    } else {
+      assocLabel.innerText = `Transparency: ${el.value}%`;
+    }
+
+    el.addEventListener('input', () => {
+      if (shonkyWrapper != null) {
+        shonkyWrapper.style.opacity = el.value / 100;
+      }
+      if (assocLabel != null) {
+        assocLabel.innerText = `Transparency: ${el.value}%`;
       }
     });
   });
