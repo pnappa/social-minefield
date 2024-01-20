@@ -32,7 +32,12 @@ python3 app.py
 ```
 
 ## TODO
+ - [ ] Serve the font ourselves, we need to ensure the dimensions are exactly what we're setting it to be.
+  - We probably need to overwrite all styles, to guarantee the click boxes are exactly where we're expecting them.
  - [ ] I need to write the /developers page for detailed information how to protect your site against it.
+ - [ ] Consider adding the feature to allow users to provide their own links.
+ - [ ] Game over screen
+ - [ ] Game won screen.
  - [x] Before I continue too much further with the game, attempt to check if it actually works with the real social media link. I don't want to do all this work for nothing.
   - We have a somewhat simple HTML that kind of looks like a minesweeper, but before any gameplay logic comes into play
  - [ ] Are we allowed to load multiple like buttons at once? Or should we make it a modified game of minesweeper where it's only one flag out of the 10 that's a super mine.

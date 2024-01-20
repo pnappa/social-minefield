@@ -101,71 +101,389 @@
             to it, there still can be bad consequences for users.
           </p>
           <p>
-            Here's a fictional, interactive demonstration of how it works:
+            Here's a fictional, interactive demonstration of how Clickjacking
+            attacks work:
           </p>
           <div id="interactive-demo-1" class="demo-wrapper">
-            <div class="demo-slide">
-              Setting the scene:
-              <ul>
-                <li>Shop Fast, Australia's biggest ecommerce site, loaded with good and bad retailers</li>
-                <li>Gareth Goodworth, an honest plumber from Kogarah</li>
-                <li>Shonky Steve, an dishonest dropshipper, con-extraordinaire, and malicious hacker</li>
-              </ul>
+            <div id="intro-to-shopfast">
+              <div class="browser">
+                <div class="url-bar">
+                  <div>
+                    <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
+                    <!-- lmao, shopfast.com.au redirects to coles -->
+                    <div>https://shopfast.com.au/shonky-hammer</div>
+                  </div>
+                  <!-- TODO: This button needs to work. It should replace the content with a pretty printed version of the HTML source. Probably fictional. -->
+                  <button class="show-source">View source</button>
+                </div>
+                <div class="browser-body">
+                  <div class="header">
+                    <div>
+                    <img src="/static/demos/shop-fast-mini-logo.png" alt="Shop Fast Logo">
+                    <h1>ShopFast</h1>
+                    </div>
+                    <div>
+                      <div class="username">
+                        Logged in as Gareth
+                      </div>
+                      <button class="logout">
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                  <div class="body">
+                    <div class="item-listing">
+                      <img
+                        width="137px"
+                        height="137px"
+                        src="/static/demos/hammer.png"
+                        alt="low quality hammer thumbnail">
+                      <div class="item-description">
+                        <h3>Shonky Hammer</h3>
+                        <p class="item-company">
+                          Shonky Steve PTY LTD
+                        </p>
+                        <p>
+                          $100.00
+                        </p>
+                        <button class="instant-purchase">
+                          <img width="12" height="12" src="/static/demos/shopping-cart.svg" alt="shopping cart icon">
+                          <span>
+                          1-click buy
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="item-reviews">
+                      <div class="summary">
+                        Reviews: 100
+                        <span class="star-count">
+                          ★★☆☆☆ 
+                          2 stars
+                        <span>
+                      </div>
+                    </div>
+                    <div class="user-reviews">
+                      <div>
+                        <p>It sucks!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>Barely works!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>How do I refund??</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Item is great but got lost!!!</p>
+                        <span class="star-count">
+                          ★★☆☆☆
+                          2 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Delivered quickly</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="browser-source hidden">
+                  <!-- This is a simplified, HTML encoded version of the above
+                       snippet. -->
+<!-- TODO: Just testing what syntax highlighting could look like.
+  - IMO, I should write a script to generate this. It's a bit tedious.
+  - The way I made it was getting the above source, stripping out some class names, and then piping into this: https://mothereff.in/html-entities
+  - Make sure the spacing is correct inside a <pre> block.
+  - Probably fairly easy to serialise - it'll just be converting the < and >, right?
+
+-->
+                  <pre>
+&#x3C;<span class="tag">header</span>&#x3E;<br>
+  &#x3C;<span class="tag">div</span>&#x3E;<br>
+    &#x3C;<span class="tag">img <span class="attribute">src</span>=&#x22;<span class="string">shop-fast-mini-logo.png</span>&#x22;</span>&#x3E;<br>
+    &#x3C;h1&#x3E;ShopFast&#x3C;/h1&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;div&#x3E;Logged in as Gareth&#x3C;/div&#x3E;<br>
+    &#x3C;button&#x3E;Logout&#x3C;/button&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+&#x3C;/header&#x3E;<br>
+&#x3C;div class=&#x22;item&#x22;&#x3E;<br>
+  &#x3C;img src=&#x22;hammer.png&#x22;&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;h3&#x3E;Shonky Hammer&#x3C;/h3&#x3E;<br>
+    &#x3C;p&#x3E;Shonky Steve PTY LTD&#x3C;/p&#x3E;<br>
+    &#x3C;p&#x3E;$100.00&#x3C;/p&#x3E;<br>
+    &#x3C;button&#x3E;<br>
+      &#x3C;img src=&#x22;shopping-cart.svg&#x22;&#x3E;<br>
+      &#x3C;span&#x3E;1-click buy&#x3C;/span&#x3E;<br>
+    &#x3C;/button&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+&#x3C;/div&#x3E;<br>
+&#x3C;div class=&#x22;item-reviews&#x22;&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    Reviews: 100<br>
+    &#x3C;span class=&#x22;star-count&#x22;<br>
+      &#x3E;&#x2605;&#x2605;&#x2606;&#x2606;&#x2606; 2 stars<br>
+    &#x3C;span&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+&#x3C;/div&#x3E;<br>
+&#x3C;div class=&#x22;user-reviews&#x22;&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;p&#x3E;It sucks!!!&#x3C;/p&#x3E;<br>
+    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
+      &#x2605;&#x2606;&#x2606;&#x2606;&#x2606; 1 star<br>
+    &#x3C;span&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;p&#x3E;Barely works!!!&#x3C;/p&#x3E;<br>
+    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
+      &#x2605;&#x2606;&#x2606;&#x2606;&#x2606; 1 star<br>
+    &#x3C;span&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;p&#x3E;How do I refund??&#x3C;/p&#x3E;<br>
+    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
+      &#x2605;&#x2605;&#x2605;&#x2605;&#x2605; 5 stars<br>
+    &#x3C;span&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;p&#x3E;Item is great but got lost!!!&#x3C;/p&#x3E;<br>
+    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
+      &#x2605;&#x2605;&#x2606;&#x2606;&#x2606; 2 stars<br>
+    &#x3C;span&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+  &#x3C;div&#x3E;<br>
+    &#x3C;p&#x3E;Delivered quickly&#x3C;/p&#x3E;<br>
+    &#x3C;span class=&#x22;star-count&#x22;&#x3E;<br>
+      &#x2605;&#x2605;&#x2605;&#x2605;&#x2605; 5 stars<br>
+    &#x3C;span&#x3E;<br>
+  &#x3C;/div&#x3E;<br>
+&#x3C;/div&#x3E;
+<!--
+                    <header>
+                      <div>
+                        <img src="shop-fast-mini-logo.png">
+                        <h1>ShopFast</h1>
+                      </div>
+                      <div>
+                        <div>Logged in as Gareth</div>
+                        <button>Logout</button>
+                      </div>
+                    </header>
+                    <div class="item">
+                      <img src="hammer.png">
+                      <div>
+                        <h3>Shonky Hammer</h3>
+                        <p>Shonky Steve PTY LTD</p>
+                        <p>$100.00</p>
+                        <button>
+                          <img src="shopping-cart.svg">
+                          <span>1-click buy</span>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="item-reviews">
+                      <div>
+                        Reviews: 100
+                        <span class="star-count">★★☆☆☆ 2 stars<span>
+                      </div>
+                    </div>
+                    <div class="user-reviews">
+                      <div>
+                        <p>It sucks!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>Barely works!!!</p>
+                        <span class="star-count">
+                          ★☆☆☆☆ 
+                          1 star
+                        <span>
+                      </div>
+                      <div>
+                        <p>How do I refund??</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Item is great but got lost!!!</p>
+                        <span class="star-count">
+                          ★★☆☆☆
+                          2 stars
+                        <span>
+                      </div>
+                      <div>
+                        <p>Delivered quickly</p>
+                        <span class="star-count">
+                          ★★★★★
+                          5 stars
+                        <span>
+                      </div>
+                    </div>
+-->
+                  </pre>
+                </div>
+              </div>
+              <div class="description">
+                <h4>Welcome to ShopFast!</h4>
+                <p>
+                  Australia's leading eCommerce website.
+                </p>
+                <p>
+                  This fictional site lets you purchase goods from sellers
+                  across the world, with just one click.
+                </p>
+                <p>
+                  Pressing the '1-click buy' button will automatically debit the
+                  money from your account, and send the purchased item to your
+                  address.
+                </p>
+                <p>
+                  Try clicking it! To make it easier to understand how the demo
+                  works, we'll make a pop-up appear when you click it.
+                </p>
+              </div>
             </div>
-            <div class="demo-slide hidden">
-              A look into Shop Fast, and the myriad network of dropshippers.
-              They have incredibly streamlined the purchasing process, and have
-              instant purchases - a single button to directly buy and deliver an
-              item to your registered address.
+            <div id="shonky-setup" class="hidden">
+              <div class="browser">TODO: the empty fake website</div>
+              <div class="description">
+                <h4>The Heist Begins</h4>
+                <p>
+                  Shonky Steve wishes to get more people to buy his items, as
+                  he's noticed the bad reviews have started to deter people.
+                  <!-- Sounds like Shonky Steve should get into review fraud
+                       then, huh! -->
+                </p>
+                <p>
+                  Instead, he decides to set up a website to trick people into
+                  buying them.
+                </p>
+                <p>
+                  <strong>XXX:</strong> This is a bit slow, no? I would prefer to 
+                </p>
+                <p>
+                  Meet: youhavewonafreecar.com
+                </p>
+              </div>
             </div>
-            <div class="demo-slide hidden">
-              Gareth's a good bloke, loves a pie and a punt, and certainly is
-              <span class="st">quite lazy</span> conscious of his time so he
-              often buys from Shop Fast.
-              Show his logged in profile, with previous purchases.
+            <div id="embedding-the-website" class="hidden">
+              <div class="browser">TODO: </div>
+              <div class="description">
+                <h4>Inception</h4>
+                <p>
+                  First, he embeds the ShopFast website <em>inside</em> his, in
+                  a nested window.
+                </p>
+                <p>
+                  Web browsers by default will allow this to happen, and the
+                  embedded website will act as normal. If you are logged in, you
+                  will also appear so in the embedded site.
+                </p>
+                <p>
+                  Interacting with the embedded site works as normal. You can
+                  even press buy!
+                </p>
+              </div>
             </div>
-            <div class="demo-slide hidden">
-              Shonky Steve's burgeoning dodgy business, selling totally useless
-              tools. Show an example of one of his products. Due to the bad
-              reviews on his profile, he's not getting many sales anymore. He
-              has a dodgy idea. He's going to exploit clickjacking to get people
-              to unwillingly buy his goods, and run off with the proceeds before
-              people can refund his items.
+            <div id="overlaying-divs" class="hidden">
+              <div class="browser">TODO: Website again</div>
+              <div class="description">
+                <h4>Covering things up!</h4>
+                <p>
+                  Steve will intentionally set up his website to trick people
+                  to click buy on his item.
+                </p>
+                <p>
+                  First, he covers up everything but the buy button with
+                  elements so that people don't accidentally interact with the
+                  site in other ways (like logging out).
+                </p>
+                <div>
+                  <p>
+                    Adjust the transparency of the top layer to see how it
+                    works:
+                  </p>
+                  <label for="opacity-slider">Transparency</label>
+                  <input
+                    id="opacity-slider"
+                    name="opacity-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="100">
+                </div>
+              </div>
             </div>
-            <div class="demo-slide hidden">
-              Shonky Steve hacks into a viral game to host his next devious
-              plan. Pseudo-cats is a hit new web game about pampering a puss and
-              dressing them up.
-              He decides to change the source code of pseudocats.com.au to host
-              a clickjacking attack.
+            <div id="adding-enticing-content" class="hidden">
+              <div class="browser">TODO: Website again</div>
+              <div class="description">
+                <h4>Free Cars!</h4>
+                <p>
+                  Next, Steve adds some content to his site that's enticing
+                  enough to get people to click. Who wouldn't want a free car?
+                </p>
+                <p>
+                  The "Enter giveaway" button doesn't do anything. Instead, it's
+                  intentionally set up to <em>ignore</em> clicks.
+                </p>
+                <p>
+                  When you click it, you will actually be clicking the Buy Now
+                  button underneath, even though it's not visible!
+                </p>
+                <p>
+                  Unfortunately for the person claiming their "prize", they'll
+                  only receive a shonky hammer and feel a little lighter in the
+                  pocket, too.
+                </p>
+                <div>
+                  <label for="opacity-slider">Transparency</label>
+                  <input
+                    id="opacity-slider"
+                    name="opacity-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="100">
+                </div>
+              </div>
             </div>
-            <div class="demo-slide hidden">
-              Starting from a clean slate, he embeds the Shop Fast inside the
-              Pseudo-cats website. Due to the way browsers work, if users are
-              logged in to Shop Fast, the embedded website is also logged in.
-            </div>
-            <div class="demo-slide hidden">
-              Next, he covers up parts of the site with elements so that people
-              can't accidentally click on other parts of Shop Fast, only the
-              button.
-            </div>
-            <div class="demo-slide hidden">
-              He then creates the site, carefully positioning an important fake
-              button for the cat game on top of where the instant buy button
-              is. He disables mouse interactions with the fake button, so that
-              if you click it, the click will go <em>through</em> it, and click
-              the real button below.
-            </div>
-            <div class="demo-slide hidden">
-              Gareth, a real feline fan, decides to play with his long-lived cat
-              on pseudocats. Unfortunately, he accidentally buys a hammer from
-              Shonky Steve! He's fallen victim to a Clickjacking attack.
-            </div>
-            <div class="demo-slide hidden">
-              It's not just limited to single clicks, multiple interactions
-              could be chained together, for example, sending money to recent
-              customers in an online banking app, or more destructively,
-              deleting backups on another site.
+            <div id="epilogue" class="hidden">
+              <h4>Extra credit</h4>
+              <p>
+                And with that, we've demonstrated how a Clickjacking attack
+                works. A malicious website can embed another website, and be
+                designed to trick visitors to perform unintended actions.
+              </p>
+              <p>
+                It's not just limited to single clicks! You can chain multiple
+                clicks together to perform more complex actions.
+              </p>
+              <p>
+                <strong>TODO:</strong> I think we should have an example like deleting files from boggle cloud or whatever. Click delete, then confirm.
+              </p>
             </div>
             <span class="steps">
               <button id="prev-step-1" disabled>← Prev</button>
@@ -175,14 +493,14 @@
           <h2 id="mine-setup">Generating the game</h2>
           This minesweeper game is made in a similar fashion.
           <div id="interactive-demo-2" class="demo-wrapper">
-            <div class="demo-slide">
+            <div>
               <p>
                 The user is initially provided with an empty table to click.
                 After clicking, the game is generated to make sure the first
                 click is not on a mine.
               </p>
             </div>
-            <div class="demo-slide hidden">
+            <div class="hidden">
               <p>
                 At each table cell where we picked a mine to be, we dynamically
                 add an embed (iframe), which points towards a Facebook Like
@@ -193,14 +511,14 @@
                 the url for each).
               </p>
             </div>
-            <div class="demo-slide hidden">
+            <div class="hidden">
               <p>
                 For each of the other squares, we work out of a number what they
                 should be, and if the user clicks on them, we reveal that
                 square, just like minesweeper.
               </p>
             </div>
-            <div class="demo-slide hidden">
+            <div class="hidden">
               <p>
                 We detect whether a user clicks a mine using some clever code,
                 essentially checking if the page isn't focused any more.
@@ -266,6 +584,9 @@
             allowed to embed this website in their site. If it's not allowed,
             then your web browser (Chrome, Firefox, Safari, etc) will refuse to
             embed it if it's tried, thus thwarting the attack.
+          </p>
+          <p>
+            <strong>TODO:</strong> Let's add a picture of failed to load screen.
           </p>
           <p>
             Some sites may intentionally want to allow being embedded in other
@@ -346,6 +667,7 @@
           <h2>Acknowledgements</h2>
           <p>
             TODO: ???
+            <!-- icon set creators if relevant -->
           </p>
           <p>
             If you're curious, the code for all this is free and open-source on

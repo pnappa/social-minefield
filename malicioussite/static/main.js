@@ -1,3 +1,7 @@
+// I intentionally expose these functions to the global scope, as it's fun to
+// expose the machinery to curious people. If they want to "defuse" the game,
+// that's fun too. :)
+
 const width = 10;
 const height = 10;
 // Null if no game started.
@@ -16,10 +20,6 @@ let demo1CurrentStep = 1;
 let maxDemo1Step = null;
 let demo2CurrentStep = 1;
 let maxDemo2Step = null;
-
-// I intentionally expose these functions to the global scope, as it's fun to
-// expose the machinery to observant people. If they want to "defuse" the game,
-// that's fun too.
 
 const isElementInBounds = (clickEvent, element) => {
   // XXX: Are we gonna support right click?
@@ -419,7 +419,7 @@ const refreshDemo1Items = () => {
       el.classList.add('hidden');
     }
   }
-  const slides = document.querySelectorAll('#interactive-demo-1 > .demo-slide');
+  const slides = document.querySelectorAll('#interactive-demo-1 > div');
   for (let i = 1; i <= slides.length; ++i) {
     updateStep(i, slides[i-1]);
   };
@@ -444,7 +444,7 @@ const refreshDemo2Items = () => {
       el.classList.add('hidden');
     }
   }
-  const slides = document.querySelectorAll('#interactive-demo-2 > .demo-slide');
+  const slides = document.querySelectorAll('#interactive-demo-2 > div');
   for (let i = 1; i <= slides.length; ++i) {
     updateStep(i, slides[i-1]);
   };
@@ -479,8 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // We have an interactive demo, but we don't want people to progress beyond
   // the last slide.
-  maxDemo1Step = document.querySelectorAll('#interactive-demo-1 > .demo-slide').length;
-  maxDemo2Step = document.querySelectorAll('#interactive-demo-2 > .demo-slide').length;
+  maxDemo1Step = document.querySelectorAll('#interactive-demo-1 > div').length;
+  maxDemo2Step = document.querySelectorAll('#interactive-demo-2 > div').length;
   document.querySelector('#prev-step-1').addEventListener('mouseup',
     () => {
       // Don't do anything if not initialised.
@@ -517,4 +517,36 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshDemo2Items();
     },
   );
+  document.querySelectorAll('.instant-purchase').forEach((el) => el.addEventListener(
+    'mouseup',
+    () => {
+      // TODO: Is there a nicer way to indicate to the user that this was triggered?
+      alert('Shipping a low quality hammer to 123 Fleet Street...');
+    },
+  ));
+  document.querySelectorAll('.logout').forEach((el) => el.addEventListener(
+    'mouseup',
+    () => {
+      // TODO: Is there a nicer way to indicate to the user that this was triggered?
+      alert('Logging out...');
+    },
+  ));
+
+  // Let the view source button toggle the visibility of the page or the
+  // fake source code of the page.
+  document.querySelectorAll('.show-source').forEach((el) => {
+    el.addEventListener('mouseup', () => {
+      // 1 level up is class=url-bar, another up is class=browser.
+      console.log(el.parentElement, el.parentElement.parentElement, el.parentElement.parentElement.children);
+      const children = el.parentElement.parentElement.children;
+      for (const child of children) {
+        console.log(child.tagName);
+        if (child.classList.contains('browser-body') || child.classList.contains('browser-source')) {
+          // If the browser-body/browser-source is hidden, make it hidden, and
+          // vice versa.
+          child.classList.toggle('hidden');
+        }
+      }
+    });
+  });
 });
