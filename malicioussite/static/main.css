@@ -214,7 +214,7 @@ footer.block > :last-child {
 }
 .url-bar {
   background: lightgrey;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   align-items: center;
   padding-left: 10px;
@@ -364,37 +364,47 @@ footer.block > :last-child {
   margin: 10px;
   position: relative;
 }
+.blocker-1.hidden {
+  display: none;
+}
 .blocker-1 {
   position: absolute;
-  background-color: white;
+  background-color: black;
   z-index: 2;
   width: 380px;
   height: 119px;
 }
 .blocker-2 {
   position: absolute;
-  background-color: white;
+  background-color: black;
   z-index: 2;
   width: 192px;
   height: 376px;
 }
+.blocker-2.hidden {
+  display: none;
+}
 .blocker-3 {
   position: absolute;
-  background-color: white;
+  background-color: black;
   z-index: 2;
   width: 95px;
   height: 376px;
   left: 286px;
 }
+.blocker-3.hidden {
+  display: none;
+}
 .blocker-4 {
   position: absolute;
-  background-color: white;
+  background-color: black;
   z-index: 2;
   width: 380px;
   height: 210px;
   top: 166px;
 }
-.abi {
+.blocker-4.hidden {
+  display: none;
 }
 
 /* 5 */
@@ -412,6 +422,17 @@ footer.block > :last-child {
   border-radius: 10px;
   margin: 10px;
   position: relative;
+}
+.shonky-content {
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.shonky-steve-logo {
+  width: 314px;
 }
 
 /* 6 */

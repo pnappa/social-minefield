@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   // Add the ability to all the opacity sliders to adjust the opacity of
   // shonky elements.
-  document.querySelectorAll('#interactive-demo-1 .opacity-slider').forEach((el) => {
+  document.querySelectorAll('#interactive-demo-1 input[name=opacity-slider]').forEach((el) => {
     // Search through the parents' siblings until we find a .shonky-site
     let currParent = el.parentElement?.parentElement;
     // Limit to only traverse 100 parents.
@@ -584,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let assocLabel = null;
     if (el.parentElement != null) {
       for (const child of el.parentElement.children) {
-        if (child.tagName.toLowerCase() === 'label' && child.getAttribute('for') === 'opacity-slider') {
+        if (child.tagName.toLowerCase() === 'label' && child.getAttribute('for') === 'opacity-slider-2') {
           assocLabel = child;
         }
       }
@@ -604,4 +604,44 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+  const overlay1Tog = document.querySelector('input[name=overlay-1-vis]');
+  overlay1Tog.addEventListener(
+    'click',
+    (e) => {
+      if (overlay1Tog.checked) {
+        document.querySelector('#blocker-1')?.classList.remove('hidden');
+      } else {
+        document.querySelector('#blocker-1')?.classList.add('hidden');
+      }
+    });
+  const overlay2Tog = document.querySelector('input[name=overlay-2-vis]');
+  overlay2Tog.addEventListener(
+    'click',
+    (e) => {
+      if (overlay2Tog.checked) {
+        document.querySelector('#blocker-2')?.classList.remove('hidden');
+      } else {
+        document.querySelector('#blocker-2')?.classList.add('hidden');
+      }
+    });
+  const overlay3Tog = document.querySelector('input[name=overlay-3-vis]');
+  overlay3Tog.addEventListener(
+    'click',
+    (e) => {
+      if (overlay3Tog.checked) {
+        document.querySelector('#blocker-3')?.classList.remove('hidden');
+      } else {
+        document.querySelector('#blocker-3')?.classList.add('hidden');
+      }
+    });
+  const overlay4Tog = document.querySelector('input[name=overlay-4-vis]');
+  overlay4Tog.addEventListener(
+    'click',
+    (e) => {
+      if (overlay4Tog.checked) {
+        document.querySelector('#blocker-4')?.classList.remove('hidden');
+      } else {
+        document.querySelector('#blocker-4')?.classList.add('hidden');
+      }
+    });
 });
