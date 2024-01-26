@@ -1,0 +1,11 @@
+{
+  "name": "clickjacking-checker",
+  "version": "1.0.0",
+  "description": "Minimal API for checking for clickjacking vulnerabilities",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Patrick Nappa",
+  "license": "MIT"
+}
