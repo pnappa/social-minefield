@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "Minimal API for checking for clickjacking vulnerabilities",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "node test.js"
   },
   "author": "Patrick Nappa",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
 }

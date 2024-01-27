@@ -1,19 +1,38 @@
-const test = require('node:test');
-const assert = require('node:assert');
+import test from 'node:test';
+import assert from 'node:assert';
 
-const { handler } = require('./');
+import { handler, checkClickjackingVulnerability } from './index.js';
 
 const getAPIOutput = async (url) => {
-  return await handler({
+  const result = await handler({
     url,
   });
+  return {
+    statusCode: result.statusCode,
+    json: JSON.parse(result.body),
+  };
 };
 
-test('access', async (t) => {
-  try {
-    const x = await getAPIOutput('https://google.com');
-    assert.strictEqual(x?.vulnStatus?.status, 'safe');
-  } finally {
-    return false;
-  }
+// Check that we can query the API via the exports fine.
+test('API handler access', async (t) => {
+  const x = await getAPIOutput('https://www.google.com');
+  assert.strictEqual(x?.json?.vulnStatus?.status, 'safe');
+});
+
+test('checkClickjackingVulnerability trivial case', async (t) => {
+  const res = checkClickjackingVulnerability({
+    xFrameOptions: null,
+    contentSecurityPolicy: null,
+  });
+  assert.strictEqual(res.status, 'unsafe');
+  assert.strictEqual(res.allowedList, null);
+});
+
+test('checkClickjackingVulnerability x-frame-options self', async (t) => {
+  const res = checkClickjackingVulnerability({
+    xFrameOptions: 'sameorigin',
+    contentSecurityPolicy: null,
+  });
+  assert.strictEqual(res.status, 'safe');
+  assert.strictEqual(res.allowedList, { sameorigin: true });
 });
