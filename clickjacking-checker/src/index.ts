@@ -1,12 +1,14 @@
-import https from 'https';
 import fetch from 'node-fetch';
+import type { Handler } from 'aws-lambda';
 
 // This function was mostly AI generated. It required some coaxing.
 // I had to fix some bugs too.
 // https://chat.openai.com/share/9b5600d9-69e1-4654-8475-f340179e6192
 const timeoutSeconds = 25;
 
-export const handler = async (event) => {
+export const handler: Handler = async (event): Promise<
+  { statusCode: number; body: string; }
+> => {
   // Extract the URL from the event object, and check it's well formed.
   const userUrl = parseUserURL(event.url);
   if (userUrl == null) {
@@ -21,8 +23,8 @@ export const handler = async (event) => {
     // to make sure we'll more than likely be able to response why we failed.
     // I wholly expect people will try to slow-loris us, but concurrent
     // execution and the captcha should deal with that.
-    const response = await Promise.race([
-      new Promise((resolve, reject) => {
+    const response: 'timeout' | Awaited<ReturnType<typeof headRequest>>  = await Promise.race([
+      new Promise<'timeout'>((resolve, reject) => {
         setTimeout(resolve, timeoutSeconds*1000, 'timeout');
       }),
       headRequest(userUrl),
@@ -30,7 +32,9 @@ export const handler = async (event) => {
     if (response === 'timeout') {
       return {
         statusCode: 504,
-        body: JSON.stringify({ error: 'Request timed out, please try again later' });
+        body: JSON.stringify({
+          error: 'Request timed out, please try again later',
+        }),
       };
     }
     const xFrameOptions = response.headers.get('x-frame-options');
@@ -39,6 +43,15 @@ export const handler = async (event) => {
       xFrameOptions,
       contentSecurityPolicy,
     });
+
+    if (vulnStatus.status === 'unknown') {
+      // Static assert.
+      vulnStatus satisfies { error: string };
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ vulnStatus }),
+      };
+    }
 
     return {
       statusCode: 200,
@@ -53,7 +66,7 @@ export const handler = async (event) => {
   }
 };
 
-function parseUserURL(inputURL) {
+function parseUserURL(inputURL: string) {
   try {
     const parsed = new URL(inputURL);
     // Ignore the port, and query strings etc. If people are gonna be making me
@@ -67,7 +80,7 @@ function parseUserURL(inputURL) {
   }
 }
 
-async function headRequest(userURL) {
+async function headRequest(userURL: { origin: string; path: string }) {
   const res = await fetch(`${userURL.origin}${userURL.path}`, {
     method: 'HEAD',
     headers: {
@@ -82,26 +95,41 @@ async function headRequest(userURL) {
   }
 }
 
-// Returns 
-//  | { status: 'unsafe', missingPolicy: true }
-//  | { error: 'Malformed frame-ancestors Content Security Policy.' }
-//  | {
-//      status: 'safe',
-//      safeSourcesAllowed: (
-//       | { sameorigin: true }
-//       | { source: 'https://cool.com' }
-//      )[]
-//    }
-//  | {
-//      status: 'unsafe',
-//      dangerousSourcesAllowed: { permissiveAddress: 'https://*' }[],
-//      // Same as the safe's safeSourcesAllowed.
-//      safeSourcesAllowed: { sameorigin: true }[],
-//    }
+type NonEmptyArray<T> = [T, ...T[]];
+function isNonEmptyArray<T>(e: T[]): e is NonEmptyArray<typeof e[number]> {
+  return e.length > 0;
+}
+
+type SafeSourcesAllowedList = (
+ | { sameorigin: true }
+ | { source: string }
+)[]
 export function checkClickjackingVulnerability({
   xFrameOptions,
   contentSecurityPolicy,
-}) {
+}: {
+  xFrameOptions: string | null | undefined;
+  contentSecurityPolicy: string | null | undefined;
+}):
+  | { status: 'unsafe'; missingPolicy: true }
+  | {
+      error: 'Malformed frame-ancestors Content Security Policy.'
+      status: 'unknown';
+      missingPolicy: false;
+    }
+  | {
+      status: 'safe';
+      safeSourcesAllowed: SafeSourcesAllowedList;
+      missingPolicy: false;
+    }
+  | {
+      status: 'unsafe';
+      dangerousSourcesAllowed: { permissiveAddress: string }[];
+      // Same as the safe's safeSourcesAllowed.
+      safeSourcesAllowed: SafeSourcesAllowedList;
+      missingPolicy: false;
+    }
+    {
   // Technically this function can report some false positives. If a user is
   // using multiple CSPs, as per:
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#multiple_content_security_policies
@@ -109,25 +137,25 @@ export function checkClickjackingVulnerability({
   // dictionary I don't believe supports it.
 
   // Check X-Frame-Options
-  if (xFrameOptions) {
+  if (xFrameOptions != null) {
     const fmt = xFrameOptions.toLowerCase().trim();
     if (fmt === 'deny') {
       return {
         status: 'safe',
         // Return where it's allowed to be hosted.
-        allowedList: [],
+        safeSourcesAllowed: [], missingPolicy: false,
       };
     }
     if (fmt === 'sameorigin') {
       return {
         status: 'safe',
-        allowedList: [{ sameorigin: true }],
+        safeSourcesAllowed: [{ sameorigin: true }], missingPolicy: false,
       };
     }
   }
 
   // Check Content-Security-Policy for frame-ancestors directive
-  if (contentSecurityPolicy) {
+  if (contentSecurityPolicy != null) {
     const cspDirectives = contentSecurityPolicy
       .toLowerCase()
       .split(';')
@@ -150,9 +178,7 @@ export function checkClickjackingVulnerability({
       let frameAncestors = frameAncestorsDirective
         .split(' ')
         .slice(1);
-      // It's safe if they specify at least one thing, and all of them aren't
-      // permissive.
-      if (frameAncestors.length === 0) {
+      if (!isNonEmptyArray(frameAncestors)) {
         return { status: 'unsafe', missingPolicy: true };
       }
 
@@ -167,20 +193,23 @@ export function checkClickjackingVulnerability({
       // TODO: Should this just be a backus-naur parser?
 
       // Check if there's exactly one definition of none.
-      const isNone = (e) => e === "'none'";
+      const isNone = (e: string) => e === "'none'";
       if (frameAncestors.length === 1 && isNone(frameAncestors[0])) {
-        return { status: 'safe', allowedList: [] };
+        return { status: 'safe', safeSourcesAllowed: [], missingPolicy: false };
       }
       if (frameAncestors.some(isNone)) {
-        return { status: 'unsafe', 
+        return {
+          status: 'unknown',
+          error: 'Malformed frame-ancestors Content Security Policy.', missingPolicy: false,
+        };
       }
       // The policies are additive, so ignore the considered 'none's.
       frameAncestors = frameAncestors.filter((schema) => !isNone(schema));
 
       // Everything left is self?
-      const isSelf = (e) => e === "'self'";
+      const isSelf = (e: string) => e === "'self'";
       if (frameAncestors.every(isSelf)) {
-        return { status: 'safe', allowedList: [{ sameorigin: true }] };
+        return { status: 'safe', safeSourcesAllowed: [{ sameorigin: true }], missingPolicy: false };
       }
       frameAncestors = frameAncestors.filter((schema) => !isSelf(schema));
 
@@ -188,11 +217,6 @@ export function checkClickjackingVulnerability({
       // scheme-sources.
       // Referring to the spec, we see that 
       // If theres's 
-
-      // These are easy cases.
-      const triviallySafe = frameAncestors.every((schema) =>
-        schema === "'none'" || schema === "'self'"
-      );
 
       // TODO: The rest of them.
       // Specifically, we probably should make it return false if there's
@@ -215,7 +239,7 @@ export function checkClickjackingVulnerability({
   return { status: 'unsafe', missingPolicy: true };
 }
 
-function isSubdomainWildcard(value) {
-  const pattern = /^https?:\/\/\*\.[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
-  return pattern.test(value);
-}
+// function isSubdomainWildcard(value) {
+  // const pattern = /^https?:\/\/\*\.[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
+  // return pattern.test(value);
+// }

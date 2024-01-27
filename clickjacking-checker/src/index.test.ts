@@ -1,12 +1,15 @@
 import test from 'node:test';
-import assert from 'node:assert';
+import * as assert from 'node:assert';
 
 import { handler, checkClickjackingVulnerability } from './index.js';
 
-const getAPIOutput = async (url) => {
-  const result = await handler({
-    url,
-  });
+const getAPIOutput = async (url: string) => {
+  const result = await handler(
+    { url },
+    // Ignore supplying the other arguments, we don't use them.
+    undefined as any,
+    undefined as any,
+  );
   return {
     statusCode: result.statusCode,
     json: JSON.parse(result.body),
@@ -25,7 +28,7 @@ test('checkClickjackingVulnerability trivial case', async (t) => {
     contentSecurityPolicy: null,
   });
   assert.strictEqual(res.status, 'unsafe');
-  assert.strictEqual(res.allowedList, null);
+  assert.strictEqual(res.missingPolicy, true);
 });
 
 test('checkClickjackingVulnerability x-frame-options self', async (t) => {
@@ -34,5 +37,5 @@ test('checkClickjackingVulnerability x-frame-options self', async (t) => {
     contentSecurityPolicy: null,
   });
   assert.strictEqual(res.status, 'safe');
-  assert.strictEqual(res.allowedList, { sameorigin: true });
+  assert.deepStrictEqual(res.safeSourcesAllowed, [{ sameorigin: true }]);
 });
