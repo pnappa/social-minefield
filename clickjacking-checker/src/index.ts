@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import type { Handler } from 'aws-lambda';
+import { parse as parseSuffix } from 'tldts';
 
 // This function was mostly AI generated. It required some coaxing.
 // I had to fix some bugs too.
@@ -20,12 +21,13 @@ export const handler: Handler = async (event): Promise<
 
   try {
     // Whilst the lambda will have a 30s timeout, we fail at 25 seconds here,
-    // to make sure we'll more than likely be able to response why we failed.
+    // to make sure we'll more than likely be able to respond why we failed.
     // I wholly expect people will try to slow-loris us, but concurrent
     // execution and the captcha should deal with that.
-    const response: 'timeout' | Awaited<ReturnType<typeof headRequest>>  = await Promise.race([
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const response = await Promise.race([
       new Promise<'timeout'>((resolve, reject) => {
-        setTimeout(resolve, timeoutSeconds*1000, 'timeout');
+        timeoutId = setTimeout(resolve, timeoutSeconds*1000, 'timeout');
       }),
       headRequest(userUrl),
     ]);
@@ -37,8 +39,15 @@ export const handler: Handler = async (event): Promise<
         }),
       };
     }
+    // Whilst we don't need to do this, we should because it means the process
+    // can close as there's no pending promises (it makes tests finish faster).
+    if (timeoutId != null) {
+      clearTimeout(timeoutId);
+    }
     const xFrameOptions = response.headers.get('x-frame-options');
-    const contentSecurityPolicy = response.headers.get('content-security-policy');
+    const contentSecurityPolicy = response.headers.get(
+      'content-security-policy',
+    );
     const vulnStatus = checkClickjackingVulnerability({
       xFrameOptions,
       contentSecurityPolicy,
@@ -98,6 +107,130 @@ async function headRequest(userURL: { origin: string; path: string }) {
 type NonEmptyArray<T> = [T, ...T[]];
 function isNonEmptyArray<T>(e: T[]): e is NonEmptyArray<typeof e[number]> {
   return e.length > 0;
+}
+
+const isValidPath = (e: string): boolean => {
+  try {
+    const x = new URL(e, 'https://example.com');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Null if not a scheme.
+export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | null => {
+  // As per https://w3c.github.io/webappsec-csp/#grammardef-scheme-source and
+  // https://datatracker.ietf.org/doc/html/rfc3986#section-3.1 , these are
+  // case-insenstive, but we'll convert to lowercase.
+  const potentialSchemeSource = e.toLowerCase();
+
+  // All valid schemes are considered too permissive. For example, `https:`
+  // allows every single https site. Not good!
+  if (/^[a-z][a-z0-9\+\-\.]*:$/.test(potentialSchemeSource)) {
+    // Clickjacking only really applies to these schemes.
+    if (
+      potentialSchemeSource === 'https:' ||
+      potentialSchemeSource === 'http:'
+    ) {
+      return { isPermissive: true };
+    }
+    return { isPermissive: true };
+  }
+  return null;
+}
+
+const isValidHost = (e: string): boolean => {
+  try {
+    const x = new URL(`https://${e}/`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Null if not a scheme.
+export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | null => {
+  // As per https://w3c.github.io/webappsec-csp/#grammardef-host-source
+  // Whilst URLs are case-sensitive (at least the path component is), we're
+  // not really caring about where the path is.
+  const source = e.toLowerCase();
+
+  // First, we parse the host source into constituent parts.
+  // [ scheme-part "://" ] host-part [ ":" port-part ] [ path-part ]
+  const groups =
+    source.match(
+    /^(?<scheme>[a-z][a-z0-9\+\-\.]*:\/\/)?(?<host>\*|(\*\.)?[a-z0-9\-\.]+)(?<port>:[0-9]+)?(?<path>\/[a-z0-9\-\.\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@\%]*\/)?$/,
+  )?.groups;
+
+  // Not a valid host.
+  if (!groups) return null;
+
+  // Process the path more. We're lenient in the regex.
+  // Path is easy to further validate, we lean on URL.
+  if (groups.path != null && !isValidPath(groups.path)) {
+    return null;
+  }
+
+  // I don't believe this is possible, but let's satisify Typescript.
+  if (groups.host == null) {
+    return null;
+  }
+
+  // Process the hostPart more. We're lenient in the regex.
+  if (groups.host.length === 0) {
+    // Shouldn't be possible to reach, but may as well.
+    return null;
+  }
+
+  if (groups.host.length === 1) {
+    // Check for valid wildcard.
+    if (groups.host === '*') {
+      // Everything wildcard is way too permissive.
+      return { isPermissive: true };
+    } 
+
+    // Otherwise, make sure it's not a dot.
+    if (groups.host === '.') {
+      return null;
+    }
+
+    // TODO: Should we assert it is 0-9a-z-?
+    return { isPermissive: false };
+  }
+
+  // groups.host.length >= 2
+  // Things like "*example.com" are not valid.
+  let host = groups.host;
+  if (host[0] === '*' && host[1] !== '.') {
+    return null;
+  }
+
+  if (host[0] === '*' && host[1] === '.') {
+    // Omit the wild card, as we need to check that the host is valid, again
+    // using the native URL parsing, so remove the part that isn't a valid
+    // regular hostname.
+    host = host.slice(2);
+  }
+
+  if (!isValidHost(host)) {
+    return null;
+  }
+
+  // We need to check what the OG host was. If it's not got a wildcard, it's
+  // safe.
+  if (groups.host.indexOf('*') === -1) {
+    return { isPermissive: false };
+  }
+
+  // If there's a wildcard, and it's a public suffix, it's not safe.
+  const parsed = parseSuffix(host);
+  if (parsed.publicSuffix === host) {
+    return { isPermissive: true };
+  }
+
+  // Otherwise, it's fine.
+  return { isPermissive: false };
 }
 
 type SafeSourcesAllowedList = (
@@ -175,9 +308,7 @@ export function checkClickjackingVulnerability({
       // Documentation can be found here:
       // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
 
-      let frameAncestors = frameAncestorsDirective
-        .split(' ')
-        .slice(1);
+      let frameAncestors = frameAncestorsDirective.split(' ').slice(1);
       if (!isNonEmptyArray(frameAncestors)) {
         return { status: 'unsafe', missingPolicy: true };
       }
@@ -190,7 +321,6 @@ export function checkClickjackingVulnerability({
       // validates `frame-ancestors https://*.com 'none'` as a valid policy,
       // despite 'none' only being allowed on its own.
       // https://csp-evaluator.withgoogle.com/
-      // TODO: Should this just be a backus-naur parser?
 
       // Check if there's exactly one definition of none.
       const isNone = (e: string) => e === "'none'";
@@ -215,31 +345,9 @@ export function checkClickjackingVulnerability({
 
       // Otherwise we need to check for restrictive host-sources and
       // scheme-sources.
-      // Referring to the spec, we see that 
-      // If theres's 
-
-      // TODO: The rest of them.
-      // Specifically, we probably should make it return false if there's
-      // some forms of "*", "https://*", "https://*.com", or whatever.
-      // Theoretically we should also check the public suffix list.
-      // If we do use that, then perhaps let's cache the PSL?
-
-      // frameAncestors.map((schema) => 
-      //   schema === "'none'"
-      // // TODO:
-      // for (let value of frameAncestors) {
-      //   if (value.includes('*')
-      //   if (value === '*' || (value.includes('*') && !isSubdomainWildcard(value))) {
-      //     return true;
-      //   }
-      // }
+      // TODO: Call isPermissiveSchemeSource and isPermissiveHostSource.
     }
   }
 
   return { status: 'unsafe', missingPolicy: true };
 }
-
-// function isSubdomainWildcard(value) {
-  // const pattern = /^https?:\/\/\*\.[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
-  // return pattern.test(value);
-// }
