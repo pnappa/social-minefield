@@ -259,7 +259,8 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 type SafeSourcesAllowedList = (
  | { sameorigin: true }
  | { source: string }
-)[]
+)[];
+type DangerousSourcesAllowedList = { permissiveAddress: string }[];
 export function checkClickjackingVulnerability({
   xFrameOptions,
   contentSecurityPolicy,
@@ -276,13 +277,17 @@ export function checkClickjackingVulnerability({
   | {
       status: 'safe';
       safeSourcesAllowed: SafeSourcesAllowedList;
+      // If it's not a well formed host, literal, or scheme, it gets ignored.
+      // It's a good idea to indicate when this happens.
+      ignoredSources: string[];
       missingPolicy: false;
     }
   | {
       status: 'unsafe';
-      dangerousSourcesAllowed: { permissiveAddress: string }[];
+      dangerousSourcesAllowed: DangerousSourcesAllowedList;
       // Same as the safe's safeSourcesAllowed.
       safeSourcesAllowed: SafeSourcesAllowedList;
+      ignoredSources: string[];
       missingPolicy: false;
     }
     {
@@ -292,84 +297,163 @@ export function checkClickjackingVulnerability({
   // The successive policies can make the conditions stricter, but the headers
   // dictionary I don't believe supports it.
 
-  // Check X-Frame-Options
-  if (xFrameOptions != null) {
+  const cspDirectives = contentSecurityPolicy?.toLowerCase().split(';').map(d => d.trim());
+  const frameAncestorsDirective = cspDirectives?.find(d => d.startsWith('frame-ancestors'));
+  // Only look at x-frame-options if there's no frame-ancestors key in the CSP
+  // list. Even an invalid frame-ancestors value will result in x-frame-options
+  // being ignored! See 6.4.2.2:
+  // https://w3c.github.io/webappsec-csp/#frame-ancestors-and-frame-options
+  const xFrameOptionsObsoleted = frameAncestorsDirective != null;
+  if (!xFrameOptionsObsoleted && xFrameOptions != null) {
     const fmt = xFrameOptions.toLowerCase().trim();
     if (fmt === 'deny') {
       return {
         status: 'safe',
         // Return where it's allowed to be hosted.
-        safeSourcesAllowed: [], missingPolicy: false,
+        safeSourcesAllowed: [],
+        missingPolicy: false,
+        ignoredSources: [],
       };
     }
     if (fmt === 'sameorigin') {
       return {
         status: 'safe',
-        safeSourcesAllowed: [{ sameorigin: true }], missingPolicy: false,
+        safeSourcesAllowed: [{ sameorigin: true }],
+        missingPolicy: false,
+        ignoredSources: [],
       };
     }
   }
 
   // Check Content-Security-Policy for frame-ancestors directive
-  if (contentSecurityPolicy != null) {
-    const cspDirectives = contentSecurityPolicy
-      .toLowerCase()
-      .split(';')
-      .map(d => d.trim());
-    const frameAncestorsDirective = cspDirectives
-      .find(d => d.startsWith('frame-ancestors'));
+  if (frameAncestorsDirective) {
+    // Source directives for CSP are additive. That means, we need to check
+    // there's at least one policy, and that none of them are wildly permissive.
+    // It's possible to specify things like '*', or https://*.com, which are
+    // too permissive to stop clickjacking attacks.
+    // So, we go through and filter until we don't have any non-permissive
+    // statements. If we have some remaining at the end, we consider it
+    // potentially unsafe.
+    // Documentation can be found here:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
 
-    if (frameAncestorsDirective) {
-      // Source directives for CSP are additive. That means, we need to check
-      // there's at least one policy, and that none of them are wildly
-      // permissive.
-      // It's possible to specify things like '*', or https://*.com, which are
-      // too permissive to stop clickjacking attacks.
-      // So, we go through and filter until we don't have any non-permissive
-      // statements. If we have some remaining at the end, we consider it
-      // potentially unsafe.
-      // Documentation can be found here:
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
-
-      let frameAncestors = frameAncestorsDirective.split(' ').slice(1);
-      if (!isNonEmptyArray(frameAncestors)) {
-        return { status: 'unsafe', missingPolicy: true };
-      }
-
-      // As per the spec (https://w3c.github.io/webappsec-csp/#directive-frame-ancestors),
-      // the grammar for specifying frame-ancestors is:
-      // ancestors       = (ancestor-source ...ancestor-source) | "'none'"
-      // ancestor-source = scheme-source | host-source | "'self'"
-      // Interestingly, Google's CSP evaluator gets this grammar wrong, and
-      // validates `frame-ancestors https://*.com 'none'` as a valid policy,
-      // despite 'none' only being allowed on its own.
-      // https://csp-evaluator.withgoogle.com/
-
-      // Check if there's exactly one definition of none.
-      const isNone = (e: string) => e === "'none'";
-      if (frameAncestors.length === 1 && isNone(frameAncestors[0])) {
-        return { status: 'safe', safeSourcesAllowed: [], missingPolicy: false };
-      }
-      if (frameAncestors.some(isNone)) {
-        return {
-          status: 'unknown',
-          error: 'Malformed frame-ancestors Content Security Policy.', missingPolicy: false,
-        };
-      }
-      // The policies are additive, so ignore the considered 'none's.
-      frameAncestors = frameAncestors.filter((schema) => !isNone(schema));
-
-      // Everything left is self?
-      const isSelf = (e: string) => e === "'self'";
-      if (frameAncestors.every(isSelf)) {
-        return { status: 'safe', safeSourcesAllowed: [{ sameorigin: true }], missingPolicy: false };
-      }
-      frameAncestors = frameAncestors.filter((schema) => !isSelf(schema));
-
-      // Otherwise we need to check for restrictive host-sources and
-      // scheme-sources.
-      // TODO: Call isPermissiveSchemeSource and isPermissiveHostSource.
+    // TODO: I think we might want to replace this with .split(/\s+/), as we want to greedily match the spaces. Let me check the spec. Yeah, I want to make it (ascii whitespace)+
+    let frameAncestors = frameAncestorsDirective.split(' ').slice(1);
+    // Empty policy? It's unsafe, sorry!
+    // TODO: Actually, I believe it is safe. The spec says if the source list
+    //       is empty, then it's "Does Not Match" (i.e. block).
+    if (!isNonEmptyArray(frameAncestors)) {
+      return { status: 'unsafe', missingPolicy: true };
     }
+
+    // As per the spec (https://w3c.github.io/webappsec-csp/#directive-frame-ancestors),
+    // the grammar for specifying frame-ancestors is:
+    // ancestors       = (ancestor-source ...ancestor-source) | "'none'"
+    // ancestor-source = scheme-source | host-source | "'self'"
+    // Interestingly, Google's CSP evaluator gets this grammar wrong, and
+    // validates `frame-ancestors https://*.com 'none'` as a valid policy,
+    // despite 'none' only being allowed on its own.
+    // https://csp-evaluator.withgoogle.com/
+    const ignoredSources: string[] = [];
+
+    // Check if there's exactly one definition of none.
+    const isNone = (e: string) => e === "'none'";
+    if (frameAncestors.length === 1 && isNone(frameAncestors[0])) {
+      return {
+        status: 'safe',
+        safeSourcesAllowed: [],
+        missingPolicy: false,
+        ignoredSources,
+      };
+    }
+
+    // If there's anything in addition to 'none', we ignore the 'none'. See
+    // 6.7.2.6: https://w3c.github.io/webappsec-csp/#match-url-to-source-list
+    if (frameAncestors.some(isNone)) {
+      ignoredSources.push("'none'");
+    }
+    frameAncestors = frameAncestors.filter((e) => !isNone(e));
+
+    // Keep track of what's safe & unsafe, so we can include in the return
+    // value.
+    const safeSourcesList: SafeSourcesAllowedList = [];
+    const unsafeSourcesList: DangerousSourcesAllowedList = [];
+
+    const isSelf = (e: string) => e === "'self'";
+    if (frameAncestors.some(isSelf)) {
+      safeSourcesList.push({ sameorigin: true });
+    }
+    // Everything left is self?
+    if (frameAncestors.every(isSelf)) {
+      return {
+        status: 'safe',
+        safeSourcesAllowed: safeSourcesList,
+        missingPolicy: false,
+        ignoredSources,
+      };
+    }
+    frameAncestors = frameAncestors.filter((schema) => !isSelf(schema));
+
+    // Otherwise we need to check for restrictive host-sources and
+    // scheme-sources.
+
+    // First, the scheme sources.
+    const schemeSources: [ReturnType<typeof isPermissiveSchemeSource>, string][] = frameAncestors.map(
+      (e) => [isPermissiveSchemeSource(e), e],
+    );
+    // Filter out any matching sources.
+    frameAncestors = schemeSources.filter(([match]) => match == null).map(([,e]) => e);
+
+    // Which schemes are safe?
+    const safeSchemeSources: SafeSourcesAllowedList = schemeSources.filter(
+      ([match]) => match != null && !match.isPermissive
+    ).map(([, e]) => ({ source: e }));
+    safeSourcesList.push(...safeSchemeSources);
+
+    // Which are unsafe?
+    const unsafeSchemeSources: DangerousSourcesAllowedList = schemeSources.filter(
+      ([match]) => match != null && match.isPermissive
+    ).map(([, e]) => ({ permissiveAddress: e }));
+    unsafeSourcesList.push(...unsafeSchemeSources);
+
+    // Finally, the host sources.
+    const hostSources: [ReturnType<typeof isPermissiveHostSource>, string][] = frameAncestors.map(
+      (e) => [isPermissiveHostSource(e), e],
+    );
+    // Filter out any matching sources.
+    frameAncestors = hostSources.filter(([match]) => match == null).map(([,e]) => e);
+
+    const safeHostSources: SafeSourcesAllowedList = hostSources.filter(
+      ([match]) => match != null && !match.isPermissive
+    ).map(([, e]) => ({ source: e }));
+    safeSourcesList.push(...safeHostSources);
+    const unsafeHostSources: DangerousSourcesAllowedList = hostSources.filter(
+      ([match]) => match != null && match.isPermissive
+    ).map(([, e]) => ({ permissiveAddress: e }));
+    unsafeSourcesList.push(...unsafeHostSources);
+
+    // If there's remaining content in the frameAncestors source list, it
+    // means they are malformed, and thus can be ignored. They can be ignored
+    // as it's not possible for a host to match them. We return these as a
+    // courtesy.
+    ignoredSources.push(...frameAncestors);
+
+    if (unsafeSourcesList.length > 0) {
+      return {
+        status: 'unsafe',
+        dangerousSourcesAllowed: unsafeSourcesList,
+        safeSourcesAllowed: safeSourcesList,
+        ignoredSources,
+        missingPolicy: false,
+      };
+    }
+
+    return {
+      status: 'safe',
+      safeSourcesAllowed: safeSourcesList,
+      ignoredSources,
+      missingPolicy: false,
+    };
   }
 
   return { status: 'unsafe', missingPolicy: true };
