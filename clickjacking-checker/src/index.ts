@@ -153,6 +153,11 @@ export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | n
     ) {
       return { isPermissive: true };
     }
+    // But for the rest, we still indicate that they're too permissive.
+    // TODO: Should this be the case? I don't really have a horse in the race,
+    //       but keeping this up to date with what schemes are supported and
+    //       embeddable within a browser context, with implicit authorisation is
+    //       not a tractable task for mere old Patrick. :)
     return { isPermissive: true };
   }
   return null;

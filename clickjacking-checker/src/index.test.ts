@@ -76,6 +76,8 @@ describe('headRequest', () => {
   });
 });
 
+// Check that null is returned for things that aren't schemes, and that for
+// anything that is a valid scheme, return that it's permissive.
 describe('isPermissiveSchemeSource', () => {
   test('https: matches', async (t) => {
     const res = isPermissiveSchemeSource('https:');
@@ -93,6 +95,34 @@ describe('isPermissiveSchemeSource', () => {
   });
   test('http: matches', async (t) => {
     const res = isPermissiveSchemeSource('http:');
+    assert.deepStrictEqual(res, { isPermissive: true });
+  });
+  test('https://google.com invalid', async (t) => {
+    const res = isPermissiveSchemeSource('https://google.com');
+    assert.deepStrictEqual(res, null);
+  });
+  test('https:/google.com invalid', async (t) => {
+    const res = isPermissiveSchemeSource('https:/google.com');
+    assert.deepStrictEqual(res, null);
+  });
+  test('https://google invalid', async (t) => {
+    const res = isPermissiveSchemeSource('https://');
+    assert.deepStrictEqual(res, null);
+  });
+  test('https:// invalid', async (t) => {
+    const res = isPermissiveSchemeSource('https://');
+    assert.deepStrictEqual(res, null);
+  });
+  test('https invalid', async (t) => {
+    const res = isPermissiveSchemeSource('https://');
+    assert.deepStrictEqual(res, null);
+  });
+  test('https://* invalid', async (t) => {
+    const res = isPermissiveSchemeSource('https://*');
+    assert.deepStrictEqual(res, null);
+  });
+  test('foo: permissive match', async (t) => {
+    const res = isPermissiveSchemeSource('foo:');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
 });
