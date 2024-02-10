@@ -299,8 +299,16 @@ export function checkClickjackingVulnerability({
   // The successive policies can make the conditions stricter, but the headers
   // dictionary I don't believe supports it.
 
-  const cspDirectives = contentSecurityPolicy?.toLowerCase().split(';').map(d => d.trim());
-  const frameAncestorsDirective = cspDirectives?.find(d => d.startsWith('frame-ancestors'));
+  const cspDirectives = contentSecurityPolicy?.toLowerCase().split(';').map(
+    // Replace leading & trailing ASCII whitespace. .trim() is too lenient.
+    // https://github.com/helmetjs/content-security-policy-parser/pull/12
+    d => d.replace(/^[\t\n\f\r ]+/, '').replace(/[\t\n\f\r ]+$/, ''),
+  );
+  const frameAncestorsDirective = cspDirectives?.find(
+    // Must be a well-formed directive key. Either an empty list following, or
+    // at least an ASCII whitespace following.
+    d => d.match(/^frame-ancestors[\t\n\f\r ]/) || d === 'frame-ancestors'
+  );
   // Only look at x-frame-options if there's no frame-ancestors key in the CSP
   // list. Even an invalid frame-ancestors value will result in x-frame-options
   // being ignored! See 6.4.2.2:
@@ -328,24 +336,31 @@ export function checkClickjackingVulnerability({
   }
 
   // Check Content-Security-Policy for frame-ancestors directive
-  if (frameAncestorsDirective) {
+  // We must only split by ASCII whitespace, follows the parsing spec here:
+  // https://w3c.github.io/webappsec-csp/#framework-infrastructure
+  const processedFADirective = frameAncestorsDirective?.split(/[\t\n\f\r ]+/g);
+  if (processedFADirective != null && processedFADirective[0] === 'frame-ancestors') {
     // Source directives for CSP are additive. That means, we need to check
     // there's at least one policy, and that none of them are wildly permissive.
     // It's possible to specify things like '*', or https://*.com, which are
     // too permissive to stop clickjacking attacks.
-    // So, we go through and filter until we don't have any non-permissive
-    // statements. If we have some remaining at the end, we consider it
-    // potentially unsafe.
     // Documentation can be found here:
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
+    // But the _real_ information can be found in the w3c spec. :)
 
-    // TODO: I think we might want to replace this with .split(/\s+/), as we want to greedily match the spaces. Let me check the spec. Yeah, I want to make it (ascii whitespace)+
-    let frameAncestors = frameAncestorsDirective.split(' ').slice(1);
-    // Empty policy? It's unsafe, sorry!
-    // TODO: Actually, I believe it is safe. The spec says if the source list
-    //       is empty, then it's "Does Not Match" (i.e. block).
+    let frameAncestors = processedFADirective.slice(1);
+    // Keep track of malformed sources.
+    const ignoredSources: string[] = [];
+
+    // Empty policy? It's considered equivalent to 'none'. Thus, safe.
+    // https://w3c.github.io/webappsec-csp/#match-url-to-source-list
     if (!isNonEmptyArray(frameAncestors)) {
-      return { status: 'unsafe', missingPolicy: true };
+      return {
+        status: 'safe',
+        safeSourcesAllowed: [],
+        missingPolicy: false,
+        ignoredSources,
+      };
     }
 
     // As per the spec (https://w3c.github.io/webappsec-csp/#directive-frame-ancestors),
@@ -356,7 +371,6 @@ export function checkClickjackingVulnerability({
     // validates `frame-ancestors https://*.com 'none'` as a valid policy,
     // despite 'none' only being allowed on its own.
     // https://csp-evaluator.withgoogle.com/
-    const ignoredSources: string[] = [];
 
     // Check if there's exactly one definition of none.
     const isNone = (e: string) => e === "'none'";
