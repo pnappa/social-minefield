@@ -24,14 +24,14 @@ const getAPIOutput = async (url: string) => {
 
 describe('API Handler', () => {
   // Check that we can query the API via the exports fine.
-  test('Access', async (t) => {
+  test('Access', async () => {
     const x = await getAPIOutput('https://www.google.com');
     assert.deepStrictEqual(x?.json?.vulnStatus?.status, 'safe');
   });
 });
 
 describe('checkClickjackingVulnerability', () => {
-  test('Trivial case', async (t) => {
+  test('Trivial case', async () => {
     const res = checkClickjackingVulnerability({
       xFrameOptions: null,
       contentSecurityPolicy: null,
@@ -40,7 +40,7 @@ describe('checkClickjackingVulnerability', () => {
     assert.deepStrictEqual(res.missingPolicy, true);
   });
 
-  test('x-frame-options self', async (t) => {
+  test('x-frame-options self', async () => {
     const res = checkClickjackingVulnerability({
       xFrameOptions: 'sameorigin',
       contentSecurityPolicy: null,
@@ -48,7 +48,7 @@ describe('checkClickjackingVulnerability', () => {
     assert.deepStrictEqual(res.status, 'safe');
     assert.deepStrictEqual(res.safeSourcesAllowed, [{ sameorigin: true }]);
   });
-  test('x-frame-options none', async (t) => {
+  test('x-frame-options none', async () => {
     const res = checkClickjackingVulnerability({
       xFrameOptions: 'deny',
       contentSecurityPolicy: null,
@@ -61,13 +61,13 @@ describe('checkClickjackingVulnerability', () => {
 describe('headRequest', () => {
   // Technically this test can fail if your internet is slow, or no network
   // access. But we're assuming it's fine.
-  test('example.com default timeout', async (t) => {
+  test('example.com default timeout', async () => {
     const res = await headRequest(
       { origin: 'https://example.com', path: '/' },
     );
     assert.notStrictEqual(res, 'timeout');
   });
-  test('example.com strict timeout hit', async (t) => {
+  test('example.com strict timeout hit', async () => {
     const res = await headRequest(
       { origin: 'https://example.com', path: '/' },
       // I really don't expect example.com to respond that quickly :)
@@ -80,108 +80,108 @@ describe('headRequest', () => {
 // Check that null is returned for things that aren't schemes, and that for
 // anything that is a valid scheme, return that it's permissive.
 describe('isPermissiveSchemeSource', () => {
-  test('https: matches', async (t) => {
+  test('https: matches', async () => {
     const res = isPermissiveSchemeSource('https:');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
-  test('https:/ no match', async (t) => {
+  test('https:/ no match', async () => {
     // This is not a scheme.
     const res = isPermissiveSchemeSource('https:/');
     assert.deepStrictEqual(res, null);
   });
-  test('empty no match', async (t) => {
+  test('empty no match', async () => {
     // This is not a scheme.
     const res = isPermissiveSchemeSource('');
     assert.deepStrictEqual(res, null);
   });
-  test('http: matches', async (t) => {
+  test('http: matches', async () => {
     const res = isPermissiveSchemeSource('http:');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
-  test('https://google.com invalid', async (t) => {
+  test('https://google.com invalid', async () => {
     const res = isPermissiveSchemeSource('https://google.com');
     assert.deepStrictEqual(res, null);
   });
-  test('https:/google.com invalid', async (t) => {
+  test('https:/google.com invalid', async () => {
     const res = isPermissiveSchemeSource('https:/google.com');
     assert.deepStrictEqual(res, null);
   });
-  test('https://google invalid', async (t) => {
+  test('https://google invalid', async () => {
     const res = isPermissiveSchemeSource('https://google');
     assert.deepStrictEqual(res, null);
   });
-  test('https:// invalid', async (t) => {
+  test('https:// invalid', async () => {
     const res = isPermissiveSchemeSource('https://');
     assert.deepStrictEqual(res, null);
   });
-  test('https invalid', async (t) => {
+  test('https invalid', async () => {
     const res = isPermissiveSchemeSource('https');
     assert.deepStrictEqual(res, null);
   });
-  test('https://* invalid', async (t) => {
+  test('https://* invalid', async () => {
     const res = isPermissiveSchemeSource('https://*');
     assert.deepStrictEqual(res, null);
   });
-  test('foo: permissive match', async (t) => {
+  test('foo: permissive match', async () => {
     const res = isPermissiveSchemeSource('foo:');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
 });
 
 describe('isPermissiveHostSource', () => {
-  test('https: no matches', async (t) => {
+  test('https: no matches', async () => {
     const res = isPermissiveHostSource('https:');
     assert.deepStrictEqual(res, null);
   });
-  test('https:/ no match', async (t) => {
+  test('https:/ no match', async () => {
     const res = isPermissiveHostSource('https:/');
     assert.deepStrictEqual(res, null);
   });
-  test('empty no match', async (t) => {
+  test('empty no match', async () => {
     const res = isPermissiveHostSource('');
     assert.deepStrictEqual(res, null);
   });
-  test('http: no match', async (t) => {
+  test('http: no match', async () => {
     const res = isPermissiveHostSource('http:');
     assert.deepStrictEqual(res, null);
   });
-  test('https://google.com good', async (t) => {
+  test('https://google.com good', async () => {
     const res = isPermissiveHostSource('https://google.com');
     assert.deepStrictEqual(res, { isPermissive: false });
   });
-  test('https:/google.com no match', async (t) => {
+  test('https:/google.com no match', async () => {
     const res = isPermissiveHostSource('https:/google.com');
     assert.deepStrictEqual(res, null);
   });
-  test('https://google good', async (t) => {
+  test('https://google good', async () => {
     const res = isPermissiveHostSource('https://google');
     assert.deepStrictEqual(res, { isPermissive: false });
   });
-  test('https:// no match', async (t) => {
+  test('https:// no match', async () => {
     const res = isPermissiveHostSource('https://');
     assert.deepStrictEqual(res, null);
   });
-  test('https good', async (t) => {
+  test('https good', async () => {
     const res = isPermissiveHostSource('https');
     assert.deepStrictEqual(res, { isPermissive: false });
   });
-  test('https://* bad', async (t) => {
+  test('https://* bad', async () => {
     const res = isPermissiveHostSource('https://*');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
-  test('foo://* bad', async (t) => {
+  test('foo://* bad', async () => {
     const res = isPermissiveHostSource('foo://*');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
-  test('foo://*.com bad', async (t) => {
+  test('foo://*.com bad', async () => {
     const res = isPermissiveHostSource('foo://*.com');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
-  test('https://*.com bad', async (t) => {
+  test('https://*.com bad', async () => {
     const res = isPermissiveHostSource('https://*.com');
     assert.deepStrictEqual(res, { isPermissive: true });
   });
-  test('https://*.example.com good', async (t) => {
+  test('https://*.example.com good', async () => {
     // It's good, because it's not a public suffix.
     const res = isPermissiveHostSource('https://*.example.com');
     assert.deepStrictEqual(res, { isPermissive: false });
