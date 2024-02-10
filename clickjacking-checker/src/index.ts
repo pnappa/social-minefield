@@ -1,9 +1,9 @@
-import fetch from 'node-fetch';
+import fetch, { AbortError } from 'node-fetch';
 import type { Handler } from 'aws-lambda';
 import { parse as parseSuffix } from 'tldts';
 
-// This function was mostly AI generated. It required some coaxing.
-// I had to fix some bugs too.
+// I initially started this with output from ChatGPT, but it wasn't particularly
+// good at very specific details about the CSP contexts.
 // https://chat.openai.com/share/9b5600d9-69e1-4654-8475-f340179e6192
 const timeoutSeconds = 25;
 
@@ -20,17 +20,7 @@ export const handler: Handler = async (event): Promise<
   }
 
   try {
-    // Whilst the lambda will have a 30s timeout, we fail at 25 seconds here,
-    // to make sure we'll more than likely be able to respond why we failed.
-    // I wholly expect people will try to slow-loris us, but concurrent
-    // execution and the captcha should deal with that.
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    const response = await Promise.race([
-      new Promise<'timeout'>((resolve, reject) => {
-        timeoutId = setTimeout(resolve, timeoutSeconds*1000, 'timeout');
-      }),
-      headRequest(userUrl),
-    ]);
+    const response = await headRequest(userUrl);
     if (response === 'timeout') {
       return {
         statusCode: 504,
@@ -38,11 +28,6 @@ export const handler: Handler = async (event): Promise<
           error: 'Request timed out, please try again later',
         }),
       };
-    }
-    // Whilst we don't need to do this, we should because it means the process
-    // can close as there's no pending promises (it makes tests finish faster).
-    if (timeoutId != null) {
-      clearTimeout(timeoutId);
     }
     const xFrameOptions = response.headers.get('x-frame-options');
     const contentSecurityPolicy = response.headers.get(
@@ -89,18 +74,51 @@ function parseUserURL(inputURL: string) {
   }
 }
 
-async function headRequest(userURL: { origin: string; path: string }) {
-  const res = await fetch(`${userURL.origin}${userURL.path}`, {
-    method: 'HEAD',
-    headers: {
-      // People getting abuse from us will be able to contact us.
-      'User-Agent': 'Social Minefield Clickjacking Checker'
-    },
-  });
+// Returns 'timeout' if the timeout threshold has been exceeded.
+export async function headRequest(
+  userURL: { origin: string; path: string },
+  // Limit in milliseconds.
+  limitMs?: number,
+): Promise<
+  | {
+      statusCode: number;
+      headers: Awaited<ReturnType<typeof fetch>>['headers']
+    }
+  | 'timeout'
+> {
+  const controller = new AbortController();
+  // Whilst the lambda will have a 30s timeout, we fail at 25 seconds here,
+  // to make sure we'll more than likely be able to respond why we failed.
+  // I wholly expect people will try to slow-loris us, but concurrent
+  // execution and the captcha should deal with that.
+  const timeout = setTimeout(
+    () => { controller.abort(); },
+    limitMs ?? (timeoutSeconds * 1000),
+  );
 
-  return {
-    statusCode: res.status,
-    headers: res.headers,
+  try {
+    const res = await fetch(`${userURL.origin}${userURL.path}`, {
+      method: 'HEAD',
+      headers: {
+        // People getting abuse from us will be able to contact us.
+        'User-Agent': 'Social Minefield Clickjacking Checker'
+      },
+      signal: controller.signal,
+    });
+
+    return {
+      statusCode: res.status,
+      headers: res.headers,
+    };
+  } catch (e) {
+    if (e instanceof AbortError) {
+      return 'timeout';
+    }
+    throw e;
+  } finally {
+    // Whilst we don't need to do this, we should because it means the process
+    // can close as there's no pending promises (it makes tests finish faster).
+    clearTimeout(timeout);
   }
 }
 

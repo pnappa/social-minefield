@@ -5,6 +5,7 @@ import {
   handler,
   checkClickjackingVulnerability,
   isPermissiveSchemeSource,
+  headRequest,
 } from './index.js';
 
 const getAPIOutput = async (url: string) => {
@@ -53,6 +54,25 @@ describe('checkClickjackingVulnerability', () => {
     });
     assert.deepStrictEqual(res.status, 'safe');
     assert.deepStrictEqual(res.safeSourcesAllowed, []);
+  });
+});
+
+describe('headRequest', () => {
+  // Technically this test can fail if your internet is slow, or no network
+  // access. But we're assuming it's fine.
+  test('example.com default timeout', async (t) => {
+    const res = await headRequest(
+      { origin: 'https://example.com', path: '/' },
+    );
+    assert.notStrictEqual(res, 'timeout');
+  });
+  test('example.com strict timeout hit', async (t) => {
+    const res = await headRequest(
+      { origin: 'https://example.com', path: '/' },
+      // I really don't expect example.com to respond that quickly :)
+      /* limitMs */ 5,
+    );
+    assert.strictEqual(res, 'timeout');
   });
 });
 
