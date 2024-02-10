@@ -186,4 +186,155 @@ describe('isPermissiveHostSource', () => {
     const res = isPermissiveHostSource('https://*.example.com');
     assert.deepStrictEqual(res, { isPermissive: false });
   });
+
+  // Test cases for different schemes
+  test('ftp://example.com allowed scheme', async () => {
+    const res = isPermissiveHostSource('ftp://example.com');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('mailto:example@example.com not a valid host source', async () => {
+    const res = isPermissiveHostSource('mailto:example@example.com');
+    assert.deepStrictEqual(res, null);
+  });
+
+  // Test cases for port inclusion
+  test('https://example.com:8080 good with port', async () => {
+    const res = isPermissiveHostSource('https://example.com:8080');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://*.example.com:8080 good with port and wildcard', async () => {
+    const res = isPermissiveHostSource('https://*.example.com:8080');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  // Test cases for invalid paths
+  test('https://example.com/invalid|path no match due to invalid path', async () => {
+    const res = isPermissiveHostSource('https://example.com/invalid|path');
+    assert.deepStrictEqual(res, null);
+  });
+
+  // Test cases for edge cases and specific scenarios
+  test('https://.example.com no match due to leading dot', async () => {
+    const res = isPermissiveHostSource('https://.example.com');
+    assert.deepStrictEqual(res, null);
+  });
+
+  test('https://example..com no match due to consecutive dots', async () => {
+    const res = isPermissiveHostSource('https://example..com');
+    assert.deepStrictEqual(res, null);
+  });
+
+  // XXX: Note that the spec for host-source is both too permissive and too
+  // strict. Some domains which are not valid (such as leading hyphens) are
+  // considered valid. Oh well!
+  // https://w3c.github.io/webappsec-csp/#framework-directive-source-list
+  test('https://-example.com is good, due to bug in CSP specification', async () => {
+    const res = isPermissiveHostSource('https://-example.com');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  // XXX: Likewise, trailing hyphens are allowed (but probably shouldn't be).
+  test('https://example.com- is good, due to bug in CSP specification', async () => {
+    const res = isPermissiveHostSource('https://example.com-');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://*. no match due to incomplete wildcard domain', async () => {
+    const res = isPermissiveHostSource('https://*.');
+    assert.deepStrictEqual(res, null);
+  });
+
+  test('https://example.* no match due to wildcard in TLD', async () => {
+    const res = isPermissiveHostSource('https://example.*');
+    assert.deepStrictEqual(res, null);
+  });
+
+  test('https://sub.example.com valid subdomain', async () => {
+    const res = isPermissiveHostSource('https://sub.example.com');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://*.sub.example.com valid wildcard subdomain', async () => {
+    const res = isPermissiveHostSource('https://*.sub.example.com');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://*.sub.example.com. valid wildcard subdomain', async () => {
+    const res = isPermissiveHostSource('https://*.sub.example.com.');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  // Test cases for valid paths
+  test('https://example.com/ good with path', async () => {
+    const res = isPermissiveHostSource('https://example.com/');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://example.com/valid/path/ good with valid path', async () => {
+    const res = isPermissiveHostSource('https://example.com/valid/path/');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  // URL.canParse(host, path) and URL.canParse(`${host}${path}`) actually
+  // disagree here. I think this might be firefox bug? I would assume this is a
+  // valid URL.
+  test('https://example.com// invalid path', async () => {
+    const res = isPermissiveHostSource('https://example.com//');
+    assert.deepStrictEqual(res, null);
+  });
+
+  test('https://example.com/valid/path/with/query?param=value invalid due to query parameters', async () => {
+    const res = isPermissiveHostSource('https://example.com/valid/path/with/query?param=value');
+    assert.deepStrictEqual(res, null);
+  });
+
+  // Again, don't shoot the messenger, it's a spec issue ;)
+  test('https://123.456.78.90 invalid IP address as host is good', async () => {
+    const res = isPermissiveHostSource('https://123.456.78.90');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://123.456.78.90 valid IP address as host is good', async () => {
+    const res = isPermissiveHostSource('https://123.233.78.90');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  test('https://xn--n3h.com valid punycode domain', async () => {
+    const res = isPermissiveHostSource('https://xn--n3h.com');
+    assert.deepStrictEqual(res, { isPermissive: false });
+  });
+
+  // Test case for explicitly allowed schemes
+  test('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ== not a valid host source', async () => {
+    const res = isPermissiveHostSource('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==');
+    assert.deepStrictEqual(res, null);
+  });
+
+  // Test cases for specific invalid characters in host
+  test('https://example.com/with space no match due to space in path', async () => {
+    // XXX: This isn't possible from our endpoint, due to use splitting
+    // directive values by spaces.
+    const res = isPermissiveHostSource('https://example.com/with space');
+    assert.deepStrictEqual(res, null);
+  });
+
+  test('https://exa$mple.com no match due to special character in host', async () => {
+    const res = isPermissiveHostSource('https://exa$mple.com');
+    assert.deepStrictEqual(res, null);
+  });
+
+  // More nuanced wildcard scenarios
+  test('https://*.co.uk too permissive due to public suffix', async () => {
+    const res = isPermissiveHostSource('https://*.co.uk');
+    // If it's a wild card of a public suffix, it's too permissive.
+    assert.deepStrictEqual(res, { isPermissive: true });
+  });
+
+  test('https://*.air-traffic-control.aero too permissive due to public suffix', async () => {
+    const res = isPermissiveHostSource('https://*.air-traffic-control.aero');
+    // If it's a wild card of a public suffix, it's too permissive.
+    assert.deepStrictEqual(res, { isPermissive: true });
+  });
 });

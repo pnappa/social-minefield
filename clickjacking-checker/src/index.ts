@@ -163,12 +163,14 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 
   // First, we parse the host source into constituent parts.
   // [ scheme-part "://" ] host-part [ ":" port-part ] [ path-part ]
+  // Note that I've omitted ; and , from path-part, as CSP omits those.
+  // https://w3c.github.io/webappsec-csp/#framework-directive-source-list
   const groups =
     source.match(
-    /^(?<scheme>[a-z][a-z0-9\+\-\.]*:\/\/)?(?<host>\*|(\*\.)?[a-z0-9\-\.]+)(?<port>:[0-9]+)?(?<path>\/[a-z0-9\-\.\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@\%]*\/)?$/,
+    /^(?<scheme>[a-z][a-z0-9\+\-\.]*:\/\/)?(?<host>\*|(\*\.)?[a-z0-9-]+(\.[a-z0-9-]+)*[\.]?)(?<port>:[0-9]+)?(?<path>\/[a-z0-9\-\.\_\~\!\$\&\'\(\)\*\+\=\:\@\%\/]*)?$/,
   )?.groups;
 
-  // Not a valid host.
+  // Not a valid host-source.
   if (!groups) return null;
 
   const isValidPath = (e: string): boolean => {
@@ -226,20 +228,6 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
     // using the native URL parsing, so remove the part that isn't a valid
     // regular hostname.
     host = host.slice(2);
-  }
-
-  const isValidHost = (e: string): boolean => {
-    try {
-      const x = new URL(`https://${e}/`);
-      void x;
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  if (!isValidHost(host)) {
-    return null;
   }
 
   // We need to check what the OG host was. If it's not got a wildcard, it's
