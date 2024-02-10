@@ -127,15 +127,6 @@ function isNonEmptyArray<T>(e: T[]): e is NonEmptyArray<typeof e[number]> {
   return e.length > 0;
 }
 
-const isValidPath = (e: string): boolean => {
-  try {
-    const x = new URL(e, 'https://example.com');
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 // Null if not a scheme.
 export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | null => {
   // As per https://w3c.github.io/webappsec-csp/#grammardef-scheme-source and
@@ -163,15 +154,6 @@ export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | n
   return null;
 }
 
-const isValidHost = (e: string): boolean => {
-  try {
-    const x = new URL(`https://${e}/`);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 // Null if not a scheme.
 export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | null => {
   // As per https://w3c.github.io/webappsec-csp/#grammardef-host-source
@@ -188,6 +170,16 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 
   // Not a valid host.
   if (!groups) return null;
+
+  const isValidPath = (e: string): boolean => {
+    try {
+      const x = new URL(e, 'https://example.com');
+      void x;
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   // Process the path more. We're lenient in the regex.
   // Path is easy to further validate, we lean on URL.
@@ -234,6 +226,16 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
     // using the native URL parsing, so remove the part that isn't a valid
     // regular hostname.
     host = host.slice(2);
+  }
+
+  const isValidHost = (e: string): boolean => {
+    try {
+      const x = new URL(`https://${e}/`);
+      void x;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   if (!isValidHost(host)) {
