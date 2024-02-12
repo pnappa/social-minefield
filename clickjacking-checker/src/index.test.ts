@@ -11,7 +11,7 @@ import {
 
 const getAPIOutput = async (url: string) => {
   const result = await handler(
-    { url },
+    { body: JSON.stringify({ url }) },
     // Ignore supplying the other arguments, we don't use them.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     undefined as any,

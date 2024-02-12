@@ -10,8 +10,18 @@ const timeoutSeconds = 25;
 export const handler: Handler = async (
   event,
 ): Promise<{ statusCode: number; body: string }> => {
+  const inputBody = event.body;
+  let inputURL: string;
+  try {
+    inputURL = JSON.parse(inputBody).url;
+  } catch (e) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: 'Invalid input' })
+    };
+  }
   // Extract the URL from the event object, and check it's well formed.
-  const userUrl = parseUserURL(event.url);
+  const userUrl = parseUserURL(inputURL);
   if (userUrl == null) {
     return {
       statusCode: 400,

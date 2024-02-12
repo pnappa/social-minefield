@@ -1,0 +1,18 @@
+service: clickjacking-checker
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  api:
+    handler: ./src/index.handler
+    events:
+      - httpApi:
+          path: /check
+          method: post
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
