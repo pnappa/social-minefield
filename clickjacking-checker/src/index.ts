@@ -1,44 +1,44 @@
-import fetch, { AbortError } from 'node-fetch';
-import type { Handler } from 'aws-lambda';
-import { parse as parseSuffix } from 'tldts';
+import fetch, { AbortError } from "node-fetch";
+import type { Handler } from "aws-lambda";
+import { parse as parseSuffix } from "tldts";
 
 // I initially started this with output from ChatGPT, but it wasn't particularly
 // good at very specific details about the CSP contexts.
 // https://chat.openai.com/share/9b5600d9-69e1-4654-8475-f340179e6192
 const timeoutSeconds = 25;
 
-export const handler: Handler = async (event): Promise<
-  { statusCode: number; body: string; }
-> => {
+export const handler: Handler = async (
+  event,
+): Promise<{ statusCode: number; body: string }> => {
   // Extract the URL from the event object, and check it's well formed.
   const userUrl = parseUserURL(event.url);
   if (userUrl == null) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid URL.' }),
+      body: JSON.stringify({ error: "Invalid URL." }),
     };
   }
 
   try {
     const response = await headRequest(userUrl);
-    if (response === 'timeout') {
+    if (response === "timeout") {
       return {
         statusCode: 504,
         body: JSON.stringify({
-          error: 'Request timed out, please try again later',
+          error: "Request timed out, please try again later",
         }),
       };
     }
-    const xFrameOptions = response.headers.get('x-frame-options');
+    const xFrameOptions = response.headers.get("x-frame-options");
     const contentSecurityPolicy = response.headers.get(
-      'content-security-policy',
+      "content-security-policy",
     );
     const vulnStatus = checkClickjackingVulnerability({
       xFrameOptions,
       contentSecurityPolicy,
     });
 
-    if (vulnStatus.status === 'unknown') {
+    if (vulnStatus.status === "unknown") {
       // Static assert.
       vulnStatus satisfies { error: string };
       return {
@@ -55,7 +55,7 @@ export const handler: Handler = async (event): Promise<
     console.log(error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'An internal error occurred' }),
+      body: JSON.stringify({ error: "An internal error occurred" }),
     };
   }
 };
@@ -82,9 +82,9 @@ export async function headRequest(
 ): Promise<
   | {
       statusCode: number;
-      headers: Awaited<ReturnType<typeof fetch>>['headers']
+      headers: Awaited<ReturnType<typeof fetch>>["headers"];
     }
-  | 'timeout'
+  | "timeout"
 > {
   const controller = new AbortController();
   // Whilst the lambda will have a 30s timeout, we fail at 25 seconds here,
@@ -92,16 +92,18 @@ export async function headRequest(
   // I wholly expect people will try to slow-loris us, but concurrent
   // execution and the captcha should deal with that.
   const timeout = setTimeout(
-    () => { controller.abort(); },
-    limitMs ?? (timeoutSeconds * 1000),
+    () => {
+      controller.abort();
+    },
+    limitMs ?? timeoutSeconds * 1000,
   );
 
   try {
     const res = await fetch(`${userURL.origin}${userURL.path}`, {
-      method: 'HEAD',
+      method: "HEAD",
       headers: {
         // People getting abuse from us will be able to contact us.
-        'User-Agent': 'Social Minefield Clickjacking Checker'
+        "User-Agent": "Social Minefield Clickjacking Checker",
       },
       signal: controller.signal,
     });
@@ -112,7 +114,7 @@ export async function headRequest(
     };
   } catch (e) {
     if (e instanceof AbortError) {
-      return 'timeout';
+      return "timeout";
     }
     throw e;
   } finally {
@@ -123,12 +125,14 @@ export async function headRequest(
 }
 
 type NonEmptyArray<T> = [T, ...T[]];
-function isNonEmptyArray<T>(e: T[]): e is NonEmptyArray<typeof e[number]> {
+function isNonEmptyArray<T>(e: T[]): e is NonEmptyArray<(typeof e)[number]> {
   return e.length > 0;
 }
 
 // Null if not a scheme.
-export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | null => {
+export const isPermissiveSchemeSource = (
+  e: string,
+): { isPermissive: true } | null => {
   // As per https://w3c.github.io/webappsec-csp/#grammardef-scheme-source and
   // https://datatracker.ietf.org/doc/html/rfc3986#section-3.1 , these are
   // case-insenstive, but we'll convert to lowercase.
@@ -136,11 +140,11 @@ export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | n
 
   // All valid schemes are considered too permissive. For example, `https:`
   // allows every single https site. Not good!
-  if (/^[a-z][a-z0-9\+\-\.]*:$/.test(potentialSchemeSource)) {
+  if (/^[a-z][a-z0-9+\-.]*:$/.test(potentialSchemeSource)) {
     // Clickjacking only really applies to these schemes.
     if (
-      potentialSchemeSource === 'https:' ||
-      potentialSchemeSource === 'http:'
+      potentialSchemeSource === "https:" ||
+      potentialSchemeSource === "http:"
     ) {
       return { isPermissive: true };
     }
@@ -152,10 +156,12 @@ export const isPermissiveSchemeSource = (e: string): { isPermissive: true; } | n
     return { isPermissive: true };
   }
   return null;
-}
+};
 
 // Null if not a scheme.
-export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | null => {
+export const isPermissiveHostSource = (
+  e: string,
+): { isPermissive: boolean } | null => {
   // As per https://w3c.github.io/webappsec-csp/#grammardef-host-source
   // Whilst URLs are case-sensitive (at least the path component is), we're
   // not really caring about where the path is.
@@ -165,9 +171,8 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
   // [ scheme-part "://" ] host-part [ ":" port-part ] [ path-part ]
   // Note that I've omitted ; and , from path-part, as CSP omits those.
   // https://w3c.github.io/webappsec-csp/#framework-directive-source-list
-  const groups =
-    source.match(
-    /^(?<scheme>[a-z][a-z0-9\+\-\.]*:\/\/)?(?<host>\*|(\*\.)?[a-z0-9-]+(\.[a-z0-9-]+)*[\.]?)(?<port>:[0-9]+)?(?<path>\/[a-z0-9\-\.\_\~\!\$\&\'\(\)\*\+\=\:\@\%\/]*)?$/,
+  const groups = source.match(
+    /^(?<scheme>[a-z][a-z0-9+\-.]*:\/\/)?(?<host>\*|(\*\.)?[a-z0-9-]+(\.[a-z0-9-]+)*[.]?)(?<port>:[0-9]+)?(?<path>\/[a-z0-9\-._~!$&'()*+=:@%/]*)?$/,
   )?.groups;
 
   // Not a valid host-source.
@@ -175,13 +180,13 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 
   const isValidPath = (e: string): boolean => {
     try {
-      const x = new URL(e, 'https://example.com');
+      const x = new URL(e, "https://example.com");
       void x;
       return true;
     } catch {
       return false;
     }
-  }
+  };
 
   // Process the path more. We're lenient in the regex.
   // Path is easy to further validate, we lean on URL.
@@ -202,28 +207,27 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 
   if (groups.host.length === 1) {
     // Check for valid wildcard.
-    if (groups.host === '*') {
+    if (groups.host === "*") {
       // Everything wildcard is way too permissive.
       return { isPermissive: true };
-    } 
+    }
 
     // Otherwise, make sure it's not a dot.
-    if (groups.host === '.') {
+    if (groups.host === ".") {
       return null;
     }
 
-    // TODO: Should we assert it is 0-9a-z-?
     return { isPermissive: false };
   }
 
   // groups.host.length >= 2
   // Things like "*example.com" are not valid.
   let host = groups.host;
-  if (host[0] === '*' && host[1] !== '.') {
+  if (host[0] === "*" && host[1] !== ".") {
     return null;
   }
 
-  if (host[0] === '*' && host[1] === '.') {
+  if (host[0] === "*" && host[1] === ".") {
     // Omit the wild card, as we need to check that the host is valid, again
     // using the native URL parsing, so remove the part that isn't a valid
     // regular hostname.
@@ -232,7 +236,7 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 
   // We need to check what the OG host was. If it's not got a wildcard, it's
   // safe.
-  if (groups.host.indexOf('*') === -1) {
+  if (groups.host.indexOf("*") === -1) {
     return { isPermissive: false };
   }
 
@@ -244,13 +248,12 @@ export const isPermissiveHostSource = (e: string): { isPermissive: boolean } | n
 
   // Otherwise, it's fine.
   return { isPermissive: false };
-}
+};
 
-type SafeSourcesAllowedList = (
- | { sameorigin: true }
- | { source: string }
-)[];
+type SafeSourcesAllowedList = ({ sameorigin: true } | { source: string })[];
 type DangerousSourcesAllowedList = { permissiveAddress: string }[];
+// TODO: We should probably also return the detected xframeoptions and CSP? UX
+//       for presenting what we found.
 export function checkClickjackingVulnerability({
   xFrameOptions,
   contentSecurityPolicy,
@@ -258,14 +261,14 @@ export function checkClickjackingVulnerability({
   xFrameOptions: string | null | undefined;
   contentSecurityPolicy: string | null | undefined;
 }):
-  | { status: 'unsafe'; missingPolicy: true }
+  | { status: "unsafe"; missingPolicy: true }
   | {
-      error: 'Malformed frame-ancestors Content Security Policy.'
-      status: 'unknown';
+      error: "Malformed frame-ancestors Content Security Policy.";
+      status: "unknown";
       missingPolicy: false;
     }
   | {
-      status: 'safe';
+      status: "safe";
       safeSourcesAllowed: SafeSourcesAllowedList;
       // If it's not a well formed host, literal, or scheme, it gets ignored.
       // It's a good idea to indicate when this happens.
@@ -273,29 +276,32 @@ export function checkClickjackingVulnerability({
       missingPolicy: false;
     }
   | {
-      status: 'unsafe';
+      status: "unsafe";
       dangerousSourcesAllowed: DangerousSourcesAllowedList;
       // Same as the safe's safeSourcesAllowed.
       safeSourcesAllowed: SafeSourcesAllowedList;
       ignoredSources: string[];
       missingPolicy: false;
-    }
-    {
+    } {
   // Technically this function can report some false positives. If a user is
   // using multiple CSPs, as per:
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#multiple_content_security_policies
   // The successive policies can make the conditions stricter, but the headers
   // dictionary I don't believe supports it.
 
-  const cspDirectives = contentSecurityPolicy?.toLowerCase().split(';').map(
-    // Replace leading & trailing ASCII whitespace. .trim() is too lenient.
-    // https://github.com/helmetjs/content-security-policy-parser/pull/12
-    d => d.replace(/^[\t\n\f\r ]+/, '').replace(/[\t\n\f\r ]+$/, ''),
-  );
+  const cspDirectives = contentSecurityPolicy
+    ?.toLowerCase()
+    .split(";")
+    .map(
+      // Replace leading & trailing ASCII whitespace. .trim() is too lenient.
+      // https://github.com/helmetjs/content-security-policy-parser/pull/12
+      (d) => d.replace(/^[\t\n\f\r ]+/, "").replace(/[\t\n\f\r ]+$/, ""),
+    );
   const frameAncestorsDirective = cspDirectives?.find(
     // Must be a well-formed directive key. Either an empty list following, or
-    // at least an ASCII whitespace following.
-    d => d.match(/^frame-ancestors[\t\n\f\r ]/) || d === 'frame-ancestors'
+    // it must be the directive followed by some whitespace and everything else
+    // in the string is ASCII.
+    (d) => d.match(/^frame-ancestors[\t\n\f\r ]*([\t\n\f\r ][\x00-\x7F]*)?$/),
   );
   // Only look at x-frame-options if there's no frame-ancestors key in the CSP
   // list. Even an invalid frame-ancestors value will result in x-frame-options
@@ -304,18 +310,18 @@ export function checkClickjackingVulnerability({
   const xFrameOptionsObsoleted = frameAncestorsDirective != null;
   if (!xFrameOptionsObsoleted && xFrameOptions != null) {
     const fmt = xFrameOptions.toLowerCase().trim();
-    if (fmt === 'deny') {
+    if (fmt === "deny") {
       return {
-        status: 'safe',
+        status: "safe",
         // Return where it's allowed to be hosted.
         safeSourcesAllowed: [],
         missingPolicy: false,
         ignoredSources: [],
       };
     }
-    if (fmt === 'sameorigin') {
+    if (fmt === "sameorigin") {
       return {
-        status: 'safe',
+        status: "safe",
         safeSourcesAllowed: [{ sameorigin: true }],
         missingPolicy: false,
         ignoredSources: [],
@@ -327,7 +333,10 @@ export function checkClickjackingVulnerability({
   // We must only split by ASCII whitespace, follows the parsing spec here:
   // https://w3c.github.io/webappsec-csp/#framework-infrastructure
   const processedFADirective = frameAncestorsDirective?.split(/[\t\n\f\r ]+/g);
-  if (processedFADirective != null && processedFADirective[0] === 'frame-ancestors') {
+  if (
+    processedFADirective != null &&
+    processedFADirective[0] === "frame-ancestors"
+  ) {
     // Source directives for CSP are additive. That means, we need to check
     // there's at least one policy, and that none of them are wildly permissive.
     // It's possible to specify things like '*', or https://*.com, which are
@@ -344,7 +353,7 @@ export function checkClickjackingVulnerability({
     // https://w3c.github.io/webappsec-csp/#match-url-to-source-list
     if (!isNonEmptyArray(frameAncestors)) {
       return {
-        status: 'safe',
+        status: "safe",
         safeSourcesAllowed: [],
         missingPolicy: false,
         ignoredSources,
@@ -364,7 +373,7 @@ export function checkClickjackingVulnerability({
     const isNone = (e: string) => e === "'none'";
     if (frameAncestors.length === 1 && isNone(frameAncestors[0])) {
       return {
-        status: 'safe',
+        status: "safe",
         safeSourcesAllowed: [],
         missingPolicy: false,
         ignoredSources,
@@ -390,7 +399,7 @@ export function checkClickjackingVulnerability({
     // Everything left is self?
     if (frameAncestors.every(isSelf)) {
       return {
-        status: 'safe',
+        status: "safe",
         safeSourcesAllowed: safeSourcesList,
         missingPolicy: false,
         ignoredSources,
@@ -402,38 +411,45 @@ export function checkClickjackingVulnerability({
     // scheme-sources.
 
     // First, the scheme sources.
-    const schemeSources: [ReturnType<typeof isPermissiveSchemeSource>, string][] = frameAncestors.map(
-      (e) => [isPermissiveSchemeSource(e), e],
-    );
+    const schemeSources: [
+      ReturnType<typeof isPermissiveSchemeSource>,
+      string,
+    ][] = frameAncestors.map((e) => [isPermissiveSchemeSource(e), e]);
     // Filter out any matching sources.
-    frameAncestors = schemeSources.filter(([match]) => match == null).map(([,e]) => e);
+    frameAncestors = schemeSources
+      .filter(([match]) => match == null)
+      .map(([, e]) => e);
 
     // Which schemes are safe?
-    const safeSchemeSources: SafeSourcesAllowedList = schemeSources.filter(
-      ([match]) => match != null && !match.isPermissive
-    ).map(([, e]) => ({ source: e }));
+    const safeSchemeSources: SafeSourcesAllowedList = schemeSources
+      // Be defensive against refactors.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      .filter(([match]) => match != null && !match.isPermissive)
+      .map(([, e]) => ({ source: e }));
     safeSourcesList.push(...safeSchemeSources);
 
     // Which are unsafe?
-    const unsafeSchemeSources: DangerousSourcesAllowedList = schemeSources.filter(
-      ([match]) => match != null && match.isPermissive
-    ).map(([, e]) => ({ permissiveAddress: e }));
+    const unsafeSchemeSources: DangerousSourcesAllowedList = schemeSources
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      .filter(([match]) => match != null && match.isPermissive)
+      .map(([, e]) => ({ permissiveAddress: e }));
     unsafeSourcesList.push(...unsafeSchemeSources);
 
     // Finally, the host sources.
-    const hostSources: [ReturnType<typeof isPermissiveHostSource>, string][] = frameAncestors.map(
-      (e) => [isPermissiveHostSource(e), e],
-    );
+    const hostSources: [ReturnType<typeof isPermissiveHostSource>, string][] =
+      frameAncestors.map((e) => [isPermissiveHostSource(e), e]);
     // Filter out any matching sources.
-    frameAncestors = hostSources.filter(([match]) => match == null).map(([,e]) => e);
+    frameAncestors = hostSources
+      .filter(([match]) => match == null)
+      .map(([, e]) => e);
 
-    const safeHostSources: SafeSourcesAllowedList = hostSources.filter(
-      ([match]) => match != null && !match.isPermissive
-    ).map(([, e]) => ({ source: e }));
+    const safeHostSources: SafeSourcesAllowedList = hostSources
+      .filter(([match]) => match != null && !match.isPermissive)
+      .map(([, e]) => ({ source: e }));
     safeSourcesList.push(...safeHostSources);
-    const unsafeHostSources: DangerousSourcesAllowedList = hostSources.filter(
-      ([match]) => match != null && match.isPermissive
-    ).map(([, e]) => ({ permissiveAddress: e }));
+    const unsafeHostSources: DangerousSourcesAllowedList = hostSources
+      .filter(([match]) => match != null && match.isPermissive)
+      .map(([, e]) => ({ permissiveAddress: e }));
     unsafeSourcesList.push(...unsafeHostSources);
 
     // If there's remaining content in the frameAncestors source list, it
@@ -444,7 +460,7 @@ export function checkClickjackingVulnerability({
 
     if (unsafeSourcesList.length > 0) {
       return {
-        status: 'unsafe',
+        status: "unsafe",
         dangerousSourcesAllowed: unsafeSourcesList,
         safeSourcesAllowed: safeSourcesList,
         ignoredSources,
@@ -453,12 +469,12 @@ export function checkClickjackingVulnerability({
     }
 
     return {
-      status: 'safe',
+      status: "safe",
       safeSourcesAllowed: safeSourcesList,
       ignoredSources,
       missingPolicy: false,
     };
   }
 
-  return { status: 'unsafe', missingPolicy: true };
+  return { status: "unsafe", missingPolicy: true };
 }

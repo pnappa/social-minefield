@@ -32,7 +32,7 @@ python3 app.py
 ```
 
 ## TODO
- - [ ] Write a service to easily check websites for clickjacking vulnerability.
+ - [x] Write a service to easily check websites for clickjacking vulnerability.
   - The security-headers is robust, but not very simple to use.
  - [ ] Add a progress meter to the interactive demos.
   - Consider not making the demos interactive, and instead splat the content inline?

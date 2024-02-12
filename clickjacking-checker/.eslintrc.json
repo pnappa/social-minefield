@@ -1,0 +1,57 @@
+{
+    "env": {
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "google",
+        "prettier",
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module",
+        "project": ["./tsconfig.json"]
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "prettier"
+    ],
+    "ignorePatterns": ["__generated__/"],
+    "rules": {
+      "prettier/prettier": "error",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ],
+      "object-curly-spacing": ["error", "always"],
+      "require-jsdoc": ["error", {
+        "require": { "FunctionDeclaration": false }
+      }],
+      "@typescript-eslint/strict-boolean-expressions": ["error", {
+        "allowNumber": false,
+        "allowString": false
+      }],
+      "no-constant-condition": ["error", { "checkLoops": false }],
+      "camelcase": "off",
+      "no-control-regex": "off",
+      "@typescript-eslint/no-namespace": "off",
+      "@typescript-eslint/no-control-regex": "off",
+      "@typescript-eslint/no-empty-interface": [
+        "error",
+        {
+          "allowSingleExtends": true
+        }
+      ],
+      "@typescript-eslint/ban-types": "off",
+      "@typescript-eslint/no-unnecessary-condition": ["error", { "allowConstantLoopConditions": true }],
+      "no-multi-str": "off"
+    }
+}
