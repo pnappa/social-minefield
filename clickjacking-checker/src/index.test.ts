@@ -113,6 +113,19 @@ describe("checkClickjackingVulnerability", () => {
       assert.deepStrictEqual(res.safeSourcesAllowed, [{ sameorigin: true }]);
       assert.deepStrictEqual(res.ignoredSources, []);
     });
+    // XXX: According to the spec this is expected!! It passes the parse test.
+    test("x-frame-options samesite not overriden with invalid frame-ancestors", async () => {
+      const res = checkClickjackingVulnerability({
+        xFrameOptions: "sameorigin",
+        contentSecurityPolicy: "frame-ancestors ...",
+      });
+      assert.deepStrictEqual(res.status, "safe");
+      assert.deepStrictEqual(res.missingPolicy, false);
+      // Invalid policy, but valid parse = ignore x-frame-options, but fail
+      // defining the CSP.
+      assert.deepStrictEqual(res.safeSourcesAllowed, []);
+      assert.deepStrictEqual(res.ignoredSources, ['...']);
+    });
   });
 
   describe("csp tests", () => {
