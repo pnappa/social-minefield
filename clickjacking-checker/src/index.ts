@@ -17,7 +17,7 @@ export const handler: Handler = async (
   } catch (e) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid input' })
+      body: JSON.stringify({ error: "Invalid input" }),
     };
   }
   // Extract the URL from the event object, and check it's well formed.
@@ -71,10 +71,20 @@ export const handler: Handler = async (
 };
 
 function parseUserURL(inputURL: string) {
+  // Ignore the port, and query strings etc. If people are gonna be making me
+  // ping external systems, I'd rather not have data associated with it.
   try {
     const parsed = new URL(inputURL);
-    // Ignore the port, and query strings etc. If people are gonna be making me
-    // ping external systems, I'd rather not have data associated with it.
+    return {
+      origin: parsed.origin,
+      path: parsed.pathname,
+    };
+  } catch (_) {
+    void 0;
+  }
+  try {
+    // Also attempt to do assuming they don't provide a protocol.
+    const parsed = new URL(`https://${inputURL}`);
     return {
       origin: parsed.origin,
       path: parsed.pathname,

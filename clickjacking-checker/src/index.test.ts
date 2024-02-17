@@ -30,6 +30,10 @@ describe("API Handler", () => {
     const x = await getAPIOutput("https://www.google.com");
     assert.deepStrictEqual(x.json?.vulnStatus?.status, "safe");
   });
+  test("No protocol", async () => {
+    const x = await getAPIOutput("google.com");
+    assert.deepStrictEqual(x.json?.vulnStatus?.status, "safe");
+  });
 });
 
 describe("checkClickjackingVulnerability", () => {
@@ -124,7 +128,7 @@ describe("checkClickjackingVulnerability", () => {
       // Invalid policy, but valid parse = ignore x-frame-options, but fail
       // defining the CSP.
       assert.deepStrictEqual(res.safeSourcesAllowed, []);
-      assert.deepStrictEqual(res.ignoredSources, ['...']);
+      assert.deepStrictEqual(res.ignoredSources, ["..."]);
     });
   });
 
