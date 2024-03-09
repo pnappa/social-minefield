@@ -209,9 +209,18 @@ footer.block > :last-child {
   border: 2px solid black;
   border-radius: 10px;
   margin: 10px;
-  /* TODO: Will this break things??? Maybe we need to disable scrolling in the later levels. */
+  /*
+   * Allow scrolling, to simulate the scrollability, but hide the scroll bar.
+   */
   overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+.browser::-webkit-scrollbar {
+  /* hide scrollbar for chrome et al */
+  display: none;
+}
+
 .url-bar {
   background: lightgrey;
   z-index: 4;
@@ -287,6 +296,12 @@ footer.block > :last-child {
 .user-reviews {
   margin: 0 10px;
   overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.user-reviews::-webkit-scrollbar {
+  /* hide scrollbar for chrome et al */
+  display: none;
 }
 
 .user-reviews > div > p {
