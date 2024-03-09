@@ -1,15 +1,43 @@
+
+@font-face {
+  font-family: "OpenSans Variable";
+  src: url("/static/opensans-variable.ttf") format("truetype");
+}
+
 body {
-  font-family: sans-serif;
-  /* Cool colours list:
-   * aniquewhite
-   * bisque
-   * darksalmon
-   * lemonchiffon
-   * TODO: Go through the list more, i stopped at lemonchiffon.
-   */
+  font-family: "OpenSans Variable";
   background-color: darksalmon;
 }
-  
+
+button, h1, h2, h3, h4, h5 {
+  /* Remove built-in styling for buttons, it ruins the demo. */
+  all: unset;
+}
+
+h1 {
+  margin: 22px 0;
+  font-size: 32px;
+  font-weight: 700;
+  display: block;
+}
+h2 {
+  margin: 20px 0;
+  font-size: 24px;
+  font-weight: 700;
+  display: block;
+}
+h3 {
+  margin: 19px 0;
+  font-size: 19px;
+  font-weight: 700;
+  display: block;
+}
+h4 {
+  margin: 5px 0;
+  font-size: 14px;
+  font-weight: 700;
+  display: block;
+}
 
 #pagecontainer {
   max-width: 800px;
@@ -220,6 +248,7 @@ footer.block > :last-child {
 .browser {
   /* This is 400px - the margin. */
   width: 380px;
+  height: 380px;
   background: beige;
   border: 2px solid black;
   border-radius: 10px;
@@ -404,14 +433,14 @@ footer.block > :last-child {
   background-color: black;
   z-index: 2;
   width: 380px;
-  height: 119px;
+  height: 122px;
 }
 .blocker-2 {
   position: absolute;
   background-color: black;
   z-index: 2;
   width: 192px;
-  height: 376px;
+  height: 356px;
 }
 .blocker-2.hidden {
   display: none;
@@ -420,9 +449,9 @@ footer.block > :last-child {
   position: absolute;
   background-color: black;
   z-index: 2;
-  width: 95px;
+  width: 100px;
   height: 376px;
-  left: 286px;
+  left: 281px;
 }
 .blocker-3.hidden {
   display: none;
@@ -433,7 +462,7 @@ footer.block > :last-child {
   z-index: 2;
   width: 380px;
   height: 210px;
-  top: 166px;
+  top: 170px;
 }
 .blocker-4.hidden {
   display: none;
@@ -479,6 +508,9 @@ footer.block > :last-child {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 14px;
+}
+.demo-wrapper h3 {
   font-size: 14px;
 }
 .demo-wrapper > div {
