@@ -13,9 +13,6 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(
             'index.html',
-            width=10,
-            height=10,
-            num_mines=10,
             minelinks_array=get_random_silly_links(10)
         )
 
