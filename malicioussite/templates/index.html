@@ -85,10 +85,144 @@
             In this game, in the locations where mines would be, are actually
             hidden Facebook like buttons embedded in the page. When you click
             them, it will cause your Facebook account to like the link it is
-            pointed at.
+            pointed at. For example:
           </p>
+          <div id="demo-game">
+              <table class="demo-field">
+                <tbody>
+                  <tr>
+                    <td class="demo-square"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked two"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square two clicked"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked two"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked two"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked two"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square clicked two"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked one"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square"></td>
+                    <td class="demo-square like-button"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked two"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked one"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                  </tr>
+                  <tr>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                    <td class="demo-square clicked zero"></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div>
+                <p>
+                  <em>
+                    A partially completed game of Social Minefield, but with the
+                    Facebook Like buttons visible.
+                  </em>
+                </p>
+              </div>
+          </div>
           <p>
-            Let's take a closer look into the world of Clickjacking attacks.
+            As you can see, the suspiciously shaped tiles of this minesweeper game hide a secret. Let's take a closer look into the world of Clickjacking attacks.
           </p>
           <h2 id="clickjacking">The Clickjacking attack</h2>
           <p>
@@ -883,49 +1017,6 @@
             <span class="steps">
               <button id="prev-step-1" disabled>← Prev</button>
               <button id="next-step-1">Next →</button>
-            </span>
-          </div>
-          <h2 id="mine-setup">Generating the game</h2>
-          This minesweeper game is made in a similar fashion.
-          <div id="interactive-demo-2" class="demo-wrapper">
-            <div>
-              <p>
-                The user is initially provided with an empty table to click.
-                After clicking, the game is generated to make sure the first
-                click is not on a mine.
-              </p>
-            </div>
-            <div class="hidden">
-              <p>
-                At each table cell where we picked a mine to be, we dynamically
-                add an embed (iframe), which points towards a Facebook Like
-                button page, to like a specific URL.
-              </p>
-              <p>
-                Each mine points to a different URL. (Hover over each to show
-                the url for each).
-              </p>
-            </div>
-            <div class="hidden">
-              <p>
-                For each of the other squares, we work out of a number what they
-                should be, and if the user clicks on them, we reveal that
-                square, just like minesweeper.
-              </p>
-            </div>
-            <div class="hidden">
-              <p>
-                We detect whether a user clicks a mine using some clever code,
-                essentially checking if the page isn't focused any more.
-              </p>
-              <p>
-                If they click on a mine, game over. If they clear all mines, a
-                winner is you!
-              </p>
-            </div>
-            <span class="steps">
-              <button id="prev-step-2" disabled>← Prev</button>
-              <button id="next-step-2">Next →</button>
             </span>
           </div>
           <h2 id="check-vulnerability">

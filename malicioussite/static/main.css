@@ -92,12 +92,27 @@ iframe {
   background-color: rgba(240, 230, 140, 0.7);
 }
 
-.square {
+.square, .demo-square {
   background: #ececec;
   pointer-events: none;
 }
 
-.square.clicked {
+.demo-square.like-button {
+  background-image: url(/static/demos/likebutton.png);
+}
+
+#demo-game {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#demo-game > div {
+  max-width: 450px;
+  text-align: center;
+}
+
+.square.clicked, .demo-square.clicked {
   background: #cccccc;
 }
 
@@ -234,6 +249,7 @@ footer.block > :last-child {
   top: 0;
   /* right align the view source button */
   justify-content: space-between;
+  height: 24px;
 }
 .url-bar > div {
   display: flex;
@@ -251,6 +267,7 @@ footer.block > :last-child {
   background-color: black;
   color: white;
   padding: 3px;
+  height: 29px;
 }
 .item-description > h3 {
   margin: 5px 0;

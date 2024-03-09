@@ -438,31 +438,6 @@ const refreshDemo1Items = () => {
     document.querySelector('#next-step-1').disabled = false;
   }
 };
-const refreshDemo2Items = () => {
-  const updateStep = (expectedStep, el) => {
-    if (demo2CurrentStep === expectedStep) {
-      el.classList.remove('hidden');
-    } else {
-      el.classList.add('hidden');
-    }
-  }
-  const slides = document.querySelectorAll('#interactive-demo-2 > div');
-  for (let i = 1; i <= slides.length; ++i) {
-    updateStep(i, slides[i-1]);
-  };
-
-  // Disable the prev and next buttons.
-  if (demo2CurrentStep === 1) {
-    document.querySelector('#prev-step-2').disabled = true;
-    document.querySelector('#next-step-2').disabled = false;
-  } else if (demo2CurrentStep === maxDemo2Step) {
-    document.querySelector('#prev-step-2').disabled = false;
-    document.querySelector('#next-step-2').disabled = true;
-  } else {
-    document.querySelector('#prev-step-2').disabled = false;
-    document.querySelector('#next-step-2').disabled = false;
-  }
-};
 
 const addURLListItems = (ul, items) => {
   // items is { url: string; otherText?: string }[].
@@ -660,24 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
       demo1CurrentStep++;
       if (demo1CurrentStep > maxDemo1Step) demo1CurrentStep = maxDemo1Step;
       refreshDemo1Items();
-    },
-  );
-  document.querySelector('#prev-step-2').addEventListener('mouseup',
-    () => {
-      // Don't do anything if not initialised.
-      if (maxDemo2Step == null) return;
-      demo2CurrentStep--;
-      if (demo2CurrentStep < 1) demo2CurrentStep = 1;
-      refreshDemo2Items();
-    },
-  );
-  document.querySelector('#next-step-2').addEventListener('mouseup',
-    () => {
-      // Don't do anything if not initialised.
-      if (maxDemo2Step == null) return;
-      demo2CurrentStep++;
-      if (demo2CurrentStep > maxDemo2Step) demo2CurrentStep = maxDemo2Step;
-      refreshDemo2Items();
     },
   );
   document.querySelectorAll('.instant-purchase').forEach((el) => el.addEventListener(
