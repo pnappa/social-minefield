@@ -34,6 +34,21 @@ describe("API Handler", () => {
     const x = await getAPIOutput("google.com");
     assert.deepStrictEqual(x.json?.vulnStatus?.status, "safe");
   });
+  test("Malformed URL 1", async () => {
+    const x = await getAPIOutput(";");
+    assert.deepStrictEqual(x.statusCode, 500);
+    assert.deepStrictEqual(x.json, { 'error': 'Failed to query provided website. Is the website valid?' });
+  });
+  test("Malformed URL 2", async () => {
+    const x = await getAPIOutput("https://asdjkaklsdj;da.com");
+    assert.deepStrictEqual(x.statusCode, 500);
+    assert.deepStrictEqual(x.json, { 'error': 'Failed to query provided website. Is the website valid?' });
+  });
+  test("Malformed URL 3", async () => {
+    const x = await getAPIOutput("hsld:/\\\\\\\\");
+    assert.deepStrictEqual(x.statusCode, 500);
+    assert.deepStrictEqual(x.json, { 'error': 'Failed to query provided website. Is the website valid?' });
+  });
 });
 
 describe("checkClickjackingVulnerability", () => {
@@ -41,6 +56,7 @@ describe("checkClickjackingVulnerability", () => {
     const res = checkClickjackingVulnerability({
       xFrameOptions: null,
       contentSecurityPolicy: null,
+      url: 'https://google.com',
     });
     assert.deepStrictEqual(res.status, "unsafe");
     assert.deepStrictEqual(res.missingPolicy, true);
@@ -50,6 +66,7 @@ describe("checkClickjackingVulnerability", () => {
     const res = checkClickjackingVulnerability({
       xFrameOptions: "sameorigin",
       contentSecurityPolicy: null,
+      url: 'https://google.com',
     });
     assert.deepStrictEqual(res.status, "safe");
     assert.deepStrictEqual(res.safeSourcesAllowed, [{ sameorigin: true }]);
@@ -58,6 +75,7 @@ describe("checkClickjackingVulnerability", () => {
     const res = checkClickjackingVulnerability({
       xFrameOptions: "deny",
       contentSecurityPolicy: null,
+      url: 'https://google.com',
     });
     assert.deepStrictEqual(res.status, "safe");
     assert.deepStrictEqual(res.safeSourcesAllowed, []);
@@ -69,6 +87,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: "deny",
         contentSecurityPolicy: "default-src example.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.safeSourcesAllowed, []);
@@ -77,6 +96,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: "deny",
         contentSecurityPolicy: "frame-ancestors example.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.safeSourcesAllowed, [
@@ -87,6 +107,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: "deny",
         contentSecurityPolicy: "frame-ancestors *.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "unsafe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -99,6 +120,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: "samesite",
         contentSecurityPolicy: "frame-ancestors",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -111,6 +133,7 @@ describe("checkClickjackingVulnerability", () => {
         // Unicode is non-ascii, and thus is considered invalid, so the
         // directive is skipped.
         contentSecurityPolicy: "frame-ancestors example❤️.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -122,6 +145,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: "sameorigin",
         contentSecurityPolicy: "frame-ancestors ...",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -137,6 +161,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors *",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "unsafe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -149,6 +174,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors *.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "unsafe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -161,6 +187,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors https://*.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "unsafe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -173,6 +200,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors https://example.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -186,6 +214,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: `frame-ancestors`,
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -196,6 +225,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: `frame-ancestors 'none'`,
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -207,6 +237,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: `frame-ancestors 'none' example.com`,
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -221,6 +252,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: `frame-ancestors 'none' 'none'`,
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -232,6 +264,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: `frame-ancestors 'none' https:`,
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "unsafe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -245,6 +278,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors https://example.com *",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "unsafe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -259,6 +293,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors   ;",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -270,6 +305,7 @@ describe("checkClickjackingVulnerability", () => {
         xFrameOptions: null,
         contentSecurityPolicy:
           "frame-ancestors example.com; frame-ancestors example-2.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -282,6 +318,7 @@ describe("checkClickjackingVulnerability", () => {
       const res = checkClickjackingVulnerability({
         xFrameOptions: null,
         contentSecurityPolicy: "frame-ancestors example.com; frame-ancestors",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -295,6 +332,7 @@ describe("checkClickjackingVulnerability", () => {
         xFrameOptions: null,
         contentSecurityPolicy:
           "frame-ancestors example❤️.com; frame-ancestors example.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);
@@ -308,6 +346,7 @@ describe("checkClickjackingVulnerability", () => {
         xFrameOptions: null,
         contentSecurityPolicy:
           " frame-ancestors example.com; frame-ancestors example❤️.com",
+        url: 'https://google.com',
       });
       assert.deepStrictEqual(res.status, "safe");
       assert.deepStrictEqual(res.missingPolicy, false);

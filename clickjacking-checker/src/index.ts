@@ -1,4 +1,4 @@
-import fetch, { AbortError } from "node-fetch";
+import fetch, { AbortError, FetchError } from "node-fetch";
 import type { Handler } from "aws-lambda";
 import { parse as parseSuffix } from "tldts";
 
@@ -38,24 +38,23 @@ export const handler: Handler = async (
           error: "Request timed out, please try again later",
         }),
       };
+    } else if (response === "failed-to-fetch") {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: "Failed to query provided website. Is the website valid?",
+        }),
+      };
     }
     const xFrameOptions = response.headers.get("x-frame-options");
     const contentSecurityPolicy = response.headers.get(
       "content-security-policy",
     );
     const vulnStatus = checkClickjackingVulnerability({
+      url: `${userUrl.origin}${userUrl.path}`,
       xFrameOptions,
       contentSecurityPolicy,
     });
-
-    if (vulnStatus.status === "unknown") {
-      // Static assert.
-      vulnStatus satisfies { error: string };
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ vulnStatus }),
-      };
-    }
 
     return {
       statusCode: 200,
@@ -105,6 +104,7 @@ export async function headRequest(
       headers: Awaited<ReturnType<typeof fetch>>["headers"];
     }
   | "timeout"
+  | "failed-to-fetch"
 > {
   const controller = new AbortController();
   // Whilst the lambda will have a 30s timeout, we fail at 25 seconds here,
@@ -135,6 +135,14 @@ export async function headRequest(
   } catch (e) {
     if (e instanceof AbortError) {
       return "timeout";
+    }
+    // Usually the website doesn't exist, or something else.
+    if (e instanceof FetchError) {
+      return "failed-to-fetch";
+    }
+    // TODO: Handle TypeError [ERR_INVALID_URL]: Invalid URL
+    if (e instanceof TypeError) {
+      console.log(e);
     }
     throw e;
   } finally {
@@ -275,18 +283,15 @@ type DangerousSourcesAllowedList = { permissiveAddress: string }[];
 // TODO: We should probably also return the detected xframeoptions and CSP? UX
 //       for presenting what we found.
 export function checkClickjackingVulnerability({
+  url,
   xFrameOptions,
   contentSecurityPolicy,
 }: {
+  url: string;
   xFrameOptions: string | null | undefined;
   contentSecurityPolicy: string | null | undefined;
 }):
-  | { status: "unsafe"; missingPolicy: true }
-  | {
-      error: "Malformed frame-ancestors Content Security Policy.";
-      status: "unknown";
-      missingPolicy: false;
-    }
+  | { status: "unsafe"; missingPolicy: true; url: string; }
   | {
       status: "safe";
       safeSourcesAllowed: SafeSourcesAllowedList;
@@ -294,6 +299,7 @@ export function checkClickjackingVulnerability({
       // It's a good idea to indicate when this happens.
       ignoredSources: string[];
       missingPolicy: false;
+      url: string;
     }
   | {
       status: "unsafe";
@@ -302,6 +308,7 @@ export function checkClickjackingVulnerability({
       safeSourcesAllowed: SafeSourcesAllowedList;
       ignoredSources: string[];
       missingPolicy: false;
+      url: string;
     } {
   // Technically this function can report some false positives. If a user is
   // using multiple CSPs, as per:
@@ -337,6 +344,7 @@ export function checkClickjackingVulnerability({
         safeSourcesAllowed: [],
         missingPolicy: false,
         ignoredSources: [],
+        url,
       };
     }
     if (fmt === "sameorigin") {
@@ -345,6 +353,7 @@ export function checkClickjackingVulnerability({
         safeSourcesAllowed: [{ sameorigin: true }],
         missingPolicy: false,
         ignoredSources: [],
+        url,
       };
     }
   }
@@ -377,6 +386,7 @@ export function checkClickjackingVulnerability({
         safeSourcesAllowed: [],
         missingPolicy: false,
         ignoredSources,
+        url,
       };
     }
 
@@ -397,6 +407,7 @@ export function checkClickjackingVulnerability({
         safeSourcesAllowed: [],
         missingPolicy: false,
         ignoredSources,
+        url,
       };
     }
 
@@ -423,6 +434,7 @@ export function checkClickjackingVulnerability({
         safeSourcesAllowed: safeSourcesList,
         missingPolicy: false,
         ignoredSources,
+        url,
       };
     }
     frameAncestors = frameAncestors.filter((schema) => !isSelf(schema));
@@ -485,6 +497,7 @@ export function checkClickjackingVulnerability({
         safeSourcesAllowed: safeSourcesList,
         ignoredSources,
         missingPolicy: false,
+        url,
       };
     }
 
@@ -493,8 +506,9 @@ export function checkClickjackingVulnerability({
       safeSourcesAllowed: safeSourcesList,
       ignoredSources,
       missingPolicy: false,
+      url,
     };
   }
 
-  return { status: "unsafe", missingPolicy: true };
+  return { status: "unsafe", missingPolicy: true, url };
 }

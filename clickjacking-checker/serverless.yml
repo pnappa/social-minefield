@@ -4,6 +4,8 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+  # 30 seconds.
+  timeout: 30
 
 functions:
   api:

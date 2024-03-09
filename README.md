@@ -34,6 +34,10 @@ python3 app.py
 ## TODO
  - [x] Write a service to easily check websites for clickjacking vulnerability.
   - The security-headers is robust, but not very simple to use.
+  - [ ] Run an analysis over the top 1m sites, see what the state of everything is. Survey of what kind of headers they use, most common settings, etc. Ratio of X-frame-options vs CSP?
+   - Use the majestic million list, or cloudflare's. The former is nicer because it includes rank.
+   - Would be cool to correlate the rank and clickjacking protection.
+  - [ ] Initially, don't bother about adding a captcha. Only do so after like a few days. I probably don't need to worry about too many calls as long its over a short period of time.
  - [ ] Add a progress meter to the interactive demos.
   - Consider not making the demos interactive, and instead splat the content inline?
   - Idk, this is a hard call, I'll need to ask around (normies and techies).

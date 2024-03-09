@@ -9,6 +9,8 @@ let currGameField = null;
 let isGameOver = false;
 let isFlagPlacingEnabled = false;
 
+const checkURL = 'http://localhost:3000';
+
 // We need to subtract the border size, as we don't want clicking on the
 // border to trigger the reveal. This is because clicking on the border of an
 // iframe will not click on the content within. Please keep in sync with the
@@ -462,6 +464,29 @@ const refreshDemo2Items = () => {
   }
 };
 
+const addURLListItems = (ul, items) => {
+  // items is { url: string; otherText?: string }[].
+  ul.replaceChildren(
+    ...items.map((v) => {
+      const liItem = document.createElement('li');
+      const codeItem = document.createElement('code');
+      codeItem.innerText = v.url;
+      // Some entries may have some additional text.
+      if (v.otherText) {
+        const flavour = document.createElement('span');
+        flavour.innerText = v.otherText;
+        liItem.replaceChildren(
+          codeItem,
+          flavour,
+        );
+      } else {
+        liItem.replaceChildren(codeItem);
+      }
+      return liItem;
+    }),
+  );
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#placeflags').addEventListener('mouseup',
     (clickEvent) => {
@@ -476,6 +501,144 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   );
+
+  document.querySelector('#clickjacking-checker').addEventListener('submit', () => {
+    document.querySelector('#clickjacking-checker').classList.add('loading');
+    const el = document.querySelector('#clickjacking-website-input');
+    if (el?.value) {
+      // First, make each sub-item under results hidden.
+      document.querySelectorAll('#clickjacking-checker > .results > div').forEach((el) => {
+        el.classList.add('hidden');    
+      });
+      fetch(`${checkURL}/check`, {
+        method: 'POST',
+        headers: { 'Content-Type':  'application/json' },
+        body: JSON.stringify({ url: el.value }) },
+      ).then((r) => r.json()).then((e) => {
+        if ('error' in e || 'errorMessage' in e) {
+          // Then set the error text and make the error visible.
+          const errorDiv = document.querySelector('#clickjacking-checker > .results > .check-result-error');
+          errorDiv.innerText = e['error'] ?? e['errorMessage'];
+          errorDiv.classList.remove('hidden');
+        } else {
+          if (e.vulnStatus?.status === 'safe') {
+            // Unhide the section.
+            document.querySelector('#clickjacking-checker > .results > .safe-result').classList.remove('hidden');
+            // Make each sub-item hidden, so the logic to show the right
+            // result is simpler, just unhide valid subelements.
+            document.querySelectorAll('#clickjacking-checker > .results > .safe-result > div').forEach((el) => el.classList.add('hidden'));
+
+            if (e.vulnStatus?.safeSourcesAllowed?.length === 0) {
+              document.querySelector('#clickjacking-checker > .results > .safe-result > .success-none-allowed').classList.remove('hidden');
+            }
+            if (e.vulnStatus?.safeSourcesAllowed?.length > 0) {
+              document.querySelector('#clickjacking-checker > .results > .safe-result > .success-result-list').classList.remove('hidden');
+              // Populate the unordered list.
+              addURLListItems(
+                document.querySelector('#clickjacking-checker > .results > .safe-result > .success-result-list > ul'),
+                e.vulnStatus.safeSourcesAllowed.map((source) => {
+                  if ('sameorigin' in source) {
+                    return {
+                      url: e.vulnStatus.url,
+                    };
+                  } 
+                  if ('source' in source) {
+                    return {
+                      url: source.source,
+                    };
+                  }
+                  // Nothing matched? Filter it out.
+                  return null;
+                }).filter((e) => e != null),
+              );
+            }
+            if (e.vulnStatus?.ignoredSources?.length > 0) {
+              document.querySelector('#clickjacking-checker > .results > .safe-result > .check-result-invalid').classList.remove('hidden');
+              addURLListItems(
+                document.querySelector('#clickjacking-checker > .results > .safe-result > .check-result-invalid > ul'),
+                e.vulnStatus.ignoredSources.map((source) => {
+                  return { url: source }
+                }),
+              );
+            }
+          } else if (e.vulnStatus?.status === 'unsafe') {
+            // Unhide the section.
+            document.querySelector('#clickjacking-checker > .results > .unsafe-result').classList.remove('hidden');
+            // Make each sub-item hidden, so the logic to show the right
+            // result is simpler, just unhide valid subelements.
+            document.querySelectorAll('#clickjacking-checker > .results > .unsafe-result > div').forEach((el) => el.classList.add('hidden'));
+
+            if (e.vulnStatus.missingPolicy) {
+              document.querySelector('#clickjacking-checker > .results > .unsafe-result > .unsafe-missing-policy').classList.remove('hidden');
+            }
+            if (e.vulnStatus.dangerousSourcesAllowed?.length > 0) {
+              // The unsafe ones.
+              document.querySelector('#clickjacking-checker > .results > .unsafe-result > .unsafe-result-list').classList.remove('hidden');
+              addURLListItems(
+                document.querySelector('#clickjacking-checker > .results > .unsafe-result > .unsafe-result-list-safe-exceptions > ul'),
+                e.vulnStatus.dangerousSourcesAllowed.map((source) => {
+                  const vurl = source.permissiveAddress;
+                  if (vurl === 'https:' || vurl === 'http:') {
+                    // Add some flavour text to explain these somewhat
+                    // confusing ones.
+                    return {
+                      url: vurl,
+                      otherText: vurl === 'https:' 
+                        ? ' (any HTTPS website)'
+                        : ' (any HTTP website)',
+                    };
+                  }
+                  return { url: vurl };
+                }),
+              );
+
+              // The safe ones.
+              if (e.vulnStatus.safeSourcesAllowed?.length > 0) {
+                document.querySelector('#clickjacking-checker > .results > .unsafe-result > .unsafe-result-list-safe-exceptions').classList.remove('hidden');
+                addURLListItems(
+                  document.querySelector('#clickjacking-checker > .results > .unsafe-result > .unsafe-result-list-safe-exceptions > ul'),
+                  e.vulnStatus.safeSourcesAllowed.map((source) => {
+                    if ('sameorigin' in source) {
+                      return {
+                        url: e.vulnStatus.url,
+                      };
+                    } 
+                    if ('source' in source) {
+                      return {
+                        url: source.source,
+                      };
+                    }
+                    // Nothing matched? Filter it out.
+                    return null;
+                  }).filter((e) => e != null),
+                );
+              }
+            }
+            if (e.vulnStatus.ignoredSources?.length > 0) {
+              // Ignored ones.
+              document.querySelector('#clickjacking-checker > .results > .unsafe-result > .check-result-invalid').classList.remove('hidden');
+              addURLListItems(
+                document.querySelector('#clickjacking-checker > .results > .unsafe-result > .check-result-invalid > ul'),
+                e.vulnStatus.ignoredSources.map((source) => {
+                  return { url: source }
+                }),
+              );
+            }
+          }
+          console.log(e);
+          // document.querySelector('#clickjacking-checker > .results').innerText = JSON.stringify(e, null, 2);
+        }
+      }).catch((err) => {
+        // XXX: Copied from above.
+        // Then set the error text and make the error visible.
+        const errorDiv = document.querySelector('#clickjacking-checker > .results > .check-result-error');
+        errorDiv.innerText = `An error occurred: unable to check website. Please try again later.`;
+        errorDiv.classList.remove('hidden');
+      }).finally(() => {
+        document.querySelector('#clickjacking-checker').classList.remove('loading');
+      });
+    }
+  });
 
   // We have an interactive demo, but we don't want people to progress beyond
   // the last slide.

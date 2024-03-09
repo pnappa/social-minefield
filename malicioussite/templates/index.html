@@ -31,7 +31,7 @@
           <li>
             You must be logged into Facebook, and use a browser without privacy
             protections (Google Chrome works best). Similarly, privacy
-            extensions or adblockers break the game.
+            extensions, adblockers, or being European 🇪🇺 break the game.
           </li>
           <li>Have fun! 😊</li>
         </ul>
@@ -105,8 +105,7 @@
             attacks work:
           </p>
           <div id="interactive-demo-1" class="demo-wrapper">
-            <!-- <div id="intro-to-shopfast"> -->
-            <div id="intro-to-shopfast" class="hidden">
+            <div id="intro-to-shopfast">
               <div class="browser">
                 <div class="url-bar">
                   <div>
@@ -721,8 +720,8 @@
                 </div>
               </div>
             </div>
-            <!-- <div id="adding-enticing-content" class="hidden"> -->
-            <div id="adding-enticing-content">
+            <div id="adding-enticing-content" class="hidden">
+            <!-- <div id="adding-enticing-content"> -->
               <div class="browser">
                 <div class="url-bar">
                   <div>
@@ -933,48 +932,86 @@
             How do I know if a site is vulnerable?
           </h2>
           <p>
-            If you wish to check if a site is vulnerable to Clickjacking
-            attacks, by visiting the <a href="https://securityheaders.com">
-              Security Headers</a> site, you can specify which site you want to
-            scan. After scanning, you should get a report indicating what
-            security features they have enabled by specifying "headers" that the
-            server sends to your computer when you visit the website.
+            I've written a tool to easily check whether a site is vulnerable to
+            Clickjacking. A site is vulnerable when the developer responsible
+            for hosting it has not included a setting on their website that will
+            reject attempts at embedding it on other websites.
           </p>
-          <p>
-            There are two fields to look at for whether a site is vulnerable to
-            Clickjacking:
-          </p>
-          <ul>
-            <li>
-              <code>x-frame-options</code>
-              <ul>
-                <li>
-                  If a value of <code>DENY</code> or <code>SAMEORIGIN</code> is
-                  specified, the site is <strong>not vulnerable</strong>.
-                </li>
-                <li>
-                  If there is no value specified, the site is
-                  <strong>vulnerable</strong>.
-                </li>
-              </ul>
-            </li>
-            <li>
-              <code>content-security-policy</code>
-              <ul>
-                <li>
-                  If the value contains something like
-                  <code>frame-ancestors 'self'</code>, or
-                  <code>frame-ancestors somewebsite.com</code>, it is
-                  <em>probably</em> <strong>not vulnerable</strong>.
-                </li>
-                <li>
-                  If there is no specified field, or the value contains
-                  something like <code>frame-ancestors *</code>, it is 
-                  <em>probably</em> <strong>vulnerable</strong>.
-                </li>
-              </ul>
-            </li>
-          </ul>
+          <div id="checker-wrapper">
+          <form id="clickjacking-checker" action="javascript:void(0);">
+            <label for="clickjacking-website-input">Check website</label>
+            <div>
+              <input id="clickjacking-website-input" name="clickjacking-website-input" placeholder="google.com" />
+              <button type="submit">Submit</button>
+            </div>
+            <div class="results">
+              <div class="check-result-error hidden">
+              </div>
+              <div class="safe-result hidden">
+                <h4>This website is not vulnerable.</h4>
+                <div class="success-none-allowed hidden">
+                  <p>
+                    The website you've provided is protected against clickjacking attacks. This is because the website does not allow any website to host it, even itself.
+                  </p>
+                </div>
+                <div class="success-result-list hidden">
+                  <p>
+                    The website you've provided is protected against clickjacking attacks. This is because the website has specified a policy that only allows the following websites to host them.
+                  </p>
+                  <ul>
+                    <li><code>google.com</code></li>
+                    <li><code>www.google.com</code></li>
+                  </ul>
+                </div>
+                <div class="check-result-invalid hidden">
+                  <p>
+                    The website also specifies a few more invalid sources, which are ignored by your browser.
+                  </p>
+                  <ul>
+                    <li><code>daklsjdakljsd</code></li>
+                    <li><code>daskldasdkl</code></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="unsafe-result hidden">
+                <h4>This website is vulnerable.</h4>
+                <div class="unsafe-missing-policy hidden">
+                  <p>
+                  The website you've provided does not specify a policy, and thus is <em>by default</em> vulnerable to clickjacking attacks.
+                  </p>
+                </div>
+                <div class="unsafe-result-list hidden">
+                  <p>
+                    The website you've provided is not protected against clickjacking attacks. This is because the website has specified a policy that allows the following websites. These websites are too permissive, and not specific enough.
+                  </p>
+                  <ul>
+                    <li><code>*.com</code></li>
+                    <li><code>https:</code> (any https website)</li>
+                  </ul>
+                </div>
+                <div class="unsafe-result-list-safe-exceptions hidden">
+                    <p>
+                      However, it also does specify some safe websites.
+                    </p>
+                    <ul>
+                      <li><code>google.com</code></li>
+                      <li><code>www.google.com</code></li>
+                    </ul>
+                </div>
+                <div class="check-result-invalid hidden">
+                  <p>
+                    The website also specifies a few more invalid sources, which are ignored by your browser.
+                  </p>
+                  <ul>
+                    <li><code>daklsjdakljsd</code></li>
+                    <li><code>daskldasdkl</code></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="loader">Loading...</div>
+          </form>
+          </div>
           <p>
             What these field values specify is whether another website is
             allowed to embed this website in their site. If it's not allowed,

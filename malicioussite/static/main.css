@@ -510,3 +510,38 @@ footer.block > :last-child {
 .steps > button[disabled] {
   cursor: not-allowed;
 }
+
+#checker-wrapper {
+  background-color: bisque;
+  padding: 1em;
+  border-radius: 10px;
+  border: 3px solid black;
+}
+#clickjacking-checker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#clickjacking-checker > button[type=submit] {
+}
+label[for=clickjacking-website-input] {
+  font-size: 18px;
+  font-weight: 600;
+}
+#clickjacking-website-input {
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 3px solid black;
+}
+
+#clickjacking-checker > div.loader {
+  display: none;
+}
+#clickjacking-checker.loading > div.loader {
+  display: inline-block;
+}
+
+.results .hidden {
+  display: none;
+}
