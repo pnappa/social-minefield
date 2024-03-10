@@ -16,9 +16,16 @@ class MainHandler(tornado.web.RequestHandler):
             minelinks_array=get_random_silly_links(10)
         )
 
+class DevelopersHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render('developers.html')
+
 def make_app():
     return tornado.web.Application(
-        [(r"/", MainHandler)],
+        [
+            (r"/", MainHandler),
+            (r"/developers", DevelopersHandler)
+        ],
         debug=True,
         template_path="templates/",
         static_path=os.path.join(os.path.dirname(__file__), "static")

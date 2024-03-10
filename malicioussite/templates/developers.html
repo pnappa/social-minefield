@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Social Minefield - Avoiding Clicjacking</title>
+    <link href="{{ static_url("main.css") }}" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="pagecontainer">
+      <div class="block">
+        <article>
+          <h1>Avoiding Clickjacking Attacks</h1>
+          <h4>A configuration guide for developers.</h4>
+          <p>
+            To prevent your website from being vulnerable to Clickjacking attacks, you must add set specific values for HTTP headers to specify which sites are allowed to embed your site.
+          </p>
+          <p>
+            For the vast majority of cases, there will not be a need to allow other sites than your own to be embed it. For that reason, I recommend restricting the allowed sites to same-origin. For what exactly same-origin refers to, <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">this MDN article</a> elaborates nicely.
+          </p>
+          <p>
+            In short, two sites are considered the same origin when their protocol (e.g. https), domain (example.com) and port (:443, usually omitted) <em>all</em> match. Subdomains will not match, so none of <code>https://google.com</code>, <code>https://www.google.com</code> or <code>https://images.google.com</code> are of the same origin.
+          </p>
+          <p>
+            There are two relevant headers you can set: <code>Content-Security-Policy</code> and <code>X-Frame-Options</code>.
+          </p>
+          <h3>Content-Security-Policy (CSP)</h3>
+          <!-- See https://caniuse.com/?search=frame-ancestors -->
+          <p>
+            <a href=https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP">Content Security Policy</a> (CSP for short), was primarily introduced (circa 2012) to protect against XSS (cross-site scripting) attacks. It is a HTTP header which instructs the browser on how to handle multiple attacks, such as which are valid domains to execute scripts from (protecting against XSS), and whether resources must have a SHA hash associated with it (to protect against supply chain attacks).
+          </p>
+          <p>
+            Here's an example policy for <code>example.com</code>, with each policy separated by semi-colons.
+          </p>
+          <pre>
+Content-Security-Policy: script-src scripts.example.com; default-src 'self'</pre>
+          <ul>
+            <li><strong><code>script-src</code></strong> - scripts (e.g. javascript) are only allowed to be loaded if they come from <code>scripts.example.com</code></li>
+            <li><strong><code>default-src</code></strong> - if there's no policy defined for an object (e.g. img-src for images, full list <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/default-src">here</a>), they will use this value. <code>'self'</code> means same-origin, so only images hosted on <code>example.com</code> will be allowed to load.</li>
+          </ul>
+          <p>
+            In 2014, CSP version 2 was published which added support for a few more attacks to cover - particularly relevant to us is its ability for a website to specify which sites (referred to as <code>frame-ancestors</code>) are allowed to host it. The overwhelming majority of browsers supported version 2 (and by extension, <code>frame-ancestors</code>) <a href="https://caniuse.com/?search=frame-ancestors">by 2017</a>. So, it's something you can rely on.
+          </p>
+          <p>
+          As we're focussing on Clickjacking attacks, I'll just specify the pertinent <code>frame-ancestors</code> values you should be aware of. For a general guide on how to configure CSP to secure your site, refer the the <a href="https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html">OWASP CSP cheatsheet</a>. A site can specify one or more values, each separated by spaces. Here are possible values for <code>frame-ancestors</code>:
+          </p>
+          <ul>
+            <li><code>'none'</code></li>
+            <ul>
+              <li>This means no sites are allowed to embed it.</li>
+            </ul>
+            <li><code>'self'</code></li>
+            <ul>
+              <li>Only same-origin sites are allowed to embed it.</li>
+            </ul>
+            <li><code>example.com</code></li>
+            <ul>
+              <li>Only <code>example.com</code> can embed this site.</li>
+            </ul>
+            <li><code>*.example.com</code></li>
+            <ul>
+              <li>Only subdomains of <code>example.com</code> can embed this site. For example, <code>embed.example.com</code>, <code>www.example.com</code>, or <code>www.nested.example.com</code></li>
+            </ul>
+            <li><code>*</code></li>
+            <ul>
+              <li>Any site is allowed to embed it. This is an <strong>unsafe</strong> value, and will allow arbitrary sites to embed yours.</li>
+            </ul>
+            <li><code>*.com</code></li>
+            <ul>
+              <li>Any site ending in <code>.com</code> is allowed to embed it. This is an <strong>unsafe</strong> value, and will allow arbitrary sites to embed yours.</li>
+              <li>Be careful with any wildcard value, you need to ensure that it's not a <a href="https://publicsuffix.org/">public suffix</a> like  <code>.co.uk</code>, as those are considered to be domains <em>anyone</em> can register.</li>
+            </ul>
+            <li><code>https:</code></li>
+            <ul>
+              <li>Any site using HTTPS is allowed to embed it. This is an <strong>unsafe</strong> value, and will allow arbitrary sites to embed yours.</li>
+            </ul>
+          </ul>
+          <p>
+          In general, I'd recommend disabling embeds your site, so a value of <code>'none'</code>. Otherwise, a safe bet (in case you need to embed your site on itself), is to only allow <code>'safe'</code>, and to add specific exceptions manually (e.g. allowing <code>embed.example.com</code>), but try to avoid wildcards where possible:
+          </p>
+          <pre>
+Content-Security-Policy: frame-ancestors 'self' embed.example.com</pre>
+          <h3>X-Frame-Options</h3>
+          <p>
+            This header was brought in a few years earlier than <code>Content-Security-Policy</code> (earliest implementation was 2011, <a href="https://caniuse.com/?search=x-frame-options">majority support</a> in 2013), specifically to protect against Clickjacking. It instructs browsers whether to reject all attempts to embed, or only allow embedding on itself.
+          </p>
+          <p>
+            This is a deprecated header, meaning that it's no longer recommended to use this header to disable embeds. It still works, but it may be removed at some point in the future. Pretty much every browser after 2017 supports the extension to <code>Content-Security-Policy</code> that allows setting <code>frame-ancestors</code>, so that should be used instead.
+          </p>
+          <p>
+            There are only two possible values to set for this header.
+          </p>
+          <ul>
+            <li><code>X-Frame-Options: DENY</code></li>
+            <ul>
+              <li>
+                <strong><code>DENY</code></strong> prevents any site from embedding your site, including your own.
+              </li>
+            </ul>
+            <li><code>X-Frame-Options: SAMEORIGIN</code></li>
+            <ul>
+              <li>
+                <strong><code>SAMEORIGIN</code></strong> prevents any site from embedding your site, except things from the same-origin (e.g. itself).
+              </li>
+            </ul>
+          </ul>
+          <p>
+          There is no harm adding this header to your config <em>in addition</em> to <code>Content-Security-Policy</code>. If you don't think your site does or will embed itself on the site, set it to <strong><code>DENY</code></strong>. Otherwise, if it's not a core requirement for your site to be embedded in an <code>&lt;iframe&gt;</code>, but you are likely to embed your own site on itself, then set it to <strong><code>SAMEORIGIN</code></strong>. More details on this header can be <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options">found on MDN</a>.
+          </p>
+          <h3>What if I need my site to be embedded by anyone?</h3>
+          <p>
+            In the scenario where you <strong>need</strong> your website to be embedded by <em>anyone</em>, there's a few things you can do to mitigate this attack.
+          </p>
+          <ul>
+            <li>
+              Try to isolate the embeddable portion to a separate domain. Prefer to avoid a subdomain, as cookies may <a href="https://security.stackexchange.com/questions/12412/what-cookie-attacks-are-possible-between-computers-in-related-dns-domains-exa">unintentionally be valid for subdomains</a>.
+            </li>
+            <li>
+              Avoid UI elements that are interactive, and can change backend state, to ensure the site is effectively read-only.
+            </li>
+            <li>
+              If the content does not require authentication (in other words, you do not need to be logged in to see the page), avoid authenticating them.
+            </li>
+          </ul>
+          <h3>Conclusion</h3>
+          <p>
+            To protect against Clickjacking attacks, you must set some HTTP headers to prevent other sites embedding your own. Unfortunately, as the default is not to deny, it means there's a bunch of websites developed by people that are unaware of this attack that are vulnerable to it.
+          </p>
+          <p>
+            What's required to change the default behaviour of web-browsers to the much safer behaviour of by default allowing only same-origin embeds? If we change the behaviour there, we can make it secure by default, and add sufficient warning labels to the documentation describing how to enable it.
+          </p>
+          <p>
+            Until then, it's a matter of educating developers, and detecting pre-emptively when sites are vulnerable to this attack.
+          </p>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>
