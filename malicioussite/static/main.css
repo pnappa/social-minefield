@@ -409,6 +409,27 @@ footer.block > :last-child {
   background: ghostwhite;
 }
 
+#shonky-setup .browser {
+  background: cornflowerblue;
+}
+
+#underconstruction {
+  width: 250px;
+}
+
+#shonky-setup .browser-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#shonky-setup .body {
+  border: 3px ridge white;
+  background-color: white;
+  border-radius: 23px;
+  text-align: center;
+}
+
 /* Step 3 */
 
 #embedding-the-website {
