@@ -446,7 +446,6 @@ footer.block > :last-child {
 }
 /* Makes clickjacking a bit harder to screw up. */
 #overlaying-divs > .browser {
-  overflow: hidden;
   /* This is 400px - the margin. */
   width: 380px;
   background: beige;
