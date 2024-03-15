@@ -579,7 +579,8 @@
             attacks work:
           </p>
           <div id="interactive-demo-1" class="demo-wrapper">
-            <div id="intro-to-shopfast">
+            <!-- <div id="intro-to-shopfast"> -->
+            <div id="intro-to-shopfast" class="hidden">
               <div class="browser">
                 <div class="url-bar">
                   <div>
@@ -1315,8 +1316,8 @@
                 </div>
               </div>
             </div>
-            <div id="adding-enticing-content" class="hidden">
-            <!-- <div id="adding-enticing-content"> -->
+            <!-- <div id="adding-enticing-content" class="hidden"> -->
+            <div id="adding-enticing-content">
               <div class="browser">
                 <div class="url-bar">
                   <div>
@@ -1335,6 +1336,19 @@
                       <img
                         class="shonky-steve-logo"
                         src="/static/demos/shonky-steve-free-car-logo.png">
+                      <div id="obnoxious-ctr">
+                        <div>
+                          <span class="one-millionth">You are the 1,000,000th visitor!!!</span>
+                          <button class="claim-now">Claim!!</button>
+                          <img
+                            class="shonky-cool-car"
+                            src="/static/demos/cool-car.png">
+                          <img
+                            class="shonky-red-arrow"
+                            src="/static/demos/red-arrow.png">
+                          <span class="click-2-claim">Click to claim your car!!!!</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="header">
@@ -1472,7 +1486,7 @@
                 clicks together to perform more complex actions.
               </p>
               <p>
-                <strong>TODO:</strong> I think we should have an example like deleting files from boggle cloud or whatever. Click delete, then confirm.
+                <strong>TODO:</strong> I think we should have an example like deleting files from gobble cloud or whatever. Click delete, then confirm.
               </p>
             </div>
             <span class="steps">
@@ -1657,10 +1671,22 @@
             </ul>
           </ul>
           <h2>Acknowledgements</h2>
-          <p>
-            TODO: ???
-            <!-- icon set creators if relevant -->
-          </p>
+          <details>
+            <summary>
+            Some resources were used in the supporting material.
+            </summary>
+            <ul>
+              <li>
+                Squiggly arrow from <a href="https://www.wannapik.com/vectors/47120">Wannapik</a>
+              </li>
+              <li>
+                Shopfast logo, broken hammer, cool car images by Dall-E 3.
+              </li>
+              <li>
+                Under construction logo from <a href="http://textfiles.com/underconstruction/">textfiles.</a>
+              </li>
+            </ul>
+          </details>
           <p>
             If you're curious, the code for all this is free and open-source on
             GitHub, <a href="https://github.com/pnappa/social-minefield">

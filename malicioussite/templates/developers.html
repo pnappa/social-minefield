@@ -14,7 +14,7 @@
             To prevent your website from being vulnerable to Clickjacking attacks, you must add set specific values for HTTP headers to specify which sites are allowed to embed your site.
           </p>
           <p>
-            For the vast majority of cases, there will not be a need to allow other sites than your own to be embed it. For that reason, I recommend restricting the allowed sites to same-origin. For what exactly same-origin refers to, <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">this MDN article</a> elaborates nicely.
+            For the vast majority of cases, there will not be a need to allow other sites than your own to be embed it. For that reason, I recommend restricting the allowed sites to same-origin, or if possible, letting nothing embed it. For what exactly same-origin refers to, <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">this MDN article</a> elaborates nicely.
           </p>
           <p>
             In short, two sites are considered the same origin when their protocol (e.g. https), domain (example.com) and port (:443, usually omitted) <em>all</em> match. Subdomains will not match, so none of <code>https://google.com</code>, <code>https://www.google.com</code> or <code>https://images.google.com</code> are of the same origin.
