@@ -701,18 +701,11 @@ document.addEventListener('DOMContentLoaded', () => {
       shonkyWrapper.style.opacity = el.value / 100;
     }
     // Also find the label, so we can have a nice responsive label.
-    let assocLabel = null;
-    if (el.parentElement != null) {
-      for (const child of el.parentElement.children) {
-        if (child.tagName.toLowerCase() === 'label' && child.getAttribute('for') === 'opacity-slider-2') {
-          assocLabel = child;
-        }
-      }
-    }
+    const assocLabel = document.querySelector('label[for=opacity-slider-2] > span');
     if (assocLabel == null) {
       console.log('couldnt find assoclabel');
     } else {
-      assocLabel.innerText = `Transparency: ${el.value}%`;
+      assocLabel.innerText = `${el.value}%`;
     }
 
     el.addEventListener('input', () => {
@@ -720,7 +713,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shonkyWrapper.style.opacity = el.value / 100;
       }
       if (assocLabel != null) {
-        assocLabel.innerText = `Transparency: ${el.value}%`;
+        assocLabel.innerText = `${el.value}%`;
       }
     });
   });
