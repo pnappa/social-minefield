@@ -529,11 +529,27 @@ div#obnoxious-ctr {
   position: absolute;
   top: 86px;
   width: 300px;
-  border: 15px solid white;
+  border: 15px solid;
+  border-color: lightgray gray lightgray white;
   height: 200px;
   pointer-events: none;
   margin-top: 6px;
   background-color: #282828;
+  animation: rotatingborder 2s step-start infinite;
+}
+@keyframes rotatingborder {
+  0% {
+    border-color: lightgray gray lightgray white;
+  }
+  25% {
+    border-color: white lightgray gray lightgray;
+  }
+  50% {
+    border-color: lightgray white lightgray gray;
+  }
+  75% {
+    border-color: gray lightgray white lightgray;
+  }
 }
 .one-millionth {
   color: white;
@@ -545,6 +561,11 @@ div#obnoxious-ctr {
   width: 148px;
   font-size: 15px;
   left: 134px;
+  animation: blinky 1s step-start infinite;
+}
+
+@keyframes blinky {
+  50% { opacity: 0; }
 }
 .shonky-cool-car {
   position: absolute;
@@ -557,6 +578,12 @@ div#obnoxious-ctr {
   width: 56px;
   left: 83px;
   top: 26px;
+  animation: 3s ease-in 1s infinite reverse both running rotatey;
+}
+@keyframes rotatey {
+  0% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+  100% { transform: rotate(-12deg); }
 }
 .click-2-claim{
   color: cyan;
@@ -568,7 +595,13 @@ div#obnoxious-ctr {
   position: absolute;
   top: 50px;
   font-weight: 600;
+  animation: 3s ease-in 1s infinite reverse both running pulse;
 }
+
+@keyframes pulse {
+  50% { font-weight: 1000; }
+}
+
 .claim-now {
   background-color: red;
   position: absolute;
@@ -578,6 +611,11 @@ div#obnoxious-ctr {
   text-align: center;
   height: 18px;
   border: 3px white outset;
+  animation: blinky2 1s step-start infinite;
+}
+
+@keyframes blinky2 {
+  50% { background-color: cyan; }
 }
 
 /* 6 */

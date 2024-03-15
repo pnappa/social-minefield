@@ -29,6 +29,12 @@ source venv/bin/activate
 cd friendlysite
 python3 app.py
 
+# And in another, to run the lambda:
+cd clickjacking-checker
+# Requires npm & nodejs, should install all deps.
+npm install
+# Start the lambda locally.
+npx serverless offline
 ```
 
 ## TODO
@@ -41,17 +47,17 @@ python3 app.py
  - [ ] Add a progress meter to the interactive demos.
   - Consider not making the demos interactive, and instead splat the content inline?
   - Idk, this is a hard call, I'll need to ask around (normies and techies).
- - [ ] Serve the font ourselves, we need to ensure the dimensions are exactly what we're setting it to be.
+ - [x] Serve the font ourselves, we need to ensure the dimensions are exactly what we're setting it to be.
   - We probably need to overwrite all styles, to guarantee the click boxes are exactly where we're expecting them.
- - [ ] I need to write the /developers page for detailed information how to protect your site against it.
+ - [x] I need to write the /developers page for detailed information how to protect your site against it.
  - [ ] Consider adding the feature to allow users to provide their own links.
  - [ ] Game over screen
  - [ ] Game won screen.
  - [x] Before I continue too much further with the game, attempt to check if it actually works with the real social media link. I don't want to do all this work for nothing.
   - We have a somewhat simple HTML that kind of looks like a minesweeper, but before any gameplay logic comes into play
- - [ ] Are we allowed to load multiple like buttons at once? Or should we make it a modified game of minesweeper where it's only one flag out of the 10 that's a super mine.
+ - [x] Are we allowed to load multiple like buttons at once? Or should we make it a modified game of minesweeper where it's only one flag out of the 10 that's a super mine.
    - I reckon Facebook might implement a timing heuristic that detects this. If instead we stream the HTML to the client, using magic HTTP streaming shit, we can ruin that. Obviously is a cat and mouse game.
- - [ ] Need to be able to detect when a iframe is clicked in, so as to know when it's game over (and which thing they liked).
+ - [x] Need to be able to detect when a iframe is clicked in, so as to know when it's game over (and which thing they liked).
   - https://stackoverflow.com/questions/2381336/detect-click-into-iframe-using-javascript/32138108#32138108
   - Looks reasonable to do.
  - [ ] See if there's a way to get page liking to work.
@@ -61,20 +67,19 @@ python3 app.py
   - Is right clicking possible for clickjacked squares? Maybe something exploiting blurring, idk. This might trigger the iframe click code?
     - Maybe let's pop up a modal on the user's first attempt at right clicking (this will only work on the non-clickjacked squares), to hopefully scare them off doing it.
     - Big warning saying not too.
- - [ ] Ability to generate a random game. I think it'll be very difficult to make minesweeper play like the legit version, which generates a board upon revealing the first square (to guarantee the first square isn't a failure).
+ - [x] Ability to generate a random game. I think it'll be very difficult to make minesweeper play like the legit version, which generates a board upon revealing the first square (to guarantee the first square isn't a failure).
   - What we'll need to do, is to get them to click a square, wherein we redirect to a page with that revealed.
   - Alternatively we can capture all clicks with an over the top div(?), and use flex-box ordering to reshuffle around the elements. There's probably some maths to involve it. We cannot move the iframes around the DOM without them resetting (which could be detected by FB maybe).
- - [ ] Add random mine facts during the game, which should distract them
+ - [ ] ~Add random mine facts during the game, which should distract them~
   - The rat that demines
   - Canaries don't like mines, yada yada yada
  - [x] Add a flag placer. It's not possible to place flags because right click isn't handled.
   - The way I imagine this working, is that you click a toggle to change which mode you're in.
   - Then when in that mode, left clicking will place a flag. Clicking the toggle again returns you to regular mode.
   - I don't want it to automatically re-enter the game mode after placing a single flag, as it's easy to accidentally click on a mine if you didn't know that it only activated once.
- - [ ] Add some styling to make it preeeetty.
+ - [x] Add some styling to make it preeeetty.
   - [ ] Optimise opensans font - we probably will only need semi-bold and regular weights, so as to strip down the font.
   - Also consider limiting the range. https://web.dev/articles/reduce-webfont-size#unicode-range_subsetting
-    - I switched to using sans serif (default browser font).
 
 ## Experiments with the Like Button
 So, if you insert an iframe with the following code:
