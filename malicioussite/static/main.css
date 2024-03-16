@@ -504,7 +504,6 @@ footer.block > :last-child {
   background: ghostwhite;
 }
 #adding-enticing-content > .browser {
-  overflow: hidden;
   /* This is 400px - the margin. */
   width: 380px;
   background: beige;
