@@ -625,6 +625,20 @@ div#obnoxious-ctr {
   grid-template-columns: 1fr 1fr;
   background: ghostwhite;
 }
+#epilogue-txt {
+  padding: 1em;
+}
+#epilogue .browser {
+  background-color: azure;
+}
+#epilogue .header {
+  background-color: darkslategrey;
+  justify-content: space-around;
+}
+#epilogue .header img {
+  height: 26px;
+  width: auto;
+}
 
 /* General demo stuff */
 .demo-wrapper {

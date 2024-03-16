@@ -24,7 +24,8 @@ def make_app():
     return tornado.web.Application(
         [
             (r"/", MainHandler),
-            (r"/developers", DevelopersHandler)
+            (r"/developers", DevelopersHandler),
+            (r"/(favicon.ico)", tornado.web.StaticFileHandler, {"path": "static"}),
         ],
         debug=True,
         template_path="templates/",

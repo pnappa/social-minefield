@@ -1474,19 +1474,72 @@
               </div>
             </div>
             <div id="epilogue" class="hidden">
-              <h4>Extra credit</h4>
-              <p>
-                And with that, we've demonstrated how a Clickjacking attack
-                works. A malicious website can embed another website, and be
-                designed to trick visitors to perform unintended actions.
-              </p>
-              <p>
-                It's not just limited to single clicks! You can chain multiple
-                clicks together to perform more complex actions.
-              </p>
-              <p>
-                <strong>TODO:</strong> I think we should have an example like deleting files from gobble cloud or whatever. Click delete, then confirm.
-              </p>
+              <div id="epilogue-txt">
+                <h4>Extra credit</h4>
+                <p>
+                  And with that, we've demonstrated how a Clickjacking attack
+                  works. A malicious website can embed another website, and be
+                  designed to trick visitors to perform unintended actions.
+                </p>
+                <p>
+                  It's not just limited to single clicks! You can chain multiple
+                  clicks together to perform more complex actions.
+                </p>
+                <p>
+                  Consider a cloud storage website, where there's a confirmation to delete a file. <em>How would you</em> design a site to trick people to click in two locations?
+                </p>
+              </div>
+              <div class="browser">
+                <div class="url-bar">
+                  <div>
+                    <img width="24" height="24" src="/static/demos/lock.svg" alt="padlock icon indicating a secure site connection">
+                    <div>https://gobblecloud.com/files</div>
+                  </div>
+                  <button class="show-source">View source</button>
+                </div>
+                <div class="browser-body">
+                  <div class="header">
+                    <div>
+                    <img src="/static/demos/gobble-cloud-logo.png" alt="Gobble Cloud Logo">
+                    <h1>Gobble Cloud</h1>
+                    </div>
+                    <div>
+                      <button class="logout">
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                  <div class="body">
+                    <div class="item-listing">
+                      <img
+                        width="137px"
+                        height="137px"
+                        src="/static/demos/hammer.png"
+                        alt="low quality hammer thumbnail">
+                      <div class="item-description">
+                        <h3>Shonky Hammer</h3>
+                        <p class="item-company">
+                          Shonky Steve PTY LTD
+                        </p>
+                        <p>
+                          $100.00
+                        </p>
+                        <button class="instant-purchase">
+                          <img width="12" height="12" src="/static/demos/shopping-cart.svg" alt="shopping cart icon">
+                          <span>
+                          1-click buy
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="browser-source hidden">
+                  <h4>Viewing source code for: <code>https://gobblecloud.com/files</code></h4>
+                  <pre>
+</pre>
+                </div>
+              </div>
             </div>
             <span class="steps">
               <button id="prev-step-1" disabled>← Prev</button>
@@ -1686,6 +1739,9 @@
               </li>
               <li>
                 Cool text generator from <a href="https://cooltext.com/Logo-Design-Burning">cooltext.com</a>.
+              </li>
+              <li>
+                Favicon generated from <a href="https://twemoji.twitter.com/">Twemoji</a>.
               </li>
             </ul>
           </details>
