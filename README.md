@@ -1,6 +1,4 @@
-# Social Minefield
-
-![Social Minefield Logo](./misc/logo.png)
+# 🚩 Social Minefield
 
 A high-stakes game of minesweeper.
 
