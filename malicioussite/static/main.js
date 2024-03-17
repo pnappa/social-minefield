@@ -104,7 +104,7 @@ const checkWinCondition = () => {
   // TODO: Change the game state and website to indicate success. Maybe remove
   //       the iframes, and display where the bombs were. Add some popup too.
   displayAllCells();
-  alert('game won');
+  document.querySelector('#game-win-frame').classList.remove('hidden');
   return true;
 };
 
@@ -206,12 +206,29 @@ const gameOver = (idx, iframeSrc) => {
   // Tweak the timeout for a good-feeling value.
   isGameOver = true;
   setTimeout(() => {
-    alert(`Game over: Clicked iframe: ${iframeSrc}, x=${x}, y=${y}`);
+    // Show what link they clicked on.
+    const mineIframe = document.querySelector('#clicked-mine-demo');
+    if (mineIframe) {
+      mineIframe.src = iframeSrc;
+    }
+    // And tell them what link they clicked on.
+    const mineLink = document.querySelector('#game-over-link-text');
+    if (mineLink) {
+      mineLink.innerText = iframeSrc;
+      mineLink.href = iframeSrc;
+    }
+    document.querySelector('#game-over-frame')?.classList.remove('hidden');
+
     // Toggle the mine cell.
     const element = document.querySelectorAll('.square')[idx];
     element.classList.add('explodedmine');
     element.classList.add('clicked');
     displayAllCells();
+
+    // Hide the place flags button.
+    document.querySelector('#placeflags').classList.add('hidden');
+
+    // 
     // XXX: This might be breaking the code if you hold down the click? Instead
     //      let's try just re-adding pointer events to the game.
     // removeAllMineIframes();

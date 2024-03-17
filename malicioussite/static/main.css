@@ -77,6 +77,11 @@ iframe#example-failed {
   display: flex;
   justify-content: center;
 }
+#game > div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 
 .field {
   position: absolute;
@@ -122,11 +127,29 @@ iframe#example-failed {
 	background-color: khaki;
   cursor: pointer;
 }
+#placeflags.hidden {
+  display: none;
+}
 
 #placeflags:hover {
   /* Khaki, but translucent. Setting opacity also changes the border colour,
    * which is ugly. */
   background-color: rgba(240, 230, 140, 0.7);
+}
+#game-over-frame > h2 {
+  text-align: center;
+}
+#game-over-frame {
+  width: 400px;
+}
+#game-over-frame.hidden {
+  display: none;
+}
+#game-win-frame.hidden {
+  display: none;
+}
+#game-win-frame {
+  text-align: center;
 }
 
 .square, .demo-square {
