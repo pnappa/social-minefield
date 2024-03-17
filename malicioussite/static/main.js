@@ -248,7 +248,11 @@ const startMonitoringIFrames = () => {
     //      are just hacks, and for a "normal" player, it functions good enough.
     if (currGameField == null) return;
     var elem = document.activeElement;
-    if(elem?.tagName === 'IFRAME' && elem.parentElement.id != null){
+    if (
+      elem?.tagName === 'IFRAME' &&
+      elem.parentElement.id != null &&
+      // Ignore clicking the example of a failed iframe loading.
+      elem.parentElement.id !== 'example-failed-wrapper'){
       // We store the ID on the table cell, not the iframe.
       const elemId = elem.parentElement.id;
       // Only activate if it's the first click.
