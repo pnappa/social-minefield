@@ -638,6 +638,55 @@ div#obnoxious-ctr {
   height: 26px;
   width: auto;
 }
+#epilogue .file-listing {
+  width: 100%;
+  background-color: white;
+  border: 2px solid black;
+}
+.file-listing td {
+  border: none;
+  padding: 1em 0;
+}
+
+.file-listing tr:nth-child(2n) {
+  background-color: #ececec;
+}
+
+.gobble-modal {
+  position: absolute;
+  background-color: white;
+  padding: 2em;
+  border: 3px solid black;
+  margin-left: 3em;
+  margin-top: 3em;
+  width: 150px;
+}
+.gobble-modal.hidden {
+  display: none;
+}
+.gobble-modal-text {
+  margin-bottom: 1em;
+}
+.gobble-modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+#gobble-modal-confirm, #gobble-modal-cancel {
+  padding: 0.5em 1em;
+  border: 2px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+}
+#gobble-modal-confirm:hover, #gobble-modal-cancel:hover {
+  background-color: #ececec;
+}
+
+
+.delete-icon {
+  width: 20px;
+  cursor: pointer;
+}
+
 
 /* General demo stuff */
 .demo-wrapper {

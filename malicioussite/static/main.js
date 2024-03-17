@@ -9,6 +9,9 @@ let currGameField = null;
 let isGameOver = false;
 let isFlagPlacingEnabled = false;
 
+// Gobble cloud currently selected deletion row:
+let currGobbleRow = null;
+
 const checkURL = 'http://localhost:3000';
 
 // We need to subtract the border size, as we don't want clicking on the
@@ -757,4 +760,33 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#blocker-4')?.classList.add('hidden');
       }
     });
+
+  // Gobble cloud stuff.
+  document.querySelectorAll('.delete-icon').forEach((el) => {
+    // Show the confirm/cancel delete modal.
+    el.addEventListener('click', (evt) => {
+      // The row to potentially delete.
+      currGobbleRow = el.parentNode.parentNode;
+      document.querySelector('.gobble-modal').classList.remove('hidden');
+    });
+  });
+  // Confirm deletion
+  document.querySelector('#gobble-modal-confirm').addEventListener(
+    'click',
+    (evt) => {
+      if (currGobbleRow) {
+        currGobbleRow.parentNode.removeChild(currGobbleRow);
+        currGobbleRow = null;
+      }
+      document.querySelector('.gobble-modal').classList.add('hidden');
+    },
+  );
+  // Cancel deletion
+  document.querySelector('#gobble-modal-cancel').addEventListener(
+    'click',
+    (evt) => {
+      currGobbleRow = null;
+      document.querySelector('.gobble-modal').classList.add('hidden');
+    },
+  );
 });

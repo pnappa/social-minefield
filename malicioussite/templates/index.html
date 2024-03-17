@@ -1633,34 +1633,191 @@
                     </div>
                   </div>
                   <div class="body">
-                    <div class="item-listing">
-                      <img
-                        width="137px"
-                        height="137px"
-                        src="/static/demos/hammer.png"
-                        alt="low quality hammer thumbnail">
-                      <div class="item-description">
-                        <h3>Shonky Hammer</h3>
-                        <p class="item-company">
-                          Shonky Steve PTY LTD
-                        </p>
-                        <p>
-                          $100.00
-                        </p>
-                        <button class="instant-purchase">
-                          <img width="12" height="12" src="/static/demos/shopping-cart.svg" alt="shopping cart icon">
-                          <span>
-                          1-click buy
-                          </span>
-                        </button>
+                    <div class="gobble-modal hidden">
+                      <div class="gobble-modal-text">
+                        Are you sure you wish to delete this file?
+                      </div>
+                      <div class="gobble-modal-actions">
+                        <button id="gobble-modal-confirm">Yes</button>
+                        <button id="gobble-modal-cancel">Cancel</button>
                       </div>
                     </div>
+                    <h4>Files</h4>
+                    <table class="file-listing">
+                      <thead>
+                        <tr>
+                          <th>Filename</th>
+                          <th>Uploaded</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            work.pdf
+                          </td>
+                          <td>
+                            March 16
+                          </td>
+                          <td>
+                            <img class="delete-icon" src="/static/demos/rubbish.svg" alt="delete icon">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            crimes.docx
+                          </td>
+                          <td>
+                            Feb 30
+                          </td>
+                          <td>
+                            <img class="delete-icon" src="/static/demos/rubbish.svg" alt="delete icon">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            fanfic.rtf
+                          </td>
+                          <td>
+                            Jan 1
+                          </td>
+                          <td>
+                            <img class="delete-icon" src="/static/demos/rubbish.svg" alt="delete icon">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            memes.tiff
+                          </td>
+                          <td>
+                            Jan 2
+                          </td>
+                          <td>
+                            <img class="delete-icon" src="/static/demos/rubbish.svg" alt="delete icon">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
                 <div class="browser-source hidden">
+                  <div>
                   <h4>Viewing source code for: <code>https://gobblecloud.com/files</code></h4>
                   <pre>
+&lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">header</span>"</span>&gt;
+  &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">gobble-logo.png</span>"</span>&gt;
+  &lt;<span class="tag">h1</span>&gt;Gobble Cloud&lt;/<span class="tag">h1</span>&gt;
+  &lt;<span class="tag">button <span class="attribute">class</span>="<span class="string">logout</span>"</span>&gt;Logout&lt;/<span class="tag">button</span>&gt;
+&lt;/<span class="tag">div</span>&gt;
+&lt;<span class="tag">div</span>&gt;
+  &lt;<span class="tag">h4</span>&gt;Files&lt;/<span class="tag">h4</span>&gt;
+  &lt;<span class="tag">table <span class="attribute">class</span>="<span class="string">file-listing</span>"</span>&gt;
+    &lt;<span class="tag">thead</span>&gt;
+      &lt;<span class="tag">tr</span>&gt;
+        &lt;<span class="tag">th</span>&gt;Filename&lt;/<span class="tag">th</span>&gt;
+        &lt;<span class="tag">th</span>&gt;Uploaded&lt;/<span class="tag">th</span>&gt;
+        &lt;<span class="tag">th</span>&gt;Actions&lt;/<span class="tag">th</span>&gt;
+      &lt;/<span class="tag">tr</span>&gt;
+    &lt;/<span class="tag">thead</span>&gt;
+    &lt;<span class="tag">tbody</span>&gt;
+      &lt;<span class="tag">tr</span>&gt;
+        &lt;<span class="tag">td</span>&gt;work.pdf&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;March 16&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;&lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">rubbish.svg</span>"</span>&gt;&lt;/<span class="tag">td</span>&gt;
+      &lt;/<span class="tag">tr</span>&gt;
+      &lt;<span class="tag">tr</span>&gt;
+        &lt;<span class="tag">td</span>&gt;crimes.docx&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;Feb 30&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;
+          &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">rubbish.svg</span>"</span>&gt;
+        &lt;/<span class="tag">td</span>&gt;
+      &lt;/<span class="tag">tr</span>&gt;
+      &lt;<span class="tag">tr</span>&gt;
+        &lt;<span class="tag">td</span>&gt;fanfic.rtf&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;Jan 1&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;
+          &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">rubbish.svg</span>"</span>&gt;
+        &lt;/<span class="tag">td</span>&gt;
+      &lt;/<span class="tag">tr</span>&gt;
+      &lt;<span class="tag">tr</span>&gt;
+        &lt;<span class="tag">td</span>&gt;memes.tiff&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;Jan 2&lt;/<span class="tag">td</span>&gt;
+        &lt;<span class="tag">td</span>&gt;
+          &lt;<span class="tag">img <span class="attribute">src</span>="<span class="string">rubbish.svg</span>"</span>&gt;
+        &lt;/<span class="tag">td</span>&gt;
+      &lt;/<span class="tag">tr</span>&gt;
+    &lt;/<span class="tag">tbody</span>&gt;
+  &lt;/<span class="tag">table</span>&gt;
+  &lt;<span class="tag">div <span class="attribute">class</span>="<span class="string">modal hidden</span>"</span>&gt;
+    &lt;<span class="tag">div</span>&gt;
+      Are you sure you wish to delete
+      this file?
+    &lt;/<span class="tag">div</span>&gt;
+    &lt;<span class="tag">div</span>&gt;
+      &lt;<span class="tag">button</span>&gt;Yes&lt;/<span class="tag">button</span>&gt;
+      &lt;<span class="tag">button</span>&gt;Cancel&lt;/<span class="tag">button</span>&gt;
+    &lt;/<span class="tag">div</span>&gt;
+  &lt;/<span class="tag">div</span>&gt;
+&lt;/<span class="tag">div</span>&gt;
 </pre>
+<!--
+<div class="header">
+  <img src="gobble-logo.png">
+  <h1>Gobble Cloud</h1>
+  <button class="logout">Logout</button>
+</div>
+<div>
+  <h4>Files</h4>
+  <table class="file-listing">
+    <thead>
+      <tr>
+        <th>Filename</th>
+        <th>Uploaded</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>work.pdf</td>
+        <td>March 16</td>
+        <td><img src="rubbish.svg"></td>
+      </tr>
+      <tr>
+        <td>crimes.docx</td>
+        <td>Feb 30</td>
+        <td>
+          <img src="rubbish.svg">
+        </td>
+      </tr>
+      <tr>
+        <td>fanfic.rtf</td>
+        <td>Jan 1</td>
+        <td>
+          <img src="rubbish.svg">
+        </td>
+      </tr>
+      <tr>
+        <td>memes.tiff</td>
+        <td>Jan 2</td>
+        <td>
+          <img src="rubbish.svg">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="modal hidden">
+    <div>
+      Are you sure you wish to delete
+      this file?
+    </div>
+    <div>
+      <button>Yes</button>
+      <button>Cancel</button>
+    </div>
+  </div>
+</div>
+-->
+                  </div>
                 </div>
               </div>
             </div>
