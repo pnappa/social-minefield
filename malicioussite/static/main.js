@@ -378,7 +378,12 @@ const initialiseGameField = ({ x, y }) => {
   const iframecells = document.querySelectorAll('td.boo');
   minePositions.forEach((pos, idx) => {
     const relevantCell = iframecells[coordToIdx(pos)];
-    relevantCell.innerHTML = `<iframe data-url="${minelinks[idx]}" referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/like.php?href=${encodeURIComponent(minelinks[idx])}&width=100px&layout&action&size&share=false&height=35&appId" width="100px" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share""></iframe>`;
+    if (!isDev) {
+      relevantCell.innerHTML = `<iframe data-url="${minelinks[idx]}" referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/like.php?href=${encodeURIComponent(minelinks[idx])}&width=100px&layout&action&size&share=false&height=35&appId" width="100px" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share""></iframe>`;
+    } else {
+      // In dev mode, just show the iframe
+      relevantCell.innerHTML = `<iframe data-url="${minelinks[idx]}" referrerpolicy="no-referrer" src="${minelinks[idx]}" width="100px" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share""></iframe>`;
+    }
   });
   
   return game;
