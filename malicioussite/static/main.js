@@ -12,7 +12,7 @@ let isFlagPlacingEnabled = false;
 // Gobble cloud currently selected deletion row:
 let currGobbleRow = null;
 
-const checkURL = 'http://localhost:3000';
+const checkURL = 'https://h7cnchzwygu4k3tgjcbuj4cetq0gmkcq.lambda-url.ap-southeast-2.on.aws/';
 
 // We need to subtract the border size, as we don't want clicking on the
 // border to trigger the reveal. This is because clicking on the border of an
@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('#clickjacking-checker > .results > div').forEach((el) => {
         el.classList.add('hidden');    
       });
-      fetch(`${checkURL}/check`, {
+      fetch(`${checkURL}`, {
         method: 'POST',
         headers: { 'Content-Type':  'application/json' },
         body: JSON.stringify({ url: el.value }) },
