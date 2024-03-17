@@ -82,6 +82,9 @@ iframe#example-failed {
   align-items: center;
   flex-direction: column;
 }
+#game > div:nth-child(1) {
+  cursor: pointer;
+}
 
 .field {
   position: absolute;
