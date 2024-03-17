@@ -196,7 +196,7 @@ const removeAllMineIframes = () => {
 };
 
 // This function is called when the user clicks on a mine at index idx.
-const gameOver = (idx, iframeSrc) => {
+const gameOver = (idx, iframeSrc, dataURL) => {
   const { x, y } = idxToCoords(idx);
   // What we should do, is mark the game as over. Then, in X seconds, show the
   // pop-up saying they've lost.
@@ -210,12 +210,13 @@ const gameOver = (idx, iframeSrc) => {
     const mineIframe = document.querySelector('#clicked-mine-demo');
     if (mineIframe) {
       mineIframe.src = iframeSrc;
+      mineIframe.setAttribute('data-url', dataURL);
     }
     // And tell them what link they clicked on.
     const mineLink = document.querySelector('#game-over-link-text');
     if (mineLink) {
-      mineLink.innerText = iframeSrc;
-      mineLink.href = iframeSrc;
+      mineLink.innerText = dataURL;
+      mineLink.href = dataURL;
     }
     document.querySelector('#game-over-frame')?.classList.remove('hidden');
 
@@ -275,7 +276,9 @@ const startMonitoringIFrames = () => {
       // Only activate if it's the first click.
       if (activeFrame != elemId) {
         const idx = elemId.split('-')[1];
-        gameOver(idx, elem.src);
+        if (idx != null) {
+          gameOver(idx, elem.src, elem.getAttribute('data-url'));
+        }
       }
       activeFrame = elemId;
     } else {
@@ -375,7 +378,7 @@ const initialiseGameField = ({ x, y }) => {
   const iframecells = document.querySelectorAll('td.boo');
   minePositions.forEach((pos, idx) => {
     const relevantCell = iframecells[coordToIdx(pos)];
-    relevantCell.innerHTML = `<iframe scrolling="no" referrerpolicy="no-referrer" src="${minelinks[idx]}"></iframe>`;
+    relevantCell.innerHTML = `<iframe data-url="${minelinks[idx]}" referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/like.php?href=${encodeURIComponent(minelinks[idx])}&width=100px&layout&action&size&share=false&height=35&appId" width="100px" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share""></iframe>`;
   });
   
   return game;

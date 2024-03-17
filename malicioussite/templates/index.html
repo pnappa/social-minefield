@@ -5,6 +5,51 @@
     <script>
       // Yes, these are the links you can like when you click a mine.
       var minelinks = {% raw minelinks_array %};
+      {#
+      var minelinks = [
+        'https://www.youtube.com/watch?v=3d5JtSHC3vw',
+        'https://zombo.com',
+        'https://www.dailymail.co.uk/tvshowbiz/article-13205653/Kanye-West-wife-Bianca-Censori-minidress-Los-Angeles.html',
+        'https://eelslap.com/',
+        'https://www.amazon.com/Uncensored-Hugging-Dakimakura-Full-Size-Pillowcase/dp/B0CLRSHWZ5/',
+        'https://titanchair.com/products/dpc-skinshot-led-face-mask',
+        'https://www.youtube.com/watch?v=pvb3y9qIf8k',
+        'https://www.dailymail.co.uk/sport/boxing/article-13204483/Mike-Tyson-57-shares-latest-training-footage-displays-power-strength-ahead-showdown-Paul-summer.html',
+        'https://www.youtube.com/watch?v=mKdjycj-7eE',
+        'https://newreligiousmovements.org/u/unification-church-moonies/',
+        'https://www.rd.com/list/coffee-memes/',
+        'https://old.reddit.com/r/PublicFreakout/comments/10g5n09/boss_puts_pressure_over_new_employee_attempting/',
+        'https://www.imdb.com/title/tt11161374/',
+        'https://boards.4chan.org/po/thread/561868',
+        'https://www.youtube.com/watch?v=c59W6SntxdQ',
+        'https://www.ecmrrc.org/',
+        'https://www.amazon.com.au/KNOW-MORE-ABOUT-HYDROXYCHLOROQUINE-CHLOROQUINE/dp/B08FRGVMFS/',
+        'https://www.madebycow.com.au/',
+        'https://www.pinterest.com.au/muffinrw/doll-toilet-paper-covers/',
+        'https://www.chatham.co.uk/mens/by-footwear/boat-shoes',
+        'https://www.calaiswine.co.uk/blog/20-best-wine-gifs-memes',
+        'https://classicsdirect.com.au/collections/dvds/products/andre-rieu-johnann-strauss-orchestra-the-magic-of-andre-rieu-box-set-3dvd',
+        'https://www.youtube.com/watch?v=xOZgF3DBH5s',
+        'https://www.imdb.com/title/tt5697572/',
+      ];
+      // https://stackoverflow.com/a/2450976
+      function shuffle(array) {
+        let currentIndex = array.length,  randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex > 0) {
+
+          // Pick a remaining element.
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      }
+      shuffle(minelinks);
+              #}
     </script>
     <script src="{{ static_url("main.js") }}"></script>
     <link href="{{ static_url("main.css") }}" rel="stylesheet" />
@@ -415,7 +460,7 @@
                 You've clicked on a mine. You have attempted to like the link: <a href="" id="game-over-link-text"></a>.
               </p>
               <p>
-                If the below like button does not show "Unlike", sorry, the game did not work for you. It may be due to privacy protections, or not being logged into Facebook.
+                If the below like button does not show it's liked (with a tick), sorry, the game did not work for you. It may be due to privacy protections, or not being logged into Facebook.
               </p>
               <div>
                 <iframe id="clicked-mine-demo"></iframe>
@@ -2059,15 +2104,7 @@
         <p>Please feel free to email feedback.</p>
       </footer>
     </div>
-    {#
     <div>
-      <iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&width=100px&layout&action&size&share=false&height=35&appId" width="100px" height="35" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-      <!--<iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FMrBeast6000&tabs=timeline&width=180&height=70&small_header=true&adapt_container_width=false&hide_cover=true&show_facepile=false&appId" width="180" height="70" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>-->
-      <!--<iframe referrerpolicy="no-referrer" src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FMrBeast6000&tabs=timeline&width=180&height=70&small_header=true&adapt_container_width=false&hide_cover=true&show_facepile=false&appId" width="180" height="70" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>-->
     </div>
-    #}
-    {#
-    <iframe scrolling="no" referrerpolicy="no-referrer" src="{{ IFRAMESRC }}"></iframe>
-    #}
   </body>
 </html>
