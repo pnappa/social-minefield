@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="options.css">
+    <link rel="icon" type="image/png" href="../icons/enabled/16.png">
+    <link rel="stylesheet" type="text/css" href="explore/explore.css">
+  </head>
+  <body>
+    <div id="explore"></div>
+    <details open>
+      <summary>I. Settings</summary>
+      <div class="section">
+        <div class="information">
+          <p style="text-align: left">Mark this checkbox to print headers (header's name, URL and matched) to the background console (default is NOT active)
+            <input id="console-log" type="checkbox"></input>
+          </p>
+        </div>
+      </div>
+    </details>
+    <details open>
+      <summary>II. Instructions</summary>
+      <div class="section">
+        <div class="information">
+          <p>With Modify Header Value addon you can add, modify or remove a custom "HTTP request header" for any request on desired URL(s). This addon is very useful if you are an app developer, website designer, or if you want to test a particular header for a request on a website. Modify Header Value (HTTP Headers) allows you to easily change an HTTP request header sent to any web server. For a complete list of HTTP headers, please take a look at the list of <a target="_blank" href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields">HTTP Header Fields</a> in Wikipedia. In order to submit bugs please visit Addon's <a target="_blank" href="http://mybrowseraddon.com/modify-header-value.html">Homepage</a> and fill the bug report form.</p>
+        </div>
+        <div class="information">
+          <p><b>Sample</b>: A sample Header is shown below. Column (1) shows the header number. Column (2) is where you put the desired URL. Check Column (3), to use DOMAIN instead of the URL. Column (4) applies the Header to all URLs whose Tab (or top-level) URL is the given URL. If you do NOT check column (4), the header will be applied to the exact URL(s) matching the given URL. Column (5) is the Header name. If you check Column (6), the header will be added to the current URL. Likewise, if Column (7) is checked the header, if matched, will be modified with the new value. Column (8) is to remove the given header, if existed, from the given url-request. Column (9) is for the header value. Column (10) is to activate or inactivate the header, yellow color indicates an active and gray color indicates an inactive header (clicking the button will swap the colors). Column (11) is to permanently delete a header item.</p>
+        </div>
+        <div class="information">
+          <p><b>Note 1</b>: Use * (star) in place of the URL field to apply the given header(s) to all URLs.</p>
+          <p><b>Note 2</b>: Once you add a field to the table below, currently there is no option to edit the URL, Name and Value areas. To do so, please add a new field and remove the old one (the edit option will be added in the next version).</p>
+        </div>
+        <div class="information grey">
+          <table>
+            <thead>
+              <tr>
+                <td style="width: 28px">#</td>
+                <td style="width: auto">URL</td>
+                <td style="width: 58px">Domain</td>
+                <td style="width: 58px" title="Include this header for all sub-domain requests">Sub</td>
+                <td style="width: auto">Header Name</td>
+                <td style="width: 58px">Add</td>
+                <td style="width: 58px">Modify</td>
+                <td style="width: 58px">Remove</td>
+                <td style="width: auto">Header Value</td>
+                <td title="Enable or disable this header">State</td>
+                <td style="width: 58px" title="Remove this header">Delete</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td type="number">1</td>
+                <td type="url"><input type="text" value="https://www.example.com/" disabled></td>
+                <td type="check"><input type="checkbox" checked disabled></td>
+                <td type="check"><input type="checkbox" checked disabled></td>
+                <td type="name"><input type="text" value="User-Agent" disabled></td>
+                <td type="check"><input type="checkbox" disabled></td>
+                <td type="check"><input type="checkbox" checked disabled></td>
+                <td type="check"><input type="checkbox" disabled></td>
+                <td type="value"><input type="text" value="Mozilla/5.0 (iPhone; CPU iPhone OS 9_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/47.0.2526.70 Mobile/13C71 Safari/601.1.46" disabled></td>
+                <td type="toggle" state="active">active</td>
+                <td type="close">⛌</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+    <div class="section interface grey">
+      <div class="container">
+        <div class="information">
+          <p><b>III. Headers</b></p>
+          <p>Enter a desired value for (URL), (Header Name) and (Header Value), then press Enter or click on the (+) button to add it to the Table.</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <td>URL</td>
+              <td>Header Name</td>
+              <td>Header Value</td>
+              <td>Add</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="input-field">
+              <td type="ajax-item"><input title="Enter a valid domain" placeholder="URL (i.e. https://www.google.com/ or *)"></input></td>
+              <td type="ajax-item"><input title="Enter a valid name" placeholder="name (i.e. User-Agent)"></input></td>
+              <td type="ajax-item"><input title="Enter a valid value" placeholder="value (i.e. Mozilla/5.0 (Linux; U; Android 4.4.4; Nexus 5 Build/KTU84P) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"></input></td>
+              <td id="input-field-add" type="ajax-item-add" title="Add Header Item">+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="container">
+        <table id="header-value-table">
+          <thead>
+            <tr>
+              <td style="width: 28px">#</td>
+              <td style="width: auto">URL</td>
+              <td style="width: 58px" title="Include this header for top domain requests">Domain</td>
+              <td style="width: 58px" title="Include this header for all sub-domain requests">Sub</td>
+              <td style="width: auto">Header Name</td>
+              <td style="width: 58px">Add</td>
+              <td style="width: 58px">Modify</td>
+              <td style="width: 58px">Remove</td>
+              <td style="width: auto">Header Value</td>
+              <td title="Enable or disable this header">State</td>
+              <td style="width: 58px" title="Remove this header">Delete</td>
+            </tr>
+          </thead>
+          <tbody id="header-value-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <script async src="explore/explore.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+    <script type="text/javascript" src="vendor/sortable.js"></script>
+  </body>
+</html>
