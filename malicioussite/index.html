@@ -1,12 +1,24 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8">
     <title>Social Minefield</title>
     <script>
       // Yes, these are the links you can like when you click a mine.
-      var minelinks = {% raw minelinks_array %};
+      var minelinks = [
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+        'http://localhost:8889',
+      ];
       var isDev = true;
-      {#
+      /*
       var isDev = false;
       var minelinks = [
         'https://www.youtube.com/watch?v=3d5JtSHC3vw',
@@ -51,10 +63,10 @@
         }
       }
       shuffle(minelinks);
-              #}
+      */
     </script>
-    <script src="{{ static_url("main.js") }}"></script>
-    <link href="{{ static_url("main.css") }}" rel="stylesheet" />
+    <script src="/static/main.js"></script>
+    <link href="/static/main.css" rel="stylesheet" />
   </head>
   <body>
     <div id="pagecontainer">
@@ -2001,7 +2013,7 @@
           </p>
           <h2 id="how-to-fix">I'm a developer, how do I fix my site?</h2>
           <p>
-            I've written a guide <a href="/developers">here</a>.
+            I've written a guide <a href="/developers.html">here</a>.
           </p>
           <h2 id="fix-once-and-for-all">
             How to <em>eradicate</em> this vulnerability?

@@ -2,30 +2,16 @@
 
 A high-stakes game of minesweeper.
 
-## Running
-
-You'll need to first install the dependencies.
-
-```
-# Make and initialise the virtual environment
-python3 -m venv venv/
-source venv/bin/activate
-
-pip3 install -r requirements.txt
-```
-
 Running the demo:
 
 ```
 # In one terminal window run:
-source venv/bin/activate
 cd malicioussite
-python3 app.py
+python3 -m http.server 8000
 
 # In another:
-source venv/bin/activate
 cd friendlysite
-python3 app.py
+python3 -m http.server 8889
 
 # And in another, to run the lambda:
 cd clickjacking-checker
@@ -33,6 +19,9 @@ cd clickjacking-checker
 npm install
 # Start the lambda locally.
 npx serverless offline
+# Update the checkURL in the JS to <blah>/check
+# Uncomment the isDev=true block, and comment the opposite.
+
 ```
 
 ## TODO
