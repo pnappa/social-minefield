@@ -30,7 +30,7 @@ if (isDev) {
     'https://www.youtube.com/watch?v=mKdjycj-7eE',
     'https://newreligiousmovements.org/u/unification-church-moonies/',
     'https://www.rd.com/list/coffee-memes/',
-    'https://old.reddit.com/r/PublicFreakout/comments/10g5n09/boss_puts_pressure_over_new_employee_attempting/',
+    'https://reddit.com/r/PublicFreakout/comments/10g5n09/boss_puts_pressure_over_new_employee_attempting/',
     'https://www.imdb.com/title/tt11161374/',
     'https://boards.4chan.org/po/thread/561868',
     'https://www.youtube.com/watch?v=c59W6SntxdQ',
